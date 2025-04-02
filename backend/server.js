@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import connectDB from './config/db.js'; 
-import dotenv from 'dotenv';
 import testRoutes from './routes/testRoutes.js'
 import setupSwagger from './config/swagger.js';
 
