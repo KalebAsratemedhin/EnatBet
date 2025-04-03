@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const RestaurantSchema = new mongoose.Schema(
     {
-    RestaurantId : {
+    restaurantId : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
         unique : true ,
@@ -11,11 +11,11 @@ const RestaurantSchema = new mongoose.Schema(
         type:mongoose.Schema.Types.ObjectId,
         ref : 'User'
     },
-    Name : {
+    name : {
         type : String,
         required : true
     },
-    Locaton : 
+    locaton : 
     {
         type :
          {
@@ -29,22 +29,22 @@ const RestaurantSchema = new mongoose.Schema(
             },
              address : string
           },
-    Menu : 
+    menu : 
     {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Menu'
     },
-    Rating :
+    rating :
      {
         type : number,
         min : 0,
         max : 5,
         default : 0
     },
-    DeliverAreas : 
+    deliverAreas : 
     {
          type:[String]},
-         
+
     promotion:[
         {
             title:String,

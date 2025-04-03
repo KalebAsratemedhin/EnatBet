@@ -6,17 +6,15 @@ const RoleRequestSchema = new mongoose.Schema({
        ref : 'User',
        required : true 
        },
-       currentRoles : [{
-        type : String,
-        enum : ['customer', 'restaurant_owner', 'delivery_person', 'admin']
-         }],
-       additionalRole : {
-        type : String,
+       requestedRole : {
+        type : [String],
         enum : ['restaurant_owner' , 'delivery_person', 'admin'],
         required : true
        },
+       status : { type : String ,enum :['pending','approve', 'disaprove','cancelled'],default:'pending'},
+
        remark : {
-        type : string,
+        type : String,
         maxlength : 500
        }
 

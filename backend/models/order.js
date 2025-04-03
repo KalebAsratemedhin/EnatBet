@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const OrderSchema=new mongoose.Schema(
     
-    { OrderId:{type:mongoose.Schema.Types.ObjectId,reuired:true,index:true},
+    { orderId:{type:mongoose.Schema.Types.ObjectId,reuired:true,index:true},
       customerID: {type: mongoose.Schema.Types.ObjectId,ref: 'Customer',required: true,index:true},
       restaurantID: {type: Schema.Types.ObjectId,ref: 'Restaurant',required: true,index:true},
       orderDetails: [{itemID: Schema.Types.ObjectId,name: String,quantity: Number,price: Number}],

@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
         index : true,
     },
 
-    Name : {
+    name : {
 
         type : String,
         required : true,
@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
         maxlength : [50, "Name cannot exceed 50 characters"]
     },
 
-    Email : {
+    email : {
 
         type : String,
         required : true,
@@ -25,7 +25,7 @@ const UserSchema = new mongoose.Schema({
         index : true,
          match : [/.+@.+\..+/, 'Please enter a valid email address'],},
 
-    Password : {
+    password : {
 
         type : String,
         validate : {
@@ -37,14 +37,14 @@ const UserSchema = new mongoose.Schema({
        }
       },
 
-    Role : {
+    role : {
 
         type : [String],
-        enum : ['customer','Restaurant_woner','delivery_person','admin'],
+        enum : ['customer','Restaurant_woner','Delivery_person','Admin'],
         default:"customer"
      },
 
-    PhoneNumber : {
+    phoneNumber : {
 
         type : String, 
         match: [
@@ -52,7 +52,7 @@ const UserSchema = new mongoose.Schema({
         "Please enter a valid Ethiopian phone number"],
         required:true },
 
-    Address : {
+    address : {
         type : String,
         required : true},
 
@@ -68,6 +68,6 @@ const UserSchema = new mongoose.Schema({
     }
     
 })
-const User=mongoose.model('User','UserSchema');
+const User=mongoose.model('User',UserSchema);
 
 export default User;
