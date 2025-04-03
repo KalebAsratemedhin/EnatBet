@@ -1,5 +1,4 @@
 import Test from "../models/test.js";
-
 export const createTest = async (req, res) => {
     try {
       const { name, age } = req.body;
@@ -10,7 +9,6 @@ export const createTest = async (req, res) => {
       res.status(500).json({ message: 'Error saving data', error });
     }
 }
-
 export const getAllTests = async (req, res) => {
     try {
       const tests = await Test.find();
