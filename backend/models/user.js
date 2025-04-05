@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
     userId : {
 
         type : mongoose.Schema.Types.ObjectId,
-        required : true,
+        required : false,
         unique : true,
         index : true,
     },
@@ -40,8 +40,8 @@ const UserSchema = new mongoose.Schema({
     role : {
 
         type : [String],
-        enum : ['customer','Restaurant_woner','Delivery_person','Admin'],
-        default:"customer"
+        enum : ['Admin','customer','Restaurant_woner','Delivery_person'],
+        default:'Admin'
      },
 
     phoneNumber : {
@@ -71,3 +71,4 @@ const UserSchema = new mongoose.Schema({
 const User=mongoose.model('User',UserSchema);
 
 export default User;
+        // default:"customer"

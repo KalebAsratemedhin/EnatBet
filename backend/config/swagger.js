@@ -2,8 +2,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 
-dotenv.config(); 
-
+dotenv.config();
 
 const swaggerOptions = {
   definition: {
@@ -19,14 +18,34 @@ const swaggerOptions = {
         description: 'Local server',
       },
     ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter JWT token in format: Bearer <token>'
+        }
+      }
+    },
+    // Add global security requirement (optional but recommended)
+    security: [{ bearerAuth: [] }]
   },
-  apis: ['./routes/*.js'], 
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 const setupSwagger = (app) => {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/api-docs', 
+    swaggerUi.serve, 
+    swaggerUi.setup(swaggerSpec, {
+      swaggerOptions: {
+        persistAuthorization: true, // Saves token between page refreshes
+        docExpansion: 'none',      // Cleaner UI
+      }
+    })
+  );
   console.log('Swagger Docs available at /api-docs');
 };
 

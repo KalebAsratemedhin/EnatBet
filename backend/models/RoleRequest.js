@@ -11,7 +11,7 @@ const RoleRequestSchema = new mongoose.Schema({
         enum : ['restaurant_owner' , 'delivery_person', 'admin'],
         required : true
        },
-       status : { type : String ,enum :['pending','approve', 'disaprove','cancelled'],default:'pending'},
+       status : { type : String ,enum :['pending','approved', 'disaproved','cancelled'],default:'pending'},
 
        remark : {
         type : String,
@@ -20,5 +20,6 @@ const RoleRequestSchema = new mongoose.Schema({
 
 
 })
- const RoleRequest = mongoose.model('RoleRequest',RoleRequestSchema);
- export default RoleRequest;
+RoleRequestSchema.index({ userId: 1, status: 1 });
+const RoleRequest = mongoose.model('RoleRequest',RoleRequestSchema);
+export default RoleRequest;
