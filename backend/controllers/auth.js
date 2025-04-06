@@ -145,7 +145,6 @@ const addRoleToUser = async(user_Id,newRole) =>{
 
      }
 
-    //  console.log(!user.role.includes(newRole));
 
      if(!user.role.includes(newRole)){
        try{

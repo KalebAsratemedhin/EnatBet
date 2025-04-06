@@ -2,11 +2,6 @@ import mongoose from "mongoose";
 
 const RestaurantSchema = new mongoose.Schema(
     {
-    restaurantId : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true,
-        unique : true ,
-        index:true},
     ownerId : {
         type:mongoose.Schema.Types.ObjectId,
         ref : 'User'
@@ -15,20 +10,22 @@ const RestaurantSchema = new mongoose.Schema(
         type : String,
         required : true
     },
-    locaton : 
-    {
-        type :
-         {
-            type : String,
-            enum : ['Point'],
-            required : true
+    location: {
+        type: {
+          type: String,
+          enum: ['Point'],
+          required: true,
+          default: 'Point'
         },
-             Coordinates : 
-             {
-                type : number , required : true
-            },
-             address : string
-          },
+        coordinates: {
+          type: [Number], // [longitude, latitude]
+          required: true
+        },
+        address: {
+          type: String,
+          required: true
+        }
+      },
     menu : 
     {
         type : mongoose.Schema.Types.ObjectId,
@@ -41,7 +38,7 @@ const RestaurantSchema = new mongoose.Schema(
         max : 5,
         default : 0
     },
-    deliverAreas : 
+    deliveryAreas : 
     {
          type:[String]},
 
