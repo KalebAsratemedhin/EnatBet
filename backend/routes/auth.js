@@ -1,6 +1,9 @@
 import express from 'express'
 import { signup, signin,logout, updateRoleRequest ,
-       createRoleRequest, cancleRoleRequest } from '../controllers/auth.js';
+       createRoleRequest, cancelRoleRequest, 
+       getAllRoleRequests,
+       getMyRoleRequests,
+       getCurrentUser} from '../controllers/auth.js';
 import { isAuthenticated, isDeliveryPerson, isAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -37,12 +40,6 @@ const router = express.Router();
  *                 type: string
  *                 minLength: 8
  *                 example: "Password123!"
- *               role:
- *                 type: array
- *                 items:
- *                   type: string
- *                   enum: [customer, Restaurant_owner, Delivery_person, Admin]
- *                 default: ["Admin"]
  *               phoneNumber:
  *                 type: string
  *                 pattern: '^(?:(?:\+251|251|0)?9\d{8}|(?:\+251|251|0)?1[1-9]\d{6})$'
@@ -72,7 +69,7 @@ const router = express.Router();
  *                   type: array
  *                   items:
  *                     type: string
- *                   example: ["Admin"]
+ *                   example: ["customer"]
  *                 phoneNumber:
  *                   type: string
  *                   example: "+251912345678"
@@ -216,6 +213,63 @@ router.post('/signin',signin);
  */
 router.post('/logout', isAuthenticated, logout)
 
+
+/**
+ * @swagger
+ * /auth/current-user:
+ *   get:
+ *     summary: Get current user
+ *     description: Retrieves the currently authenticated user's information.
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   example: "660b2d3483c6b5b3d95e6b5d"
+ *                 name:
+ *                   type: string
+ *                   example: "John Doe"
+ *                 email:
+ *                   type: string
+ *                   example: "john@example.com"
+ *                 role:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                     enum: [admin, customer, restaurant_owner, delivery_person]
+ *                   example: ["customer"]
+ *                 phoneNumber:
+ *                   type: string
+ *                   example: "+251911223344"
+ *                 address:
+ *                   type: string
+ *                   example: "Addis Ababa"
+ *                 isEmailVerified:
+ *                   type: boolean
+ *                   example: false
+ *                 isPhoneVerified:
+ *                   type: boolean
+ *                   example: false
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-04-01T10:00:00.000Z"
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
+ */
+
+
+router.get('/current-user', isAuthenticated, getCurrentUser);
+
+
 /**
  * @swagger
  * /auth/role-request:
@@ -254,13 +308,21 @@ router.post('/role-request',isAuthenticated, createRoleRequest);
 
 /**
  * @swagger
- * /auth/role-request/cancelled:
+ * /auth/role-request/cancelled/{requestId}:
  *   post:
  *     summary: Cancel user's pending role request
  *     description: Cancels the authenticated user's most recent pending role request
  *     tags: [Role Requests]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: requestId
+ *         required: true
+ *         description: ID of the role request to cancel
+ *         schema:
+ *           type: string
+ *           example: "507f1f77bcf86cd799439011"
  *     responses:
  *       200:
  *         description: Role request cancelled successfully
@@ -292,7 +354,7 @@ router.post('/role-request',isAuthenticated, createRoleRequest);
  *       401:
  *         description: Unauthorized (missing/invalid token)
  */
-router.post('/role-request/cancelled',isAuthenticated,cancleRoleRequest);
+router.post('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleRequest);
 
 /**
  * @swagger
@@ -328,6 +390,77 @@ router.post('/role-request/cancelled',isAuthenticated,cancleRoleRequest);
  *         description: Request not found
  */
 router.put('/role-request',isAuthenticated, isAdmin,updateRoleRequest)
-export default router;
 
-// , 
+/**
+ * @swagger
+ * /auth/role-request/mine:
+ *   get:
+ *     summary: Get current user's role requests
+ *     description: Retrieves all role requests submitted by the authenticated user.
+ *     tags: [Role Requests]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Role requests retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                     enum: [pending, approved, rejected, cancelled]
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Unauthorized (missing/invalid token)
+*/
+router.get('/role-request/mine', isAuthenticated, getMyRoleRequests);
+
+/**
+ * @swagger
+ * /auth/role-request/all:
+ *   get:
+ *     summary: Get all role requests
+ *     description: Retrieves all role requests submitted by users (admin access required).
+ *     tags: [Role Requests]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All role requests retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   user:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *                     enum: [pending, approved, rejected, cancelled]
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Unauthorized (missing/invalid token)
+ *       403:
+ *         description: Forbidden – Only accessible by admins
+ */
+router.get('/role-request/all', isAuthenticated, isAdmin, getAllRoleRequests);
+
+export default router;

@@ -3,19 +3,18 @@ import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 import dotenv from 'dotenv'
 import RoleRequest from '../models/RoleRequest.js'
-import { request } from 'express'
 import BlacklistedToken from '../models/BlacklistedToken.js'
 dotenv.config();
 
 export const signup = async (req,res)=>{
     try {
-        const { name,email,password,phoneNumber,role,address} = req.body;
+        const { name,email,password,phoneNumber,address} = req.body;
 
         //hash password
          const hashedPassword = await bcrypt.hash(password,12);
 
          const user = await User.create(
-            {name , email,password : hashedPassword,phoneNumber,address,role:['Admin']}
+            {name , email,password : hashedPassword,phoneNumber,address,role:['customer']}
          );
          
          // Generate token
@@ -73,6 +72,19 @@ export const logout = async (req,res) => {
     }
 };
 
+
+export const getCurrentUser = async (req,res) => {
+    try{
+        const userId = req.user.id;
+        const user = await User.findById(userId).select('-password');
+        if (!user) throw new Error('User not found');
+
+        res.status(200).json({user});
+    }catch(error){
+        res.status(400).json({error:error.message});
+    }
+}
+
 //create role request
 export const createRoleRequest = async (req,res) =>{
      
@@ -98,28 +110,28 @@ export const createRoleRequest = async (req,res) =>{
 };
 
 //cancel role request
-export const cancleRoleRequest = async (req,res) =>{
+export const cancelRoleRequest = async (req,res) =>{
 
-     try{
-        
-         const request = await RoleRequest.findOne({ userId : req.user.id, status:"pending"});
+    try{
+        const requestId = req.params.requestId;
+    
+        const request = await RoleRequest.findById(requestId);
        
-         console.log(request.status)
+        console.log(request)
 
-         if(!request)
-            {
-             return res.status(404).json({ message : 'No pending request found to cancel'});
-           }
-            request.status ="cancelled";
+        if(!request || request.status !== 'pending'){
+            return res.status(404).json({ message : 'No pending request found to cancel'});
+        }
+        request.status ="cancelled";
 
-            await request.save()
+        await request.save()
 
-            res.status(200).json({message : 'Request cancelled successfully'})
+        res.status(200).json({message : 'Request cancelled successfully'})
 
-        }catch(error){
+    }catch(error){
 
-                 res.status(500).json({message : "Failed to cancel request"});
-}
+    res.status(500).json({message : "Failed to cancel request"});
+    }
 };
 
 // add new role to user
@@ -192,3 +204,26 @@ export const updateRoleRequest = async (req,res) =>{
 
     }
 };
+
+export const getMyRoleRequests = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const requests = await RoleRequest.find({ userId });
+
+        res.status(200).json(requests);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch role requests' });
+    }
+}
+
+export const getAllRoleRequests = async (req, res) => {
+    try {
+        const requests = await RoleRequest.find();
+
+        res.status(200).json(requests);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch role requests' });
+    }
+}
