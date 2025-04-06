@@ -9,6 +9,8 @@ const Sidebar: React.FC = () => {
     { name: 'Home', href: '/' },
     { name: 'Restaurants', href: '/restaurants' },
     { name: 'Orders', href: '/orders' },
+    { name: 'Profile', href: '/profile' },
+    { name: 'Settings', href: '/settings' },
   ];
 
   const dashboardLinks = [
@@ -18,7 +20,7 @@ const Sidebar: React.FC = () => {
     { role: 'admin', name: 'Admin Dashboard', href: '/dashboard/admin' },
   ];
 
-  const userRoles: string[] =  ["customer", "restaurant_owner", "delivery_person", "admin"];
+  const userRoles: string[] =  user?.role || [];
 
 
   useEffect(() => {

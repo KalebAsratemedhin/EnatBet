@@ -79,7 +79,7 @@ export const getCurrentUser = async (req,res) => {
         const user = await User.findById(userId).select('-password');
         if (!user) throw new Error('User not found');
 
-        res.status(200).json({user});
+        res.status(200).json(user);
     }catch(error){
         res.status(400).json({error:error.message});
     }

@@ -1,9 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
-// import Restaurants from './pages/Restaurants';
-// import Orders from './pages/Orders';
-import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
@@ -14,12 +11,13 @@ import CustomerDashboard from './components/CustomerDashboard';
 import RestaurantOwnerDashboard from './components/RestaurantOwnerDashboard';
 import DeliveryDashboard from './components/DeliveryPersonDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import SettingsPage from './pages/Settings';
+import ProfilePage from './pages/Profile';
 
 const App: React.FC = () => {
   return (
     <>
       <Routes>
-        {/* Public Routes */}
         <Route>
           <Route path="/" element= {
               <MainLayout> 
@@ -38,15 +36,14 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          {/* <Route path="/restaurants" element={<Restaurants />} />
-          <Route path="/orders" element={<Orders />} /> */}
+          <Route path="/settings" element={<SettingsPage />} /> 
+          <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
           <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />
           <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
         </Route>
 
-        {/* 404 Route */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

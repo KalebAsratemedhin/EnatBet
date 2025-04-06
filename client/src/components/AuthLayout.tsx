@@ -6,17 +6,17 @@ import { Outlet } from "react-router-dom";
 
 const AuthLayout: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <Header />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 max-h-[calc(100vh-40px)]">
         {/* Fixed Sidebar */}
-        <aside className="hidden md:block w-2/12 bg-gray-100 h-[calc(100vh-40px)] fixed top-20 left-0">
+        <aside className="hidden md:block w-3/12 lg:w-2/12 bg-gray-100 h-[calc(100vh-40px)] ">
           <Sidebar />
         </aside>
 
         {/* Main content shifted to the right of the fixed sidebar */}
-        <main className="ml-0 md:ml-[16.666667%] w-full md:w-[83.333333%] overflow-y-auto px-4 py-6 mx-4 md:mx-10">
+        <main className="w-full lg:w-9/12 overflow-y-auto py-6">
           <Outlet />
           <Footer />
         </main>

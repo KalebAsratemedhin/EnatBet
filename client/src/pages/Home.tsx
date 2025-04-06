@@ -33,11 +33,11 @@ const Home: React.FC = () => {
         <section id="restaurants" className="py-16 px-6">
         <h2 className="text-3xl font-bold text-center mb-10">Top Rated Restaurants</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {['italian', 'indian', 'chinese'].map((cuisine, index) => (
+            {['EthioBernos', 'Getva', 'Shewaye'].map((cuisine, index) => (
             <FeatureCard
                 key={index}
                 image={`http://localhost:3000/Wayan, restaurante en Manhattan_ - diariodesign.jpeg`}
-                title={`${cuisine.charAt(0).toUpperCase() + cuisine.slice(1)} Delights`}
+                title={`${cuisine.charAt(0).toUpperCase() + cuisine.slice(1)} Hotel`}
                 description="Explore the best places serving authentic cuisine near you."
             />
             ))}
@@ -47,7 +47,7 @@ const Home: React.FC = () => {
         <section id="dishes" className="py-16 px-6 bg-gray-50">
         <h2 className="text-3xl font-bold text-center mb-10">Popular Dishes</h2>
         <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {['pasta', 'noodles', 'burger', 'tacos'].map((dish, i) => (
+            {['firfir', 'doro wot', 'burger', 'pizza'].map((dish, i) => (
             <FeatureCard
                 key={i}
                 image={`http://localhost:3000/Injera Firfir_ A Versatile Ethiopian Home-made Dish - AbyssiniaEats.jpeg`}

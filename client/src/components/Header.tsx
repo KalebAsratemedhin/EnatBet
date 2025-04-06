@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HiBell, HiMenuAlt3, HiX } from 'react-icons/hi';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { isAuthenticated } from '../utils/auth';
+import { useGetCurrentUserQuery, useLogoutMutation } from '../api/authApi';
 
 
 
 const Header: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false); 
+  const [logout, { isLoading, isError, error, isSuccess }] = useLogoutMutation();
+  const { data: user } = useGetCurrentUserQuery();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
   const userName = 'John Doe'; // Replace with dynamic username if needed
-  const userInitial = userName.charAt(0).toUpperCase(); // Get the first initial
-
-
+  const userInitial = userName; // Get the first initial
+  const navigator = useNavigate();
+  
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Restaurants', href: '/restaurants' },
@@ -21,37 +27,91 @@ const Header: React.FC = () => {
     { name: 'Dashboard', href: '/dashboard' },
   ];
 
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  useEffect(() => {
+    if (isError) {
+      console.error('logout error:', error);
+    }
+    if (isSuccess) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      navigator("/"); 
+    }
+  }, [isError, isSuccess, error]);
+    
+
   return (
     <>
       <header className="bg-white shadow-lg py-5 px-6 flex justify-between items-center h-20 sticky top-0 z-50">
         <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
 
-        {/* Desktop Navigation (Removed) */}
-
-        {/* Mobile Hamburger */}
         <div className="md:hidden">
           <button onClick={toggleSidebar} className="text-3xl text-gray-700 focus:outline-none">
             {sidebarOpen ? <HiX /> : <HiMenuAlt3 />}
           </button>
         </div>
 
-        {/* User Profile & Notifications */}
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <button className="flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full text-xl text-gray-700">
-              {userInitial} {/* Show the first initial of the user's name */}
-            </button>
-          </div>
+        {isAuthenticated() ? (
+          <div className="flex items-center space-x-4 relative">
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full text-xl text-gray-700"
+              >
+                {user?.profileImage ? (
+                  <img src={user?.profileImage} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0)?.toUpperCase()
+                )}
+              </button>
 
-          <div className="relative">
-            <button className="text-2xl text-gray-700">
-              <HiBell />
-            </button>
-            <span className="absolute top-0 right-0 text-xs text-white bg-red-500 rounded-full w-4 h-4 flex items-center justify-center">
-              3 {/* Notifications count */}
-            </span>
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
+                  <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Profile
+                  </Link>
+                  <Link to="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    Settings
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="relative">
+              <button className="text-2xl text-gray-700">
+                <HiBell />
+              </button>
+              <span className="absolute top-0 right-0 text-xs text-white bg-red-500 rounded-full w-4 h-4 flex items-center justify-center">
+                3 {/* Notifications count */}
+              </span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="space-x-4">
+            <Link
+              to="/signup"
+              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
+            >
+              Signup
+            </Link>
+            <Link
+              to="/signin"
+              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
+            >
+              Signin
+            </Link>
+          </div>
+        )}
       </header>
       {/* Sidebar */}
       <div
@@ -67,11 +127,7 @@ const Header: React.FC = () => {
         </div>
         <nav className="flex flex-col p-6 space-y-4">
           {navLinks.map((link) => (
-            // <a
-            // href={link.href}
-            // className="text-gray-700 text-lg hover:text-red-500 transition-colors"
-            // >
-            // </a>
+
             <NavLink
             key={link.name}
             to={link.href}
@@ -99,3 +155,4 @@ const Header: React.FC = () => {
 };
 
 export default Header;
+

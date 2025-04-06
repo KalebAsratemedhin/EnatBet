@@ -29,10 +29,41 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+    }),
     getCurrentUser: builder.query<any, void>({
       query: () => '/auth/current-user',
     }),
-    // Add more secured endpoints here...
+    updateUserProfile: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/user/profile',
+        method: 'PUT',
+        body: formData,
+      }),
+    }),
+    changePassword: builder.mutation<void, void>({
+      query: (data) => ({
+        url: '/user/change-password',
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+    verifyEmail: builder.mutation<void, void>({
+      query: () => ({
+        url: '/user/verify-email',
+        method: 'POST',
+      }),
+    }),
+    deleteAccount: builder.mutation<void, void>({
+      query: () => ({
+        url: '/user/delete-account',
+        method: 'DELETE',
+      }),
+    }),
   }),
 });
 
@@ -40,4 +71,9 @@ export const {
   useSignupMutation,
   useSigninMutation,
   useGetCurrentUserQuery,
+  useLogoutMutation,
+  useUpdateUserProfileMutation,
+  useChangePasswordMutation,
+  useVerifyEmailMutation,
+  useDeleteAccountMutation,
 } = authApi;

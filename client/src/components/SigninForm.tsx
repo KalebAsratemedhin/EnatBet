@@ -43,7 +43,8 @@ const SigninForm: React.FC = () => {
       console.error('Sigin error:', error);
     }
     if (isSuccess) {
-      navigator("/dashboard"); 
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      navigator(`/dashboard/${user.role}`); 
       console.log('Sigin successful');
     }
   }, [isError, isSuccess, error]);
