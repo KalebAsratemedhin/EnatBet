@@ -4,7 +4,7 @@ import SigninForm from '../components/SigninForm';
 const Signin: React.FC = () => {
  
   return (
-    <div className="flex justify-center items-center h-screen w-full">
+    <div className="flex justify-center items-center bg-kitchen-table-2 bg-no-repeat bg-cover min-h-screen">
       <SigninForm />
     </div>
   );

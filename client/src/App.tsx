@@ -7,8 +7,13 @@ import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import Signup from './pages/Signup';
 import Signin from './pages/Signin';
-import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import MainLayout from './components/MainLayout';
+import AuthLayout from './components/AuthLayout';
+import CustomerDashboard from './components/CustomerDashboard';
+import RestaurantOwnerDashboard from './components/RestaurantOwnerDashboard';
+import DeliveryDashboard from './components/DeliveryPersonDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 const App: React.FC = () => {
   return (
@@ -17,27 +22,28 @@ const App: React.FC = () => {
         {/* Public Routes */}
         <Route>
           <Route path="/" element= {
-            <ProtectedRoute>
-              <Layout> 
+              <MainLayout> 
                 <Home/>
-              </Layout>
-            </ProtectedRoute>
+              </MainLayout>  
             } />
+       
         </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
 
-        {/* Protected Routes wrapped with Layout */}
         <Route
           element={
             <ProtectedRoute>
-              <Layout />
+              <AuthLayout />
             </ProtectedRoute>
           }
         >
           {/* <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/orders" element={<Orders />} /> */}
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+          <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />
+          <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />
+          <Route path="/dashboard/admin" element={<AdminDashboard />} />
         </Route>
 
         {/* 404 Route */}

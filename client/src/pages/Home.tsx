@@ -1,7 +1,7 @@
 import React from 'react';
 import FeatureCard from '../components/FeatureCard';
 import Carousel from '../components/Carousel';
-import Layout from '../components/Layout';
+import Layout from '../components/AuthLayout';
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
