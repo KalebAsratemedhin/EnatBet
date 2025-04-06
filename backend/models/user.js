@@ -40,8 +40,8 @@ const UserSchema = new mongoose.Schema({
     role : {
 
         type : [String],
-        enum : ['Admin','customer','Restaurant_woner','Delivery_person'],
-        default:'Admin'
+        enum : ['Admin','customer','restaurant_owner','Delivery_person'],
+        default:['Admin']
      },
 
     phoneNumber : {

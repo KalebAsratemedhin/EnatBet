@@ -78,14 +78,16 @@ export const createRoleRequest = async (req,res) =>{
      
      try{
         const {requestedRole,remark} = req.body;
-         console.log(requestedRole);
-   const newRoleRequest = await RoleRequest.create({
+
+        const newRoleRequest = await RoleRequest.create({
+
             userId: req.user.id,
             requestedRole,
             remark,
             status:'pending'
+
         });
-    console.log(newRoleRequest.status);
+
     res.status(201).json({message : "Request submitted"})
 
      }catch(error){
@@ -99,41 +101,56 @@ export const createRoleRequest = async (req,res) =>{
 export const cancleRoleRequest = async (req,res) =>{
 
      try{
-         
-       const request = await RoleRequest.findOne({ userId : req.user.id, status:"pending"});
-        const updated = await RoleRequest.findOneAndUpdate(
-            { _id: request._id, __v: request.__v },  // Explicit version check
-            { $set: { status: 'cancelled' } },
-            { new: true }  // Returns the updated doc
-          ); 
+        
+         const request = await RoleRequest.findOne({ userId : req.user.id, status:"pending"});
+       
+         console.log(request.status)
 
-         if(!updated)
+         if(!request)
             {
              return res.status(404).json({ message : 'No pending request found to cancel'});
            }
-           
+            request.status ="cancelled";
+
+            await request.save()
 
             res.status(200).json({message : 'Request cancelled successfully'})
 
         }catch(error){
+
                  res.status(500).json({message : "Failed to cancel request"});
 }
 };
 
 // add new role to user
 const addRoleToUser = async(user_Id,newRole) =>{
-       
-     const user = await User.findOne( {userId : user_Id});
-     if(!user){
-       throw new Error('User not found')
-     }
-     
-     if(!user.role.includes(newRole)){
 
-         user.role.push(newRole);
+    const user = await User.findById(user_Id);
+
+     if(!user){
+
+       throw new Error('User not found')
+
+     }
+
+    //  console.log(!user.role.includes(newRole));
+
+     if(!user.role.includes(newRole)){
+       try{
+         user.role.push(newRole[0]);
+
          await user.save();
 
+         return user
+
+       }catch(err){
+
+        console.log("Error whaile saving")
+
+       }
+
      }
+    
 
 }
 
@@ -144,26 +161,34 @@ export const updateRoleRequest = async (req,res) =>{
     try{
         console.log(req.body)
         const {requestId,status} = req.body;
-        console.log(requestId);
-        request = await RoleRequest.find({userId:requestId,status:"pending"});
+        
+        // console.log(mongoose.Types.ObjectId.isValid(requestId))
+          
+        const request = await RoleRequest.findById(requestId);
+
         console.log(request)
+
         if(!request){
 
-            return res.status(404).json({
-                message : " Request not  found"
-            });
+            return res.status(404).json({message : " Request not  found" });
+            
         }
          
         request.status = status;
  
         await request.save();
         console.log(request.status);
-        if (status === 'approved'){
+        if (request.status === 'approved'){
+           
             await addRoleToUser(request.userId,request.requestedRole )
-        }
-        
+
+            res.status(200).json({message : 'Role Added successfully'})
+
+        }    
 
     } catch (error) {
+
         res.status(500).json({message: 'Failed to update request status'});
+
     }
 };
