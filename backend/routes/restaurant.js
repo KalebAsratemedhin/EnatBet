@@ -1,5 +1,6 @@
 import { isAuthenticated,isRestaurantOwner } from "../middlewares/auth.js";
-import { addRestaurant,updateRestaurant,deleteRestaurant ,getAllMineRestaurant,getActiveRestaurants } from "../controllers/restaurant.js";
+import { addRestaurant,updateRestaurant,deleteRestaurant,
+    getAllMineRestaurant,getActiveRestaurants,getAllRestaurant } from "../controllers/restaurant.js";
 
 import express from 'express';
 
@@ -14,3 +15,5 @@ router.delete("/deleteRestaurant",isAuthenticated, isRestaurantOwner,deleteResta
 router.get("/getAllMineRestaurant", isAuthenticated,isRestaurantOwner,getAllMineRestaurant);
 
 router.get('/activeRestaurants',isAuthenticated,getActiveRestaurants);
+
+router.get('/getAllRestaurant',isAuthenticated,getAllRestaurant)
