@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
+import { NavLink } from 'react-router-dom';
+
+
 
 const Header: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -8,10 +11,10 @@ const Header: React.FC = () => {
   const closeSidebar = () => setSidebarOpen(false);
 
   const navLinks = [
-    { name: 'Home', href: '#' },
-    { name: 'Restaurants', href: '#' },
-    { name: 'Orders', href: '#' },
-    { name: 'Profile', href: '#' },
+    { name: 'Home', href: '/' },
+    { name: 'Restaurants', href: '/restaurants' },
+    { name: 'Orders', href: '/orders' },
+    { name: 'Profile', href: '/profile' },
   ];
 
   return (
@@ -22,13 +25,17 @@ const Header: React.FC = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
           {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-gray-700 hover:text-red-500 font-medium transition-colors"
-            >
-              {link.name}
-            </a>
+          <NavLink
+            key={link.name}
+            to={link.href}
+            onClick={closeSidebar}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            {link.name}
+
+          </NavLink>
           ))}
         </nav>
 
@@ -54,14 +61,22 @@ const Header: React.FC = () => {
         </div>
         <nav className="flex flex-col p-6 space-y-4">
           {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.href}
-              className="text-gray-700 text-lg hover:text-red-500 transition-colors"
-              onClick={closeSidebar}
-            >
-              {link.name}
-            </a>
+            // <a
+            // href={link.href}
+            // className="text-gray-700 text-lg hover:text-red-500 transition-colors"
+            // >
+            // </a>
+            <NavLink
+            key={link.name}
+            to={link.href}
+            onClick={closeSidebar}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            {link.name}
+
+          </NavLink>
           ))}
         </nav>
       </div>
