@@ -1,13 +1,6 @@
 import mongoose, { mongo } from "mongoose";
 
 const UserSchema = new mongoose.Schema({
-    userId : {
-
-        type : mongoose.Schema.Types.ObjectId,
-        required : false,
-        unique : true,
-        index : true,
-    },
 
     name : {
 
@@ -40,7 +33,7 @@ const UserSchema = new mongoose.Schema({
     role : {
 
         type : [String],
-        enum : ['Admin','customer','restaurant_owner','Delivery_person'],
+        enum : ['admin','customer','restaurant_owner','delivery_person'],
         default:['Admin']
      },
 
