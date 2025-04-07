@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js'; 
@@ -7,7 +6,7 @@ import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
-dotenv.config();
+import 'dotenv/config'; 
 
 const app = express();
 
