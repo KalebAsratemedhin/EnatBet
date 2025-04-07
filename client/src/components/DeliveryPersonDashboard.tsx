@@ -1,4 +1,3 @@
-import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaTruck, FaCheckCircle, FaHourglassHalf, FaTimesCircle } from 'react-icons/fa';
 import { StatsCard } from '../components/StatsCard';

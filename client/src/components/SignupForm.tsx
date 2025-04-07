@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import InputField from '../components/InputField';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSignupMutation } from '../api/authApi';
 
 const signupSchema = yup.object().shape({
@@ -28,7 +28,7 @@ const SignupForm: React.FC = () => {
   } = useForm<SignupFormValues>({
     resolver: yupResolver(signupSchema),
   });
-  const [signup, { isLoading, isError, error, isSuccess }] = useSignupMutation();
+  const [signup, { isError, error, isSuccess }] = useSignupMutation();
   const navigator = useNavigate();
 
   const onSubmit = async (data: SignupFormValues) => {

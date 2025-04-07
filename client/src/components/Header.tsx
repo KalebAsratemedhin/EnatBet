@@ -9,15 +9,13 @@ import { useGetCurrentUserQuery, useLogoutMutation } from '../api/authApi';
 const Header: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); 
-  const [logout, { isLoading, isError, error, isSuccess }] = useLogoutMutation();
+  const [logout, { isError, error, isSuccess }] = useLogoutMutation();
   const { data: user } = useGetCurrentUserQuery();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
-  const userName = 'John Doe'; // Replace with dynamic username if needed
-  const userInitial = userName; // Get the first initial
   const navigator = useNavigate();
   
   const navLinks = [

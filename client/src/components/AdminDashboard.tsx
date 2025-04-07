@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FaUsers, FaChartBar, FaBox, FaDollarSign } from 'react-icons/fa';
 import { StatsCard } from '../components/StatsCard';
@@ -22,7 +21,7 @@ const revenueData = [
   { name: 'Cancelled Orders', value: 700 },
 ];
 
-const COLORS = ['#22c55e', '#facc15', '#ef4444'];
+// const COLORS = ['#22c55e', '#facc15', '#ef4444'];
 
 const AdminDashboard = () => (
   <div className="p-4 md:p-6 space-y-8">

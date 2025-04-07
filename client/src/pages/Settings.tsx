@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useChangePasswordMutation, useDeleteAccountMutation, useVerifyEmailMutation } from '../api/authApi'; // Assuming RTK Query setup
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
