@@ -1,12 +1,14 @@
 /** @type {import('tailwindcss').Config} */
+const url = import.meta.env.VITE_CLIENT_URL
+
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       backgroundImage: {
-        'kitchen-table': "url('http://localhost:3000/kitchen-table-bg.jpg')",
-        'buffet': "url('http://localhost:3000/buffet.jpeg')",
-        'kitchen-table-2': "url('http://localhost:3000/cLe5TRIh.jpeg')",
+        'kitchen-table': `url(${url}/kitchen-table-bg.jpg')`,
+        'buffet': `url(${url}/buffet.jpeg')`,
+        'kitchen-table-2': `url(${url}/cLe5TRIh.jpeg)`,
       },
     },
   },
