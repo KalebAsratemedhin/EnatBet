@@ -4,6 +4,8 @@ import connectDB from './config/db.js';
 import testRoutes from './routes/testRoutes.js'
 import setupSwagger from './config/swagger.js';
 import authRoute from './routes/auth.js'
+import restaurantRoutes from './routes/restaurant.js';
+
 dotenv.config(); 
 
 const app = express();
@@ -16,6 +18,8 @@ setupSwagger(app);
 app.use('/api/test', testRoutes);
 
 app.use('/auth',authRoute);
+
+app.use('/restaurant', restaurantRoutes);
 
 app.use(express.urlencoded({ extended: true }))
 

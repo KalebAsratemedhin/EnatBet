@@ -11,10 +11,10 @@ export const addRestaurant = async (req,res) =>{
          const {name, location,deliveryAreas,promotion,} = req.body;
 
          const newRestaurant = new Restaurant({
-
+             ownerId:req.user.id,
               name,
               location :{
-                type:"point",
+                type:"Point",
                 coordinates :location.coordinates,
                 address:location.address
               },
@@ -39,25 +39,27 @@ export const addRestaurant = async (req,res) =>{
 export const updateRestaurant = async (req,res) =>{
 
       try{
-        const restaurantId = req.body.restaurant._id;
+        const restaurantId = req.params.id;
         const currentUserId =req.user.id;
 
-        const restaurant = await Restaurant.findById({restaurantId});
-
+        const restaurant = await Restaurant.findById(restaurantId).populate("ownerId");
+        if (!restaurant.ownerId) {
+          return res.status(403).json({ message: "Restaurant has no owner assigned" });
+        }
         if(!restaurant){
 
            return res.status(404).json({message: "Restaurant not found"});
 
         }
-        
-        if(!checkOwnership(restaurant.ownerId,currentUserId)){
+        console.log(restaurant.ownerId)
+        if(!checkOwnership(restaurant.ownerId._id,currentUserId)){
 
             return res.status(403).json({message:"Unauthorized"});
 
         }
 
         const {name, location, deliveryAreas,promotion} =req.body
-        const result = await Restaurant.findByIdAndUpdate({
+        const result = await Restaurant.findByIdAndUpdate(restaurantId,{
            name:name,
            location:location,
            deliveryAreas :deliveryAreas,
@@ -81,11 +83,11 @@ export const deleteRestaurant = async (req,res) =>{
 
            try{
 
-               const restaurantId = req.body.restaurant._id;
+               const restaurantId = req.params.id;
                const currentUserId = req.user.id;
 
-               const restaurant = await findById({restaurantId});
-
+               const restaurant = await Restaurant.findById(restaurantId);
+               console.log(restaurant)
                if(!checkOwnership(restaurant.ownerId, currentUserId)){
 
                   return res.status(403).json({ message: "Not authorized to delete this comment" });
@@ -93,6 +95,8 @@ export const deleteRestaurant = async (req,res) =>{
                 }
 
                await Restaurant.findByIdAndDelete(restaurantId);
+
+               res.status(200).json({message: "Restaurant deleted successfully"})
 
            }catch(err){
 
@@ -115,7 +119,7 @@ export const getAllMineRestaurant = async (req,res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page-1)*limit;
 
-        const myRestaurants =await Restaurant.fin({ownerId:userId})
+        const myRestaurants =await Restaurant.find({ownerId:userId})
             .skip(skip)
             .limit(limit);
         
@@ -149,7 +153,7 @@ export const getActiveRestaurants = async (req,res) =>{
                 const limit = parseInt(req.query.limit) || 10;
                 const skip = (page-1)*limit;
 
-                const allActiveRestaurants = await Restaurant.findAll({isApproved:true})
+                const allActiveRestaurants = await Restaurant.find({isApproved:true})
                     .skip(skip)
                     .limit(limit)
 

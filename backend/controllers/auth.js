@@ -100,7 +100,7 @@ export const createRoleRequest = async (req,res) =>{
 
         });
 
-    res.status(201).json({message : "Request submitted"})
+    res.status(201).json({message : "Request submitted",newRoleRequest})
 
      }catch(error){
 
