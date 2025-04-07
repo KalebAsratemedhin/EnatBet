@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import InputField from '../components/InputField';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSignupMutation } from '../api/authApi';
+import Snackbar from './Snackbar';
+import LoadingSpinner from './LoadingSpinner';
 
 const signupSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
@@ -28,8 +30,12 @@ const SignupForm: React.FC = () => {
   } = useForm<SignupFormValues>({
     resolver: yupResolver(signupSchema),
   });
-  const [signup, { isError, error, isSuccess }] = useSignupMutation();
+  const [signup, { isError, isLoading, error, isSuccess }] = useSignupMutation();
   const navigator = useNavigate();
+  const [snackbar, setSnackbar] = useState<{
+      message: string;
+      type: 'success' | 'error';
+    } | null>(null);
 
   const onSubmit = async (data: SignupFormValues) => {
     console.log("signing up", data)
@@ -48,11 +54,14 @@ const SignupForm: React.FC = () => {
 
   useEffect(() => {
     if (isError) {
-      console.error('Signup error:', error);
+      setSnackbar({ message: 'Error Signing up', type: 'error' });
+
     }
     if (isSuccess) {
-      navigator("/dashboard"); 
-      console.log('Signup successful');
+      setSnackbar({ message: 'Signed up', type: 'success' });
+
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      navigator(`/dashboard/${user.role}`);
     }
   }, [isError, isSuccess, error]);
   
@@ -76,9 +85,12 @@ const SignupForm: React.FC = () => {
         </button>
         <p className="text-sm text-gray-600 mt-4 text-center">
         Already have an account?{' '}
-        <Link to="/signin" className="text-red-500 hover:underline">
-          Sign In
-        </Link>
+        { isLoading ?
+          <LoadingSpinner /> :
+          <Link to="/signin" className="text-red-500 hover:underline">
+            Sign In
+          </Link>
+        }
       </p>
 
       <p className="text-xs text-gray-500 mt-2 text-center">
@@ -92,6 +104,13 @@ const SignupForm: React.FC = () => {
         </a>.
       </p>
       </form>
+      {snackbar && (
+        <Snackbar
+          message={snackbar.message}
+          type={snackbar.type}
+          onClose={() => setSnackbar(null)}
+        />
+      )}
     </div>
   );
 };
