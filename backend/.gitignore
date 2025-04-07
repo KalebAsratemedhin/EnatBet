@@ -16,9 +16,6 @@ yarn-error.log
 .vscode/
 .idea/
 
-# npm package lock file (if you're using yarn, add yarn.lock instead)
-package-lock.json
-
 # Coverage reports
 coverage/
 
