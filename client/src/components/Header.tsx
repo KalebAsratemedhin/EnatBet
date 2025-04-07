@@ -44,7 +44,6 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-white shadow-lg py-5 px-6 flex justify-between items-center h-20 sticky top-0 z-50">
-        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
 
         <div className="md:hidden">
           <button onClick={toggleSidebar} className="text-3xl text-gray-700 focus:outline-none">
@@ -52,6 +51,7 @@ const Header: React.FC = () => {
           </button>
         </div>
 
+        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
         {isAuthenticated() ? (
           <div className="flex items-center space-x-4 relative">
             <div className="relative">
