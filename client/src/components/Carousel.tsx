@@ -7,20 +7,18 @@ type Slide = {
   image: string;
   title: string;
 };
-const url = import.meta.env.VITE_CLIENT_URL
-
 
 const slides: Slide[] = [
   {
-    image: `${url}/Delicious Salami Pizza🍕.jpeg`,
+    image: `/Delicious Salami Pizza🍕.jpeg`,
     title: 'Delicious Pizza at Your Doorstep',
   },
   {
-    image: `${url}/crack burgers -.jpeg`,
+    image: `/crack burgers -.jpeg`,
     title: 'Mouthwatering Burgers in Minutes',
   },
   {
-    image: `${url}/Yetsom Beyaynetu (Ethiopian Combination Platter).jpeg`,
+    image: `/Yetsom Beyaynetu (Ethiopian Combination Platter).jpeg`,
     title: 'Delicious Beyaynet for you and your friends',
   },
 ];
