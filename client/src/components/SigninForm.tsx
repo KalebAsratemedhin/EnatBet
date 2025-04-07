@@ -64,6 +64,9 @@ const SigninForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} noValidate className='w-96'>
         <InputField label="Email" name="email" type="email" register={register} error={errors.email?.message} />
         <InputField label="Password" name="password" type="password" register={register} error={errors.password?.message} />
+        { 
+        isLoading ?
+         <LoadingSpinner /> :
 
         <button
           type="submit"
@@ -71,16 +74,13 @@ const SigninForm: React.FC = () => {
         >
           Sign In
         </button>
+       }
         <p className="text-sm text-gray-600 mt-4 text-center">
         Don’t have an account?{' '}
        
-       { 
-       isLoading ?
-        <LoadingSpinner /> :
         <Link to="/signup" className="text-red-500 hover:underline">
             Sign Up
         </Link> 
-       }
       </p>
 
       <p className="text-xs text-gray-500 mt-2 text-center">

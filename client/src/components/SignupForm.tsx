@@ -77,20 +77,20 @@ const SignupForm: React.FC = () => {
         <InputField label="Address" name="address" register={register} error={errors.address?.message} />
         <InputField label="Password" name="password" type="password" register={register} error={errors.password?.message} />
 
-        <button
-          type="submit"
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition"
-        >
-          Sign Up
-        </button>
-        <p className="text-sm text-gray-600 mt-4 text-center">
-        Already have an account?{' '}
         { isLoading ?
           <LoadingSpinner /> :
+          <button
+            type="submit"
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition"
+          >
+            Sign Up
+          </button>
+        }
+        <p className="text-sm text-gray-600 mt-4 text-center">
+        Already have an account?{' '}
           <Link to="/signin" className="text-red-500 hover:underline">
             Sign In
           </Link>
-        }
       </p>
 
       <p className="text-xs text-gray-500 mt-2 text-center">
