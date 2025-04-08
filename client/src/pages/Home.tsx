@@ -1,7 +1,6 @@
 import React from 'react';
 import FeatureCard from '../components/FeatureCard';
 import Carousel from '../components/Carousel';
-import Layout from '../components/AuthLayout';
 import { Link } from 'react-router-dom';
 
 const Home: React.FC = () => {
@@ -13,17 +12,17 @@ const Home: React.FC = () => {
         <h2 className="text-3xl font-bold mb-8">How EnatBet Works</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <FeatureCard
-            image="http://localhost:3000/Dukamo coffee, Addis Ababa, Ethiopia_.jpeg"
+            image="/Dukamo coffee, Addis Ababa, Ethiopia_.jpeg"
             title="Browse Restaurants"
             description="Find top-rated restaurants in your area and browse their menus."
             />
             <FeatureCard
-            image="http://localhost:3000/The Migrant Kitchen Ep_ 1_ Chirmol - Life & Thyme.jpeg"
+            image="/The Migrant Kitchen Ep_ 1_ Chirmol - Life & Thyme.jpeg"
             title="Place Your Order"
             description="Customize your meals, pay online or on delivery. Easy and quick!"
             />
             <FeatureCard
-            image="http://localhost:3000/Food delivery drivers are driving to deliver products for customers who order online_ The impact of the epidemic has increased online purchases.jpeg"
+            image="/Food delivery drivers are driving to deliver products for customers who order online_ The impact of the epidemic has increased online purchases.jpeg"
             title="Fast Delivery"
             description="Get your favorite dishes delivered hot and fresh in no time."
             />
@@ -36,7 +35,7 @@ const Home: React.FC = () => {
             {['EthioBernos', 'Getva', 'Shewaye'].map((cuisine, index) => (
             <FeatureCard
                 key={index}
-                image={`http://localhost:3000/Wayan, restaurante en Manhattan_ - diariodesign.jpeg`}
+                image={`/Wayan, restaurante en Manhattan_ - diariodesign.jpeg`}
                 title={`${cuisine.charAt(0).toUpperCase() + cuisine.slice(1)} Hotel`}
                 description="Explore the best places serving authentic cuisine near you."
             />
@@ -50,7 +49,7 @@ const Home: React.FC = () => {
             {['firfir', 'doro wot', 'burger', 'pizza'].map((dish, i) => (
             <FeatureCard
                 key={i}
-                image={`http://localhost:3000/Injera Firfir_ A Versatile Ethiopian Home-made Dish - AbyssiniaEats.jpeg`}
+                image={`/Injera Firfir_ A Versatile Ethiopian Home-made Dish - AbyssiniaEats.jpeg`}
                 title={dish.charAt(0).toUpperCase() + dish.slice(1)}
                 description="Crave-worthy meals chosen by our community!"
             />

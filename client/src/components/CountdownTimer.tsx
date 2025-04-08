@@ -1,22 +1,25 @@
-// CountdownTimer.tsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+type TimeLeft = {
+  minutes: number;
+  seconds: number;
+} | null;
 
 const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
-  const calculateTimeLeft = () => {
+  const calculateTimeLeft = (): TimeLeft => {
     const difference = +new Date(targetTime) - +new Date();
-    let timeLeft = {};
 
     if (difference > 0) {
-      timeLeft = {
+      return {
         minutes: Math.floor((difference / 1000 / 60) % 60),
         seconds: Math.floor((difference / 1000) % 60),
       };
     }
 
-    return timeLeft;
+    return null;
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(calculateTimeLeft());
 
   useEffect(() => {
     const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
@@ -25,7 +28,7 @@ const CountdownTimer = ({ targetTime }: { targetTime: string }) => {
 
   return (
     <div className="text-center text-lg font-medium text-gray-700">
-      {timeLeft.minutes != null ? (
+      {timeLeft ? (
         <p>
           Next Order In: {timeLeft.minutes}m {timeLeft.seconds}s
         </p>

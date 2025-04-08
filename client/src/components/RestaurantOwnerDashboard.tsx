@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { FaHamburger, FaPizzaSlice, FaWineBottle, FaUsers } from 'react-icons/fa';
 import { StatsCard } from '../components/StatsCard';

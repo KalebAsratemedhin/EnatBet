@@ -1,10 +1,10 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
-import dotenv from 'dotenv'
+import 'dotenv/config' 
 import RoleRequest from '../models/RoleRequest.js'
 import BlacklistedToken from '../models/BlacklistedToken.js'
-dotenv.config();
+
 
 export const signup = async (req,res)=>{
     try {

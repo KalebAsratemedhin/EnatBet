@@ -1,8 +1,8 @@
 import cloudinary from '../config/cloudinary.js'
 import bcrypt from 'bcryptjs'
 import User from '../models/user.js'
-import dotenv from 'dotenv'
-dotenv.config();
+import 'dotenv/config' 
+
 
 
 export const changePassword = async (req, res) => {

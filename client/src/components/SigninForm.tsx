@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import InputField from '../components/InputField';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSigninMutation } from '../api/authApi';
+import Snackbar from './Snackbar';
+import LoadingSpinner from './LoadingSpinner';
 
 const signinSchema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -21,8 +23,12 @@ const SigninForm: React.FC = () => {
   } = useForm<SigninFormValues>({
     resolver: yupResolver(signinSchema),
   });
-  const [signin, { isLoading, isError, error, isSuccess }] = useSigninMutation();
+  const [signin, { isError, isLoading, error, isSuccess }] = useSigninMutation();
   const navigator = useNavigate();
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
 
 
   const onSubmit = async (data: SigninFormValues) => {
@@ -41,11 +47,13 @@ const SigninForm: React.FC = () => {
   useEffect(() => {
     if (isError) {
       console.error('Sigin error:', error);
+      setSnackbar({ message: 'Error Signing in', type: 'error' });
     }
     if (isSuccess) {
+      setSnackbar({ message: 'Signed in', type: 'success' });
+
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       navigator(`/dashboard/${user.role}`); 
-      console.log('Sigin successful');
     }
   }, [isError, isSuccess, error]);
   
@@ -56,6 +64,9 @@ const SigninForm: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} noValidate className='w-96'>
         <InputField label="Email" name="email" type="email" register={register} error={errors.email?.message} />
         <InputField label="Password" name="password" type="password" register={register} error={errors.password?.message} />
+        { 
+        isLoading ?
+         <LoadingSpinner /> :
 
         <button
           type="submit"
@@ -63,11 +74,13 @@ const SigninForm: React.FC = () => {
         >
           Sign In
         </button>
+       }
         <p className="text-sm text-gray-600 mt-4 text-center">
         Don’t have an account?{' '}
+       
         <Link to="/signup" className="text-red-500 hover:underline">
-          Sign Up
-        </Link>
+            Sign Up
+        </Link> 
       </p>
 
       <p className="text-xs text-gray-500 mt-2 text-center">
@@ -81,6 +94,13 @@ const SigninForm: React.FC = () => {
         </a>.
       </p>
       </form>
+      {snackbar && (
+        <Snackbar
+          message={snackbar.message}
+          type={snackbar.type}
+          onClose={() => setSnackbar(null)}
+        />
+      )}
     </div>
   );
 };

@@ -9,15 +9,13 @@ import { useGetCurrentUserQuery, useLogoutMutation } from '../api/authApi';
 const Header: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); 
-  const [logout, { isLoading, isError, error, isSuccess }] = useLogoutMutation();
+  const [logout, { isError, error, isSuccess }] = useLogoutMutation();
   const { data: user } = useGetCurrentUserQuery();
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const closeSidebar = () => setSidebarOpen(false);
 
-  const userName = 'John Doe'; // Replace with dynamic username if needed
-  const userInitial = userName; // Get the first initial
   const navigator = useNavigate();
   
   const navLinks = [
@@ -46,7 +44,6 @@ const Header: React.FC = () => {
   return (
     <>
       <header className="bg-white shadow-lg py-5 px-6 flex justify-between items-center h-20 sticky top-0 z-50">
-        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
 
         <div className="md:hidden">
           <button onClick={toggleSidebar} className="text-3xl text-gray-700 focus:outline-none">
@@ -54,6 +51,7 @@ const Header: React.FC = () => {
           </button>
         </div>
 
+        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
         {isAuthenticated() ? (
           <div className="flex items-center space-x-4 relative">
             <div className="relative">
