@@ -7,6 +7,7 @@ import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
+import restaurantRoutes from './routes/restaurant.js';
 dotenv.config();
 
 const app = express();
@@ -25,8 +26,11 @@ connectDB();
 setupSwagger(app);
 
 app.use('/api/test', testRoutes);
+
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
+
+app.use('/restaurant', restaurantRoutes);
 
 
 const PORT = process.env.PORT || 5000;

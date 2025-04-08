@@ -100,7 +100,7 @@ export const createRoleRequest = async (req,res) =>{
 
         });
 
-    res.status(201).json({message : "Request submitted"})
+    res.status(201).json({message : "Request submitted",newRoleRequest})
 
      }catch(error){
 
@@ -145,7 +145,6 @@ const addRoleToUser = async(user_Id,newRole) =>{
 
      }
 
-    //  console.log(!user.role.includes(newRole));
 
      if(!user.role.includes(newRole)){
        try{
