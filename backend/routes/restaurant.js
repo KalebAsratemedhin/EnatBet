@@ -1,6 +1,6 @@
-import { isAuthenticated,isRestaurantOwner } from "../middlewares/auth.js";
+import { isAdmin, isAuthenticated,isRestaurantOwner } from "../middlewares/auth.js";
 import { addRestaurant,updateRestaurant,deleteRestaurant,
-    getAllMineRestaurant,getActiveRestaurants,getAllRestaurant } from "../controllers/restaurant.js";
+    getAllMineRestaurant,getActiveRestaurants,getAllRestaurant, approveRestaurant } from "../controllers/restaurant.js";
 
 import express from 'express';
 
@@ -332,5 +332,40 @@ router.get('/activeRestaurants',isAuthenticated,getActiveRestaurants);
 
 router.get('/getAllRestaurant',isAuthenticated,getAllRestaurant);
 
+
+/**
+ * @swagger
+ * /restaurant/approveRestaurant/{id}:
+ *   patch:
+ *     summary: Approve a restaurant (Admin only)
+ *     tags:
+ *       - Restaurant
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the restaurant to approve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Restaurant approved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Restaurant approved successfully
+ *       404:
+ *         description: Restaurant not found
+ *       500:
+ *         description: Internal server error
+ */
+
+router.patch('/approveRestaurant/:id',isAuthenticated,isAdmin,approveRestaurant);
 
 export default router;

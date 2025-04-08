@@ -204,3 +204,27 @@ export const getAllRestaurant = async (req,res)=>{
         res.status(500).json({ message: 'Failed to fetch restaurants' });
     }
 }
+
+
+export const approveRestaurant = async (req,res) =>{
+   
+        try{
+               const restaurantId = req.params.id;
+
+               const restaurant = await Restaurant.findById(restaurantId);
+
+               console.log(restaurant);
+
+               restaurant.isApproved =true;
+
+               restaurant.save();
+
+               res.status(200).json({message:"Restaurant approved successfully "})
+
+
+        }catch(err){
+          console.log(err.message);
+          res.status(500).json({message : err.message})
+        }
+
+}
