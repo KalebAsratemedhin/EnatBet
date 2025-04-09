@@ -8,6 +8,7 @@ import setupSwagger from './config/swagger.js';
 import authRoute from './routes/auth.js'
 import restaurantRoutes from './routes/restaurant.js';
 
+import menuRoutes from './routes/menu.js'
 dotenv.config(); 
 
 
@@ -31,6 +32,8 @@ app.use('/api/test', testRoutes);
 app.use('/auth',authRoute);
 
 app.use('/restaurant', restaurantRoutes);
+
+app.use("/menu",menuRoutes);
 
 app.use(express.urlencoded({ extended: true }))
 

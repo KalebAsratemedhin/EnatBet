@@ -4,21 +4,18 @@ const MenuSchema = mongoose.Schema({
     menuName :{
         type :String
     },
-    menuId : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true
-    },
-    restaurantId : {
+   
+    restaurant : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Restaurant',
 
     },
-    itemId : {
+    menuItems : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : 'MenuItems',
         required : true,
-    }
-})
+    }]
+});
 
 const Menu = mongoose.model('Menu' , MenuSchema );
 
