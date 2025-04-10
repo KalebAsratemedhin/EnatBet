@@ -1,13 +1,13 @@
 import express from 'express';
 import {isAuthenticated,isRestaurantOwner} from "../middlewares/auth.js";
-import upload from "../middlewares/fileUpload.js"
-
+import {upload} from "../middlewares/fileUpload.js";
+import {addMenuItem} from '../controllers/menuItem.js';
 
 const router = express.Router();
 
 /** 
 * @swagger
-*   /addMenuItem/{id}:
+*   /menuItem/addMenuItem/{id}:
 *     post:
 *       summary: Create a menu item with image
 *       tags:
@@ -43,4 +43,6 @@ const router = express.Router();
 *         '401':
 *           description: Unauthorized
 */
-router.post('/addMenuItem/:id',isAuthenticated,isRestaurantOwner,upload.single("itemPicture"));
+router.post('/addMenuItem/:id',isAuthenticated,isRestaurantOwner,upload.single("image"),addMenuItem);
+
+export default router
