@@ -354,7 +354,7 @@ router.post('/role-request',isAuthenticated, createRoleRequest);
  *       401:
  *         description: Unauthorized (missing/invalid token)
  */
-router.post('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleRequest);
+router.put('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleRequest);
 
 /**
  * @swagger
@@ -389,7 +389,7 @@ router.post('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleReq
  *       404:
  *         description: Request not found
  */
-router.put('/role-request',isAuthenticated, isAdmin,updateRoleRequest)
+router.put('/role-request/:requestId',isAuthenticated, isAdmin,updateRoleRequest)
 
 /**
  * @swagger

@@ -16,8 +16,10 @@ const AuthLayout: React.FC = () => {
         </aside>
 
         {/* Main content shifted to the right of the fixed sidebar */}
-        <main className="w-full  overflow-y-auto py-6">
-          <Outlet />
+        <main className="w-full  overflow-y-auto">
+          <div className="min-h-screen">
+            <Outlet />
+          </div>
           <Footer />
         </main>
       </div>

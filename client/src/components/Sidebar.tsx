@@ -11,6 +11,8 @@ const Sidebar: React.FC = () => {
     { name: 'Orders', href: '/orders' },
     { name: 'Profile', href: '/profile' },
     { name: 'Settings', href: '/settings' },
+    { name: 'Role Management', href: '/role-management' },
+
   ];
 
   const dashboardLinks = [

@@ -13,6 +13,7 @@ import DeliveryDashboard from './components/DeliveryPersonDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
+import RoleManagement from './components/RoleManagement';
 
 const App: React.FC = () => {
   return (
@@ -38,6 +39,8 @@ const App: React.FC = () => {
         >
           <Route path="/settings" element={<SettingsPage />} /> 
           <Route path="/profile" element={<ProfilePage />} /> 
+          <Route path="/role-management" element={<RoleManagement />} /> 
+
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
           <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />
           <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />

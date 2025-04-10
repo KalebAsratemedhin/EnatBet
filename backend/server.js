@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
 import restaurantRoutes from './routes/restaurant.js';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();

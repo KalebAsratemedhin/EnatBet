@@ -64,6 +64,30 @@ export const authApi = createApi({
         method: 'DELETE',
       }),
     }),
+    getRoleRequests: builder.query<any, void>({
+      query: () => '/auth/role-request/mine',
+    }),
+    createRoleRequest: builder.mutation<void, any>({
+      query: (data) => ({
+        url: '/auth/role-request',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    updateRoleRequestStatus: builder.mutation<void, { id: string }>({
+      query: (data) => ({
+        url: `/auth/role-request/${data.id}`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+    cancelRoleRequest: builder.mutation<void, { id: string }>({
+      query: (data) => ({
+        url: `/user/role-request/cancelled/${data.id}`,
+        method: 'PUT',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -76,4 +100,8 @@ export const {
   useChangePasswordMutation,
   useVerifyEmailMutation,
   useDeleteAccountMutation,
+  useCreateRoleRequestMutation,
+  useGetRoleRequestsQuery,
+  useUpdateRoleRequestStatusMutation,
+  useCancelRoleRequestMutation,
 } = authApi;

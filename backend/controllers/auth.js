@@ -91,6 +91,8 @@ export const createRoleRequest = async (req,res) =>{
      try{
         const {requestedRole,remark} = req.body;
 
+        console.log("create role reqs ", requestedRole, remark)
+        
         const newRoleRequest = await RoleRequest.create({
 
             userId: req.user.id,
@@ -171,7 +173,8 @@ export const updateRoleRequest = async (req,res) =>{
 
     try{
         console.log(req.body)
-        const {requestId,status} = req.body;
+        const requestId = req.params.requestId;
+        const {status} = req.body;
         
         // console.log(mongoose.Types.ObjectId.isValid(requestId))
           
