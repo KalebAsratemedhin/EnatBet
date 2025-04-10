@@ -1,7 +1,7 @@
 import express from 'express';
 import {isAuthenticated,isRestaurantOwner} from "../middlewares/auth.js";
 import {upload} from "../middlewares/fileUpload.js";
-import {addMenuItem, updateMenuItem} from '../controllers/menuItem.js';
+import {addMenuItem, removeMenuItem, updateMenuItem} from '../controllers/menuItem.js';
 
 const router = express.Router();
 
@@ -91,5 +91,36 @@ router.post('/addMenuItem/:id',isAuthenticated,isRestaurantOwner,upload.single("
 *         '500':
 *           description: Internal server error
 */
-router.put("/updateMenuItem/:id",isAuthenticated,isRestaurantOwner,upload.single("image"),updateMenuItem)
-export default router
+router.put("/updateMenuItem/:id",isAuthenticated,isRestaurantOwner,upload.single("image"),updateMenuItem);
+
+
+/**
+ * @swagger
+ * /menuItem/removeMenuItem/{id}:
+ *   delete:
+ *     summary: Delete a menu item
+ *     tags:
+ *       - Menu Items
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the menu item to delete
+ *     responses:
+ *       200:
+ *         description: Menu item deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - You are not allowed to delete this item
+ *       404:
+ *         description: Menu item not found
+ *       500:
+ *         description: Internal server error
+ */
+
+router.delete("/removeMenuItem/:id",isAuthenticated,isRestaurantOwner,removeMenuItem);
+
+export default router;

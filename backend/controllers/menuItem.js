@@ -12,9 +12,8 @@ export const addMenuItem = async (req,res)=>{
         const menuId =req.params.id;
         
         console.log(menuId)
-        const restaurantOwner = await Menu.findById(menuId).populate({path:"restaurant",populate:{path:'ownerId'}});
-        console.log(restaurantOwner.restaurant.ownerId);
-        if(!checkOwnership(restaurantOwner.restaurant.ownerId._id,currentUserId)){
+        const menuItem = await Menu.findById(menuId).populate({path:"restaurant",populate:{path:'ownerId'}});
+        if(!checkOwnership(menuItem.restaurant.ownerId._id,currentUserId)){
 
             res.status(403).json({message: "Unauthorized Access"});
         }
@@ -27,7 +26,7 @@ export const addMenuItem = async (req,res)=>{
 
         const {name,description,price} = req.body;
 
-        const menuItem = await MenuItems.create({
+        const newMenuItem = await MenuItems.create({
             name,
             description,
             price,
@@ -35,10 +34,10 @@ export const addMenuItem = async (req,res)=>{
             menu:menuId
         })
         await Menu.findByIdAndUpdate(menuId,{
-            $push: {menuItems:menuItem._id},
+            $push: {menuItems:newMenuItem._id},
         });
 
-     return res.status(201).json({message: "Menu item created successfuly",data :menuItem});
+     return res.status(201).json({message: "Menu item created successfuly",data :newMenuItem});
 
     }catch(err){
         console.log(err.message);
@@ -53,9 +52,9 @@ export const updateMenuItem = async (req,res) =>{
         const currentUserId = req.user.id;
         const menuItemId =req.params.id;
 
-        const restaurantOwner = await MenuItems.findById(menuItemId).populate({path:"menu" , populate:{path:"restaurant",populate:{path:"ownerId"}}});
+        const menuItem = await MenuItems.findById(menuItemId).populate({path:"menu" , populate:{path:"restaurant",populate:{path:"ownerId"}}});
 
-        if(!checkOwnership(restaurantOwner.menu.restaurant.ownerId._id,currentUserId)){
+        if(!checkOwnership(menuItem.menu.restaurant.ownerId._id,currentUserId)){
             return res.status(403).json({message: "Access denied "})
         }
 
@@ -71,10 +70,41 @@ export const updateMenuItem = async (req,res) =>{
 
         return res.status(200).json({message: "Menu item updated successfully", data:updatedMenuItem})
         
-    }catch(error){
-        console.error(error);
-        return res.status(500).json({message: "Something went Wrong",error:error.message})
+    }catch(err){
+        console.error(err);
+        return res.status(500).json({message: "Something went Wrong",err:err.message})
     }
+
+
+}
+
+export const removeMenuItem = async (req,res) =>{
+
+       try{
+
+        const currentUserId = req.user.id;
+        const menuItemId = req.params.id;
+
+        const menuItem = await MenuItems.findById(menuItemId).populate({path : "menu" , populate:{path : "restaurant", populate:{path: "ownerId"}}});
+
+        if(!checkOwnership(menuItem.menu.restaurant.ownerId._id,currentUserId)){
+            return res.status(403).json({message : "Access denied"})
+        }
+
+
+         await Menu.findByIdAndUpdate(menuItem.menu._id,{
+            $pull:{menuItems :menuItemId}});
+
+         await MenuItems.findByIdAndDelete(menuItemId);
+
+         return res.status(200).json({message: "Menu Item deleted successfully"});
+
+       }catch(err){
+
+        console.log(err.message);
+        res.status(500).json({message:"Something went wrong",err: err.message});
+
+       }
 
 
 }

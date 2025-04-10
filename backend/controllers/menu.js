@@ -1,5 +1,4 @@
 import Menu from "../models/Menu.js";
-import MenuItems from "../models/MenuItems.js";
 import { checkOwnership } from "../utils/index.js";
 import Restaurant from "../models/Restaurant.js";
 
@@ -8,25 +7,29 @@ import Restaurant from "../models/Restaurant.js";
 export const createMenu = async (req,res) =>{
      
     try{
-        console.log("ayred")
+
         const restaurantId = req.params.id;
         const currentUserId = req.user.id;
-        console.log(restaurantId)
+
         const restaurantOwner = await Restaurant.findById(restaurantId).populate("ownerId");
-        console.log(restaurantOwner)
+        
         if(!checkOwnership(restaurantOwner.ownerId._id,currentUserId)){
 
             return res.status(403).json({message:"unauthorized"});
 
         }
 
-        const {name} =req.body;
+        const {menuName} =req.body;
 
         const newMenu = await Menu.create({
-            name,
+            menuName,
             restaurant:restaurantId
         });
-      
+
+        await Restaurant.findByIdAndUpdate(restaurantId,{
+            $push:{menu:newMenu._id}
+        })
+
         return res.status(201).json({
             message : 'Menu created successfully',
             menu:newMenu,
@@ -39,3 +42,24 @@ export const createMenu = async (req,res) =>{
     }
 
 };
+
+export const getMenu = async (req,res) =>{
+
+    try{
+        const restaurantId = req.params.id;
+        const restaurant = await Restaurant.findById(restaurantId).populate("menu");
+
+        if (!restaurant) {
+            return res.status(404).json({ message: "Restaurant not found" });
+          }
+      
+        res.status(200).json({menu:restaurant.menu});
+
+    }catch(err){
+
+        console.log(err.message);
+        res.status(500).json({message:"Something went wrong"});
+
+    }
+
+}
