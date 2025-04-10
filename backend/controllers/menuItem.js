@@ -46,3 +46,35 @@ export const addMenuItem = async (req,res)=>{
     }
 }
 
+
+export const updateMenuItem = async (req,res) =>{
+    
+    try{
+        const currentUserId = req.user.id;
+        const menuItemId =req.params.id;
+
+        const restaurantOwner = await MenuItems.findById(menuItemId).populate({path:"menu" , populate:{path:"restaurant",populate:{path:"ownerId"}}});
+
+        if(!checkOwnership(restaurantOwner.menu.restaurant.ownerId._id,currentUserId)){
+            return res.status(403).json({message: "Access denied "})
+        }
+
+        const {name,description,price} = req.body;
+
+        const updatedMenuItem = await MenuItems.findByIdAndUpdate(menuItemId,{
+            name :name,
+            description :description,
+            price :price,
+            itemPicture : req.file.path
+
+        })
+
+        return res.status(200).json({message: "Menu item updated successfully", data:updatedMenuItem})
+        
+    }catch(error){
+        console.error(error);
+        return res.status(500).json({message: "Something went Wrong",error:error.message})
+    }
+
+
+}
