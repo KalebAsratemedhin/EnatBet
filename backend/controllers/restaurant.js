@@ -1,4 +1,3 @@
-import express from 'express';
 import Restaurant from '../models/Restaurant.js';
 import { checkOwnership } from '../utils/index.js';
 // import mongoose from 'mongoose';

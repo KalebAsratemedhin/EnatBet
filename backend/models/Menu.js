@@ -1,21 +1,21 @@
 import mongoose from "mongoose";
 
 const MenuSchema = mongoose.Schema({
-    menuId : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true
+    menuName :{
+        type :String,required:true
     },
-    restaurantId : {
+   
+    restaurant : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Restaurant',
 
     },
-    itemId : {
+    menuItems : [{
         type : mongoose.Schema.Types.ObjectId,
         ref : 'MenuItems',
         required : true,
-    }
-})
+    }]
+});
 
 const Menu = mongoose.model('Menu' , MenuSchema );
 
