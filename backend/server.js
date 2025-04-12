@@ -7,8 +7,11 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
 import restaurantRoutes from './routes/restaurant.js';
-import dotenv from 'dotenv';
-dotenv.config();
+
+import menuRoutes from './routes/menu.js';
+import menuItemRoutes from './routes/menuItem.js';
+dotenv.config(); 
+
 
 const app = express();
 
@@ -32,6 +35,11 @@ app.use('/user', userRoutes);
 
 app.use('/restaurant', restaurantRoutes);
 
+app.use("/menu",menuRoutes);
+
+app.use(express.urlencoded({ extended: true }))
+
+app.use('/menuItem',menuItemRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
