@@ -53,7 +53,8 @@ const SigninForm: React.FC = () => {
       setSnackbar({ message: 'Signed in', type: 'success' });
 
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      navigator(`/dashboard/${user.role}`); 
+      
+      navigator(`/dashboard/${user.role[0]}`); 
     }
   }, [isError, isSuccess, error]);
   

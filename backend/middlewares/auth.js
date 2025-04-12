@@ -23,7 +23,7 @@ export const isAuthenticated = async (req,res,next) =>{
  
 export const isDeliveryPerson = async (req,res,next) =>{
     
-        if( !req.user.role.includes("Delivery_person")){
+        if( !req.user.role.includes("delivery_person")){
 
             return res.status(403).json({message : 'Access denied'});
         }
@@ -43,7 +43,7 @@ export const isRestaurantOwner = async (req,res,next) =>{
 
 export const isAdmin = async (req,res,next)=>{
 
-    if(!req.user.role.includes("Admin")){
+    if(!req.user.role.includes("admin")){
 
         return res.status(403).json({message:"Access denied"})
         

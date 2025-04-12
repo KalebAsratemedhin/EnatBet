@@ -1,9 +1,10 @@
 import express from 'express'
 import { signup, signin,logout, updateRoleRequest ,
-       createRoleRequest, cancelRoleRequest, 
+       createRoleRequest, 
        getAllRoleRequests,
        getMyRoleRequests,
-       getCurrentUser} from '../controllers/auth.js';
+       getCurrentUser,
+       toggleCancelRoleRequest} from '../controllers/auth.js';
 import { isAuthenticated, isDeliveryPerson, isAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
@@ -354,7 +355,7 @@ router.post('/role-request',isAuthenticated, createRoleRequest);
  *       401:
  *         description: Unauthorized (missing/invalid token)
  */
-router.put('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleRequest);
+router.put('/role-request/cancelled/:requestId', isAuthenticated, toggleCancelRoleRequest);
 
 /**
  * @swagger
@@ -389,7 +390,7 @@ router.put('/role-request/cancelled/:requestId', isAuthenticated, cancelRoleRequ
  *       404:
  *         description: Request not found
  */
-router.put('/role-request/:requestId',isAuthenticated, isAdmin,updateRoleRequest)
+router.put('/role-request/:requestId',isAuthenticated, isAdmin, updateRoleRequest)
 
 /**
  * @swagger

@@ -92,7 +92,16 @@ export const createRoleRequest = async (req,res) =>{
         const {requestedRole,remark} = req.body;
 
         console.log("create role reqs ", requestedRole, remark)
-        
+
+        const existing = await RoleRequest.findOne({
+            userId: req.user.id,
+            requestedRole
+        })
+
+        if(existing){
+            res.status(400).json({message: "Role already requested."})
+            return 
+        }
         const newRoleRequest = await RoleRequest.create({
 
             userId: req.user.id,
@@ -102,29 +111,36 @@ export const createRoleRequest = async (req,res) =>{
 
         });
 
+        console.log("created")
+
     res.status(201).json({message : "Request submitted",newRoleRequest})
 
      }catch(error){
 
-     res.status(500).json({message : "Failed to request"})
+     res.status(500).json({message : "Failed to request", error})
 
     };
 };
 
 //cancel role request
-export const cancelRoleRequest = async (req,res) =>{
+export const toggleCancelRoleRequest = async (req,res) =>{
 
     try{
         const requestId = req.params.requestId;
-    
+
         const request = await RoleRequest.findById(requestId);
        
         console.log(request)
 
-        if(!request || request.status !== 'pending'){
-            return res.status(404).json({ message : 'No pending request found to cancel'});
+        if(!request){
+            return res.status(404).json({ message : 'No request found to cancel'});
         }
-        request.status ="cancelled";
+
+        if(request.status === 'pending')
+            request.status ="cancelled";
+
+        if(request.status === 'cancelled')
+            request.status ="pending";
 
         await request.save()
 
@@ -132,7 +148,7 @@ export const cancelRoleRequest = async (req,res) =>{
 
     }catch(error){
 
-    res.status(500).json({message : "Failed to cancel request"});
+    res.status(500).json({message : "Failed to cancel request", error: error});
     }
 };
 
@@ -172,33 +188,32 @@ const addRoleToUser = async(user_Id,newRole) =>{
 export const updateRoleRequest = async (req,res) =>{
 
     try{
-        console.log(req.body)
         const requestId = req.params.requestId;
         const {status} = req.body;
-        
-        // console.log(mongoose.Types.ObjectId.isValid(requestId))
-          
-        const request = await RoleRequest.findById(requestId);
 
-        console.log(request)
+        const request = await RoleRequest.findById(requestId);
 
         if(!request){
 
-            return res.status(404).json({message : " Request not  found" });
+            return res.status(404).json({message : " Request not found" });
             
         }
          
         request.status = status;
  
         await request.save();
-        console.log(request.status);
+        console.log('stats ', request, request.status);
         if (request.status === 'approved'){
+        console.log('stats ca;; ', request);
+           
            
             await addRoleToUser(request.userId,request.requestedRole )
 
             res.status(200).json({message : 'Role Added successfully'})
 
-        }    
+        }   
+        res.status(200).json({message : 'Role Request disapproved successfully'})
+
 
     } catch (error) {
 
@@ -221,7 +236,7 @@ export const getMyRoleRequests = async (req, res) => {
 
 export const getAllRoleRequests = async (req, res) => {
     try {
-        const requests = await RoleRequest.find();
+        const requests = await RoleRequest.find().populate("userId");
 
         res.status(200).json(requests);
 

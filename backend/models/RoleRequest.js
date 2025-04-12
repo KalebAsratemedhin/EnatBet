@@ -8,10 +8,10 @@ const RoleRequestSchema = new mongoose.Schema({
        },
        requestedRole : {
         type : [String],
-        enum : ['restaurant_owner' , 'Delivery_person', 'Admin','customer'],
+        enum : ['restaurant_owner' , 'delivery_person', 'admin'],
         required : true
        },
-       status : { type : String ,enum :['pending','approved', 'disaproved','cancelled'],default:'pending'},
+       status : { type : String ,enum :['pending','approved', 'disapproved','cancelled'],default:'pending'},
 
        remark : {
         type : String,

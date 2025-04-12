@@ -14,6 +14,7 @@ const baseQuery = fetchBaseQuery({
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery,
+  tagTypes: ["role-requests"],
   endpoints: (builder) => ({
     signup: builder.mutation({
       query: (data) => ({
@@ -64,8 +65,13 @@ export const authApi = createApi({
         method: 'DELETE',
       }),
     }),
-    getRoleRequests: builder.query<any, void>({
+    getMineRoleRequests: builder.query<any, void>({
       query: () => '/auth/role-request/mine',
+      providesTags: ['role-requests']
+    }),
+    getAllRoleRequests: builder.query<any, void>({
+      query: () => '/auth/role-request/all',
+      providesTags: ['role-requests']
     }),
     createRoleRequest: builder.mutation<void, any>({
       query: (data) => ({
@@ -73,20 +79,24 @@ export const authApi = createApi({
         method: 'POST',
         body: data,
       }),
+      invalidatesTags: ['role-requests']
     }),
-    updateRoleRequestStatus: builder.mutation<void, { id: string }>({
-      query: (data) => ({
-        url: `/auth/role-request/${data.id}`,
+    updateRoleRequestStatus: builder.mutation<void, { id: string, status: string }>({
+      query: ({id, status}) => ({
+        url: `/auth/role-request/${id}`,
         method: 'PUT',
-        body: data,
+        body: {status}
       }),
+      invalidatesTags: ['role-requests']
+
     }),
     cancelRoleRequest: builder.mutation<void, { id: string }>({
-      query: (data) => ({
-        url: `/user/role-request/cancelled/${data.id}`,
-        method: 'PUT',
-        body: data,
+      query: ({id}) => ({
+        url: `/auth/role-request/cancelled/${id}`,
+        method: 'PUT'
       }),
+      invalidatesTags: ['role-requests']
+
     }),
   }),
 });
@@ -101,7 +111,8 @@ export const {
   useVerifyEmailMutation,
   useDeleteAccountMutation,
   useCreateRoleRequestMutation,
-  useGetRoleRequestsQuery,
+  useGetMineRoleRequestsQuery,
+  useGetAllRoleRequestsQuery,
   useUpdateRoleRequestStatusMutation,
   useCancelRoleRequestMutation,
 } = authApi;
