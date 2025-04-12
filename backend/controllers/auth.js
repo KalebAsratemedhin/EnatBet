@@ -117,8 +117,6 @@ export const cancelRoleRequest = async (req,res) =>{
     
         const request = await RoleRequest.findById(requestId);
        
-        console.log(request)
-
         if(!request || request.status !== 'pending'){
             return res.status(404).json({ message : 'No pending request found to cancel'});
         }

@@ -27,10 +27,10 @@ const RestaurantSchema = new mongoose.Schema(
         }
       },
     menu : 
-    {
+    [{
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Menu'
-    },
+    }],
     rating :
      {
         type : Number,
