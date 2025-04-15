@@ -9,7 +9,6 @@ import authRoute from './routes/auth.js'
 import restaurantRoutes from './routes/restaurant.js';
 
 import menuRoutes from './routes/menu.js';
-import menuItemRoutes from './routes/menuItem.js';
 dotenv.config(); 
 
 
@@ -38,7 +37,6 @@ app.use("/menu",menuRoutes);
 
 app.use(express.urlencoded({ extended: true }))
 
-app.use('/menuItem',menuItemRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
