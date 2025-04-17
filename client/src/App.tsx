@@ -14,6 +14,7 @@ import AdminDashboard from './components/AdminDashboard';
 import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
 import RoleManagement from './components/RoleManagement';
+import RestaurantManagement from './pages/RestaurantManagement';
 
 const App: React.FC = () => {
   return (
@@ -45,6 +46,8 @@ const App: React.FC = () => {
           <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />
           <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
+          <Route path="/restaurant-management" element={<RestaurantManagement />} />
+
         </Route>
 
         <Route path="*" element={<NotFound />} />

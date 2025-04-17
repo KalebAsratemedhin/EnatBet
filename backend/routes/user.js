@@ -128,5 +128,4 @@ router.get('/verify-phone', isAuthenticated, verifyPhone);
  */
 router.put('/profile', isAuthenticated, updateProfile);
 
-
 export default router;

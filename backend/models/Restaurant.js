@@ -40,7 +40,7 @@ const RestaurantSchema = new mongoose.Schema(
     },
     deliveryAreas : 
     {
-         type:[String]},
+         type:Number},
 
     promotion:[
         {

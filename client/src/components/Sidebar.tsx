@@ -12,6 +12,7 @@ const Sidebar: React.FC = () => {
     { name: 'Profile', href: '/profile' },
     { name: 'Settings', href: '/settings' },
     { name: 'Role Management', href: '/role-management' },
+    { name: 'Restaurant Management', href: '/restaurant-management' },
 
   ];
 
@@ -66,6 +67,27 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
+{/* 
+        {userRoles.length > 0 && (
+          <div className="pt-4 border-t border-gray-300 mt-4">
+            <p className="text-sm text-gray-500 uppercase mb-2">Dashboards</p>
+            <div className='flex flex-col gap-3'>
+            {dashboardLinks
+              .filter((link) => userRoles.includes(link.role))
+              .map((link) => (
+                <NavLink
+                  key={link.name}
+                  to={link.href}
+                  className={({ isActive }) =>
+                    isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+                  }
+                >
+                  {link.name}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        )} */}
       </nav>
     </aside>
   );

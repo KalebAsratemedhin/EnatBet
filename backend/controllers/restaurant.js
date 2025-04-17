@@ -10,7 +10,7 @@ export const addRestaurant = async (req,res) =>{
          const {name, location,deliveryAreas,promotion,} = req.body;
 
          const newRestaurant = new Restaurant({
-             ownerId:req.user.id,
+              ownerId:req.user.id,
               name,
               location :{
                 type:"Point",

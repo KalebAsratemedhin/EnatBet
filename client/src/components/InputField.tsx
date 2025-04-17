@@ -23,7 +23,7 @@ const InputField: React.FC<InputFieldProps> = ({
         {label}
       </label>
       <input
-        type={type}
+        type={type} 
         id={name}
         {...register(name)}
         placeholder={placeholder}

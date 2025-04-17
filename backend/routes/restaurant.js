@@ -365,7 +365,7 @@ router.get('/getAllRestaurant',isAuthenticated,getAllRestaurant);
  *       500:
  *         description: Internal server error
  */
-
+ 
 router.patch('/approveRestaurant/:id',isAuthenticated,isAdmin,approveRestaurant);
 
 export default router;

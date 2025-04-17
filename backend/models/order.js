@@ -11,7 +11,7 @@ const OrderSchema=new mongoose.Schema(
       paymentMethod: {type: String,enum: ['telebirr','cbe-birr',],required: true},
       deliveryAddress: {type: String,required: true},
       createdAt: {type: Date,default: Date.now}
- 
+      
     }
 );
 const Order = mongoose.model('Order',OrderSchema);
