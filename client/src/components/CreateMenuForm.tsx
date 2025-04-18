@@ -15,7 +15,6 @@ import { useGetAllMineRestaurantQuery } from "@/api/restaurantApi";
 import { useCreateMenuMutation } from "@/api/menuApi"; // new import
 
 const createMenuSchema = z.object({
-  restaurantId: z.string().min(1, "Restaurant is required"),
   title: z.string().min(1, "Menu title is required"),
   menuItems: z
     .array(
@@ -28,10 +27,14 @@ const createMenuSchema = z.object({
     )
     .min(1, "At least one item is required"),
 });
-
+type Props = {
+  selectedRestaurantId?: string | null;
+  onCreated?: () => void;
+};
 type CreateMenuFormData = z.infer<typeof createMenuSchema>;
 
-const CreateMenuForm = () => {
+const CreateMenuForm = ({ selectedRestaurantId, onCreated }: Props) => {
+
   const {
     register,
     handleSubmit,
@@ -51,51 +54,35 @@ const CreateMenuForm = () => {
     name: "menuItems",
   });
 
-  const { data: restaurants, isLoading } = useGetAllMineRestaurantQuery();
   const [createMenu, { isLoading: isCreating }] = useCreateMenuMutation();
 
+
   const onSubmit = async (data: CreateMenuFormData) => {
-    const formData = new FormData();
-    formData.append("menuName", data.title);
-    formData.append("restaurant", data.restaurantId);
-
-    data.menuItems.forEach((item, index) => {
-      formData.append(`menuItems[${index}][name]`, item.name);
-      formData.append(`menuItems[${index}][description]`, item.description);
-      formData.append(`menuItems[${index}][price]`, item.price.toString());
-      if (item.itemPicture instanceof File) {
-        formData.append("itemPictures", item.itemPicture);
-      }
-    });
-
     try {
-      console.log("menu ", formData)
-      await createMenu(formData).unwrap();
+      console.log("yebo")
+      const formData = new FormData();
+      formData.append("restaurantId", selectedRestaurantId as string);
+      formData.append("menuName", data.title);
+      const menuItemsWithoutImage = data.menuItems.map(({ itemPicture, ...rest }) => rest);
+      formData.append("menuItems", JSON.stringify(menuItemsWithoutImage));
+      data.menuItems.forEach((item) => {
+        if (item.itemPicture) formData.append("itemPictures", item.itemPicture);
+      });
+
+      console.log("creating", formData)
+
+      await createMenu({ restaurantId: selectedRestaurantId as string, formData }).unwrap();
       toast.success("Menu created successfully!");
+      // onCreated?.();
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create menu");
     }
   };
+  
+  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-      <div>
-        <Select onValueChange={(value) => setValue("restaurantId", value)}>
-          <SelectTrigger>
-            <SelectValue placeholder={isLoading ? "Loading..." : "Select Restaurant"} />
-          </SelectTrigger>
-          <SelectContent>
-            {restaurants?.data?.map((restaurant) => (
-              <SelectItem key={restaurant._id} value={restaurant._id}>
-                {restaurant.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.restaurantId && (
-          <p className="text-red-500 text-sm">{errors.restaurantId.message}</p>
-        )}
-      </div>
 
       <div>
         <Input placeholder="Menu Title" {...register("title")} />
@@ -121,8 +108,13 @@ const CreateMenuForm = () => {
             <Input
               type="file"
               accept="image/*"
-              {...register(`menuItems.${index}.itemPicture`)}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setValue(`menuItems.${index}.itemPicture`, file);
+              }}
             />
+
+
             <Button
               type="button"
               variant="destructive"

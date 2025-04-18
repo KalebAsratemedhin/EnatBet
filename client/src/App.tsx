@@ -15,6 +15,7 @@ import SettingsPage from './pages/Settings';
 import ProfilePage from './pages/Profile';
 import RoleManagement from './components/RoleManagement';
 import RestaurantManagement from './pages/RestaurantManagement';
+import MenuDetailsPage from './pages/MenuDetails';
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,10 @@ const App: React.FC = () => {
           <Route path="/settings" element={<SettingsPage />} /> 
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/role-management" element={<RoleManagement />} /> 
+
+          <Route path="/menu/:menuId" element={<MenuDetailsPage />} />
+
+
 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
           <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />

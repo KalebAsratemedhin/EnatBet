@@ -7,7 +7,7 @@ export const storage  = new CloudinaryStorage({
     cloudinary : cloudinary,
     parmas : {
         folder:'uploads',
-        allwoed_formats:['jpg', 'png', 'jpeg'],
+        allowed_formats:['jpg', 'png', 'jpeg'],
     } 
 });
 

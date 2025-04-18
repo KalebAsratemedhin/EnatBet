@@ -40,20 +40,13 @@ const RestaurantSchema = new mongoose.Schema(
     },
     deliveryAreas : 
     {
-         type:Number},
+      type:Number
+    },
+    logo: { 
+      type: String
+    },
+    status: {type: String,enum: ['pending', 'approved', 'disapproved', 'inactive'],default: 'pending'},
 
-    promotion:[
-        {
-            title:String,
-            description:String,
-            discount:Number,
-            validuntil:Date
-        }],
-    isApproved : {
-    type : Boolean,
-    default : false
-
-    }
 
 })
 

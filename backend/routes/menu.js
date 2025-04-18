@@ -1,16 +1,15 @@
 import express from "express";
 import {
   createMenu,
-  getMenuById,
+  getMenusByRestaurant,
   updateMenu,
   deleteMenu,
+  getMenuById,
 } from "../controllers/menu.js";
 import { isAuthenticated, isRestaurantOwner } from "../middlewares/auth.js";
-import { createMenu, deleteMenu, getMenuByRestaurant, updateMenu } from "../controllers/menu.js";
 import { upload } from "../middlewares/fileUpload.js";
 
 const router = express.Router();
-
 
 /**
  * @swagger
@@ -60,7 +59,7 @@ const router = express.Router();
 
 router.post('/createMenu/:id',isAuthenticated,isRestaurantOwner,upload.fields([{name:"itemPictures"}]),createMenu);
 /**
- * @swagger
+ * @swagger 
  * /menu/updateMenu/{id}:
  *   put:
  *     summary: Update an existing menu and its items (with image upload)
@@ -106,28 +105,6 @@ router.post('/createMenu/:id',isAuthenticated,isRestaurantOwner,upload.fields([{
 
 
 router.put("/updateMenu/:id",isAuthenticated,isRestaurantOwner,upload.fields([{name:"itemPictures"}]),updateMenu)
-/**
- * @swagger
- * /menu/{id}:
- *   get:
- *     summary: Get a menu by ID
- *     tags: [Menu]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the menu
- *     responses:
- *       200:
- *         description: Menu retrieved successfully
- *       404:
- *         description: Menu not found
- *       500:
- *         description: Server error
- */
-router.get("/:id", isAuthenticated, getMenuById);
 
 /**
  * @swagger
@@ -213,8 +190,12 @@ router.put("/:id",
  *         description: Server error
  */
 
+ 
+router.get('/getMenu/:id',isAuthenticated, getMenusByRestaurant);
 
-router.get('/getMenu/:id',isAuthenticated,getMenuByRestaurant);
+
+router.get('/:id',isAuthenticated, getMenuById);
+
 /**
  * @swagger
  * /menu/deleteMenu/{restaurantId}:

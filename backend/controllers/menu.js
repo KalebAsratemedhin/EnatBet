@@ -2,18 +2,14 @@ import Menu from "../models/Menu.js";
 import { checkOwnership } from "../utils/index.js";
 import Restaurant from "../models/Restaurant.js";
 
-export const createMenu = async (req, res) => {
-    try {
-      console.log(" menus ", menuName, restaurant, menuItems)
-      const { menuName, restaurant } = req.body;
-      let menuItems = JSON.parse(req.body.menuItems); // Expect menuItems to be sent as a JSON string
-  
 
 export const createMenu = async (req,res) =>{
      
     try{
+        console.log(" files ", req.files)
+        console.log("create menu ", req.body, req.params)
 
-        const restaurantId = req.params.id;
+        const restaurantId = req.params.id; 
         const currentUserId = req.user.id;
 
         const restaurantOwner = await Restaurant.findById(restaurantId).populate("ownerId");
@@ -24,7 +20,7 @@ export const createMenu = async (req,res) =>{
         if(!checkOwnership(restaurantOwner.ownerId._id,currentUserId)){
 
             return res.status(403).json({message:"unauthorized"});
-
+ 
         }
 
         const { menuName, menuItems } = req.body;
@@ -40,9 +36,8 @@ export const createMenu = async (req,res) =>{
         menuName,
         menuItems: finalItems,
         restaurant: restaurantId
-        });
-
-
+        });   
+    
         await Restaurant.findByIdAndUpdate(restaurantId,{
             $push:{menu:newMenu._id}
         },{new: true})
@@ -53,25 +48,26 @@ export const createMenu = async (req,res) =>{
         }); 
 
     }catch(err){
+        console.log("err ", err)
 
         res.status(500).json({message: 'Error creating menu',err:err.message});
 
-    }
+    } 
 
 };
 
-export const getMenuByRestaurant = async (req,res) =>{
+export const getMenusByRestaurant = async (req,res) =>{
 
     try{
+        console.log(" rest id ", req.params)
         const restaurantId = req.params.id;
-        const menu = await Menu.findOne({restaurant:restaurantId});
-
+        const menu = await Menu.find({restaurant:restaurantId});
+        console.log('menus by rest ', menu)
         if (!menu) {
-            return res.status(404).json({ message: "Menu not found" });
+            return res.status(404).json({ message: "No Menus found" });
           }
       
         res.status(200).json({menu});
-
     }catch(err){
 
         console.log(err.message);
@@ -81,7 +77,28 @@ export const getMenuByRestaurant = async (req,res) =>{
 
 }
 
-export const updateMenu =async (req,res)=>{
+export const getMenuById = async (req,res) =>{
+
+    try{
+        const id = req.params.id;
+        const menu = await Menu.findById(id);
+        console.log('menu ', menu)
+        if (!menu) {
+            return res.status(404).json({ message: "Menu not found" });
+          }
+      
+        res.status(200).json(menu);
+    }catch(err){
+
+        console.log(err.message);
+        res.status(500).json({message:"Something went wrong"});
+
+    }
+
+}
+
+
+export const updateMenu =async (req,res)=>{ 
     try{
         const menuId = req.params.id;
         const currentUserId = req.user.id

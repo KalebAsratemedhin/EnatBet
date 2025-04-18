@@ -10,40 +10,56 @@ import { useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Schema update
 const restaurantSchema = z.object({
   name: z.string().min(1, "Name is required"),
   address: z.string().min(1, "Address is required"),
   latitude: z.coerce.number(),
   longitude: z.coerce.number(),
   deliveryAreaRadius: z.coerce.number().min(1, "Radius must be greater than 0"),
+  logo: z.any().optional(),
 });
 
 type FormData = z.infer<typeof restaurantSchema>;
 
 const CreateRestaurantForm = () => {
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(restaurantSchema),
   });
 
   const [addRestaurant, { isLoading }] = useAddRestaurantMutation();
   const [position, setPosition] = useState<L.LatLng | null>(null);
   const [radius, setRadius] = useState<number | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  const watchLogo = watch("logo");
+
+  // Generate image preview
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoPreview(URL.createObjectURL(file));
+    }
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
-      const payload = {
-        name: data.name,
-        location: {
-          coordinates: [data.longitude, data.latitude],
-          address: data.address,
-        },
-        deliveryAreas:  data.deliveryAreaRadius,
-        promotion: [],
-      };
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("address", data.address);
+      formData.append("latitude", data.latitude.toString());
+      formData.append("longitude", data.longitude.toString());
+      formData.append("deliveryAreaRadius", data.deliveryAreaRadius.toString());
 
-      await addRestaurant(payload).unwrap();
+      if (data.logo && data.logo[0]) {
+        formData.append("logo", data.logo[0]);
+      }
+
+      await addRestaurant(formData as any).unwrap();
+
       toast.success("Restaurant created successfully");
       reset();
+      setLogoPreview(null);
       setPosition(null);
       setRadius(null);
     } catch (error: any) {
@@ -68,12 +84,32 @@ const CreateRestaurantForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4 max-w-md">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4 max-w-md" encType="multipart/form-data">
       <Input {...register("name")} placeholder="Restaurant Name" />
       {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
 
       <Input {...register("address")} placeholder="Address" />
       {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+
+      {/* Logo input and preview */}
+      <div>
+        <label className="block text-sm font-medium mb-1">Logo</label>
+        <input
+          type="file"
+          accept="image/*"
+          {...register("logo")}
+          onChange={handleLogoChange}
+          className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4
+                     file:rounded-full file:border-0 file:text-sm file:font-semibold
+                     file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        />
+        {errors.logo?.message && (
+          <p className="text-red-500 text-sm">{String(errors.logo.message)}</p>
+        )}
+        {logoPreview && (
+          <img src={logoPreview} alt="Logo Preview" className="mt-2 h-24 object-contain" />
+        )}
+      </div>
 
       <div style={{ height: '400px', width: '100%' }}>
         <MapContainer

@@ -1,11 +1,5 @@
-// src/services/menuApi.ts
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import {
-  CreateMenuRequest,
-  UpdateMenuRequest,
-  GetMenuResponse,
-  GenericResponse,
-} from '../types/menu';
+
 
 const url = import.meta.env.VITE_API_URL;
 
@@ -23,65 +17,52 @@ const baseQuery = fetchBaseQuery({
 export const menuApi = createApi({
   reducerPath: 'menuApi',
   baseQuery,
-  tagTypes: ['Menu'],
+  tagTypes: ['Menu', 'Menus'],
   endpoints: (builder) => ({
-    createMenu: builder.mutation<GenericResponse, CreateMenuRequest>({
-      query: (data) => {
-        // const formData = new FormData();
-        // formData.append('menuName', data.menuName);
-        // formData.append('restaurant', data.restaurant);
-        // formData.append('menuItems', JSON.stringify(data.menuItems));
-        // data.itemPictures?.forEach((file) => {
-        //   formData.append('itemPictures', file);
-        // });
-
-        return {
-          url: '/menu',
-          method: 'POST',
-          body: data,
-        };
-      },
-      invalidatesTags: ['Menu'],
+    createMenu: builder.mutation({
+      query: ({ restaurantId, formData }) => ({
+        url: `/menu/createMenu/${restaurantId}`, // Adjust this based on your Express route
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ['Menus'],
+    }),
+    
+    getMenusByRestaurant: builder.query({
+      query: (restaurantId: string) => `/menu/getMenu/${restaurantId}`,
+      providesTags: ['Menus'],
     }),
 
-    getMenuById: builder.query<GetMenuResponse, string>({
-      query: (id) => `/menu/${id}`,
+    getMenuById: builder.query({
+      query: (id: string) => `/menu/${id}`,
       providesTags: ['Menu'],
     }),
 
-    updateMenu: builder.mutation<GenericResponse, UpdateMenuRequest>({
-      query: ({ id, ...data }) => {
-        const formData = new FormData();
-        formData.append('menuName', data.menuName);
-        formData.append('restaurant', data.restaurant);
-        formData.append('menuItems', JSON.stringify(data.menuItems));
-        data.itemPictures?.forEach((file) => {
-          formData.append('itemPictures', file);
-        });
-
-        return {
-          url: `/menu/${id}`,
-          method: 'PUT',
-          body: formData,
-        };
-      },
-      invalidatesTags: ['Menu'],
+    updateMenu: builder.mutation({
+      query: ({ menuId, formData}) => (
+        {
+          url: `/menu/updateMenu/${menuId}`,
+          method: 'PATCH',
+          body: formData
+      }),
+      invalidatesTags: ['Menus', 'Menu'],
     }),
 
-    deleteMenu: builder.mutation<GenericResponse, string>({
-      query: (id) => ({
-        url: `/menu/${id}`,
+    deleteMenu: builder.mutation({
+      query: (menuId: string) => ({
+        url: `/menu/deleteMenu/${menuId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Menu'],
+      invalidatesTags: ['Menu', 'Menus'],
     }),
   }),
 });
 
 
 export const {
-    useCreateMenuMutation,
-    useDeleteMenuMutation,
-    useGetMenuByIdQuery,
-    useUpdateMenuMutation
+  useCreateMenuMutation,
+  useGetMenusByRestaurantQuery,
+  useGetMenuByIdQuery,
+  useUpdateMenuMutation,
+  useDeleteMenuMutation,
 } = menuApi;
