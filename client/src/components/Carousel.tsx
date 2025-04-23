@@ -10,15 +10,15 @@ import Autoplay from "embla-carousel-autoplay"
 
 const slides = [
   {
-    image: 'http://localhost:3000/Delicious Salami Pizza🍕.jpeg',
+    image: `/Delicious Salami Pizza🍕.jpeg`,
     title: 'Delicious Pizza at Your Doorstep',
   },
   {
-    image: 'http://localhost:3000/crack burgers -.jpeg',
+    image: `/crack burgers -.jpeg`,
     title: 'Mouthwatering Burgers in Minutes',
   },
   {
-    image: 'http://localhost:3000/Yetsom Beyaynetu (Ethiopian Combination Platter).jpeg',
+    image: `/Yetsom Beyaynetu (Ethiopian Combination Platter).jpeg`,
     title: 'Delicious Beyaynet for you and your friends',
   },
 ];

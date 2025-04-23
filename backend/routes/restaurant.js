@@ -17,7 +17,7 @@ router.delete("/:id",isAuthenticated, isRestaurantOwner,deleteRestaurant );
 
 router.get("/mine", isAuthenticated,isRestaurantOwner,getAllMineRestaurant);
 
-router.get('/active',isAuthenticated,getActiveRestaurants);
+router.get('/active',getActiveRestaurants);
 
 router.get('/all',isAuthenticated,getAllRestaurant);
 
