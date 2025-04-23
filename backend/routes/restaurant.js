@@ -1,7 +1,10 @@
 import { isAdmin, isAuthenticated,isRestaurantOwner } from "../middlewares/auth.js";
-import { addRestaurant,updateRestaurant,deleteRestaurant,
-    getAllMineRestaurant,getActiveRestaurants,getAllRestaurant, approveRestaurant } from "../controllers/restaurant.js";
-
+import { upload } from "../middlewares/fileUpload.js";
+import { 
+    addRestaurant,updateRestaurant,deleteRestaurant,
+    getAllMineRestaurant,getActiveRestaurants,getAllRestaurant, 
+    updateRestaurantStatus
+} from "../controllers/restaurant.js";
 import express from 'express';
 
 const router = express.Router(); 
@@ -54,10 +57,10 @@ const router = express.Router();
  *       201:
  *         description: Restaurant created successfully
  *       500:
- *         description: Failed to create restaurant
+ *         description: Failed to create restaurant 
  */
-
-router.post('/addRestaurant',isAuthenticated,isRestaurantOwner,addRestaurant); 
+    
+router.post('/addRestaurant',isAuthenticated,isRestaurantOwner, upload.single("logo"), addRestaurant); 
 
 /**
  * @swagger
@@ -123,7 +126,7 @@ router.post('/addRestaurant',isAuthenticated,isRestaurantOwner,addRestaurant);
 
 
     
-router.put("/updateRestaurant/:id", isAuthenticated,isRestaurantOwner, updateRestaurant );
+router.put("/updateRestaurant/:id", isAuthenticated,isRestaurantOwner, upload.single("logo"), updateRestaurant );
 
 /**
  * @swagger
@@ -366,6 +369,6 @@ router.get('/getAllRestaurant',isAuthenticated,getAllRestaurant);
  *         description: Internal server error
  */
  
-router.patch('/approveRestaurant/:id',isAuthenticated,isAdmin,approveRestaurant);
+router.patch('/updateRestaurantStatus/:id',isAuthenticated,isAdmin,updateRestaurantStatus);
 
 export default router;

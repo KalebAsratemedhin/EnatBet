@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const url = import.meta.env.VITE_API_URL
+import { FetchBaseQueryError, BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/query/react';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
@@ -12,9 +13,23 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+
+// Wrap the baseQuery to check for a 401 error
+const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async(args, api, extraOptions) => {
+  // Execute the query
+  const result = await baseQuery(args, api, extraOptions);
+
+  // Check if we received a 401 Unauthorized error
+  if (result.error && result.error.status === 401) {
+    localStorage.clear()
+  }
+  
+  return result;
+};
+
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery,
+  baseQuery: baseQueryWithReauth,
   tagTypes: ["role-requests"],
   endpoints: (builder) => ({
     signup: builder.mutation({

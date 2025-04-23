@@ -6,9 +6,6 @@ import Restaurant from "../models/Restaurant.js";
 export const createMenu = async (req,res) =>{
      
     try{
-        console.log(" files ", req.files)
-        console.log("create menu ", req.body, req.params)
-
         const restaurantId = req.params.id; 
         const currentUserId = req.user.id;
 
@@ -48,7 +45,6 @@ export const createMenu = async (req,res) =>{
         }); 
 
     }catch(err){
-        console.log("err ", err)
 
         res.status(500).json({message: 'Error creating menu',err:err.message});
 
@@ -59,10 +55,8 @@ export const createMenu = async (req,res) =>{
 export const getMenusByRestaurant = async (req,res) =>{
 
     try{
-        console.log(" rest id ", req.params)
         const restaurantId = req.params.id;
         const menu = await Menu.find({restaurant:restaurantId});
-        console.log('menus by rest ', menu)
         if (!menu) {
             return res.status(404).json({ message: "No Menus found" });
           }
@@ -70,7 +64,6 @@ export const getMenusByRestaurant = async (req,res) =>{
         res.status(200).json({menu});
     }catch(err){
 
-        console.log(err.message);
         res.status(500).json({message:"Something went wrong"});
 
     }
@@ -82,7 +75,6 @@ export const getMenuById = async (req,res) =>{
     try{
         const id = req.params.id;
         const menu = await Menu.findById(id);
-        console.log('menu ', menu)
         if (!menu) {
             return res.status(404).json({ message: "Menu not found" });
           }
@@ -90,7 +82,6 @@ export const getMenuById = async (req,res) =>{
         res.status(200).json(menu);
     }catch(err){
 
-        console.log(err.message);
         res.status(500).json({message:"Something went wrong"});
 
     }
@@ -139,10 +130,7 @@ export const updateMenu =async (req,res)=>{
         res.status(200).json({message: "Menu updated successfully ",cleanMenu});
 
     }catch (err){
-
-        console.log(err);
         res.status(500).json({message:"Error updating menu",error:err.message});
-
     }
 }
 

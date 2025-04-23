@@ -91,8 +91,6 @@ export const createRoleRequest = async (req,res) =>{
      try{
         const {requestedRole,remark} = req.body;
 
-        console.log("create role reqs ", requestedRole, remark)
-
         const existing = await RoleRequest.findOne({
             userId: req.user.id,
             requestedRole
@@ -204,14 +202,11 @@ export const updateRoleRequest = async (req,res) =>{
         await request.save();
         console.log('stats ', request, request.status);
         if (request.status === 'approved'){
-        console.log('stats ca;; ', request);
-           
-           
             await addRoleToUser(request.userId,request.requestedRole )
 
-            res.status(200).json({message : 'Role Added successfully'})
+           return  res.status(200).json({message : 'Role Added successfully'})
 
-        }   
+        } 
         res.status(200).json({message : 'Role Request disapproved successfully'})
 
 

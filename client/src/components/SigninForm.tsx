@@ -34,6 +34,8 @@ const SigninForm: React.FC = () => {
   const onSubmit = async (data: SigninFormValues) => {
     try {
       const response = await signin(data).unwrap();
+
+      console.log("response", response)
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       console.log('User signed in:', response.user);

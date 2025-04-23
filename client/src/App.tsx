@@ -16,6 +16,7 @@ import ProfilePage from './pages/Profile';
 import RoleManagement from './components/RoleManagement';
 import RestaurantManagement from './pages/RestaurantManagement';
 import MenuDetailsPage from './pages/MenuDetails';
+import AdminRestaurantList from './components/AdminRestaurantList';
 
 const App: React.FC = () => {
   return (
@@ -52,6 +53,8 @@ const App: React.FC = () => {
           <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/restaurant-management" element={<RestaurantManagement />} />
+          <Route path="/restaurant-applications" element={<AdminRestaurantList />} />
+
 
         </Route>
 

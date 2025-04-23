@@ -12,8 +12,14 @@ const Sidebar: React.FC = () => {
     { name: 'Profile', href: '/profile' },
     { name: 'Settings', href: '/settings' },
     { name: 'Role Management', href: '/role-management' },
-    { name: 'Restaurant Management', href: '/restaurant-management' },
+  ];
 
+  const restaurantOwnerLinks = [
+    { name: 'Restaurant Management', href: '/restaurant-management' },
+  ];
+
+  const adminLinks = [
+    { name: 'Restaurant Applications', href: '/restaurant-applications' },
   ];
 
   const dashboardLinks = [
@@ -36,6 +42,29 @@ const Sidebar: React.FC = () => {
     <aside className="hidden md:block bg-gray-100 p-4">
       <nav className="space-y-4 flex flex-col">
         {staticLinks.map((link) => (
+          <NavLink
+            key={link.name}
+            to={link.href}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            {link.name}
+          </NavLink>
+        ))}
+        { userRoles.includes("restaurant_owner") && restaurantOwnerLinks.map((link) => (
+          <NavLink
+            key={link.name}
+            to={link.href}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            {link.name}
+          </NavLink>
+        ))}
+
+      { userRoles.includes("admin") && adminLinks.map((link) => (
           <NavLink
             key={link.name}
             to={link.href}

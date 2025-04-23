@@ -16,8 +16,7 @@ const restaurantSchema = z.object({
   address: z.string().min(1, "Address is required"),
   latitude: z.coerce.number(),
   longitude: z.coerce.number(),
-  deliveryAreaRadius: z.coerce.number().min(1, "Radius must be greater than 0"),
-  logo: z.any().optional(),
+  deliveryAreaRadius: z.coerce.number().min(1, "Radius must be greater than 0")
 });
 
 type FormData = z.infer<typeof restaurantSchema>;
@@ -31,19 +30,12 @@ const CreateRestaurantForm = () => {
   const [position, setPosition] = useState<L.LatLng | null>(null);
   const [radius, setRadius] = useState<number | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  const watchLogo = watch("logo");
-
-  // Generate image preview
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogoPreview(URL.createObjectURL(file));
-    }
-  };
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log("data rest create ", data, logoFile)
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("address", data.address);
@@ -51,9 +43,10 @@ const CreateRestaurantForm = () => {
       formData.append("longitude", data.longitude.toString());
       formData.append("deliveryAreaRadius", data.deliveryAreaRadius.toString());
 
-      if (data.logo && data.logo[0]) {
-        formData.append("logo", data.logo[0]);
+      if (logoFile) {
+        formData.append("logo", logoFile);
       }
+      
 
       await addRestaurant(formData as any).unwrap();
 
@@ -97,18 +90,22 @@ const CreateRestaurantForm = () => {
         <input
           type="file"
           accept="image/*"
-          {...register("logo")}
-          onChange={handleLogoChange}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setLogoFile(file);
+              setLogoPreview(URL.createObjectURL(file));
+            }
+          }}
           className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4
                      file:rounded-full file:border-0 file:text-sm file:font-semibold
                      file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                     
         />
-        {errors.logo?.message && (
-          <p className="text-red-500 text-sm">{String(errors.logo.message)}</p>
-        )}
         {logoPreview && (
           <img src={logoPreview} alt="Logo Preview" className="mt-2 h-24 object-contain" />
         )}
+
       </div>
 
       <div style={{ height: '400px', width: '100%' }}>

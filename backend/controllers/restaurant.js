@@ -7,18 +7,19 @@ import { checkOwnership } from '../utils/index.js';
 export const addRestaurant = async (req,res) =>{
     
       try{
-         const {name, location,deliveryAreas,promotion,} = req.body;
+         const {name, latitude, longitude, address, deliveryAreaRadius} = req.body;
+         const logo = req.file.path; 
 
          const newRestaurant = new Restaurant({
               ownerId:req.user.id,
               name,
+              logo,
               location :{
                 type:"Point",
-                coordinates :location.coordinates,
-                address:location.address
+                coordinates :[ latitude, longitude],
+                address: address
               },
-              deliveryAreas,
-              promotion
+              deliveryAreaRadius
         
          })
 
@@ -33,87 +34,88 @@ export const addRestaurant = async (req,res) =>{
 
 };
 
+export const updateRestaurant = async (req, res) => {
+  try {
+    const restaurantId = req.params.id;
+    const currentUserId = req.user.id;  
+    const restaurant = await Restaurant.findById(restaurantId).populate("ownerId");
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
 
+    if (!restaurant.ownerId) {
+      return res.status(403).json({ message: "Restaurant has no owner assigned" });
+    }
 
-export const updateRestaurant = async (req,res) =>{
+    if (!checkOwnership(restaurant.ownerId._id, currentUserId)) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
 
-      try{
-        const restaurantId = req.params.id;
-        const currentUserId =req.user.id;
+    const { name, latitude, longitude, deliveryAreaRadius, address } = req.body;
+    const logo = req?.file?.path
 
-        const restaurant = await Restaurant.findById(restaurantId).populate("ownerId");
-        if (!restaurant.ownerId) {
-          return res.status(403).json({ message: "Restaurant has no owner assigned" });
-        }
-        if(!restaurant){
+    const location = {
+      type: "Point",
+      coordinates: [longitude, latitude],  
+      address: address
+    };
 
-           return res.status(404).json({message: "Restaurant not found"});
+    const updateData = {
+      name,
+      location,
+      deliveryAreaRadius,
+    };
 
-        }
-        console.log(restaurant.ownerId)
-        if(!checkOwnership(restaurant.ownerId._id,currentUserId)){
+    if (logo) {
+      updateData.logo = logo;  
+    }
 
-            return res.status(403).json({message:"Unauthorized"});
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(restaurantId, updateData, { new: true });
 
-        }
+    return res.status(200).json(updatedRestaurant);  
 
-        const {name, location, deliveryAreas,promotion} =req.body
-        const result = await Restaurant.findByIdAndUpdate(restaurantId,{
-           name:name,
-           location:location,
-           deliveryAreas :deliveryAreas,
-           promotion:promotion
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: err.message });
+  }
+};
 
-        });
-
-        return res.status(201).json(result);
-
-      }catch(err){
-
-         res.status(500).send({message:err.message});
-
-      }
-
-
-}
 
 
 export const deleteRestaurant = async (req,res) =>{
 
-           try{
+  try{  
 
-               const restaurantId = req.params.id;
-               const currentUserId = req.user.id;
+      const restaurantId = req.params.id;
+      const currentUserId = req.user.id;
 
-               const restaurant = await Restaurant.findById(restaurantId);
-               console.log(restaurant)
-               if(!checkOwnership(restaurant.ownerId, currentUserId)){
+      const restaurant = await Restaurant.findById(restaurantId);
+      if(!checkOwnership(restaurant.ownerId, currentUserId)){
 
-                  return res.status(403).json({ message: "Not authorized to delete this comment" });
-                
-                }
+        return res.status(403).json({ message: "Not authorized to delete this comment" });
+      
+      }
 
-               await Restaurant.findByIdAndDelete(restaurantId);
+      await Restaurant.findByIdAndDelete(restaurantId);
 
-               res.status(200).json({message: "Restaurant deleted successfully"})
+      res.status(200).json({message: "Restaurant deleted successfully"})
 
-           }catch(err){
+  }catch(err){
 
-                res.status(500).json({message:err.message});
+      res.status(500).json({message:err.message});
 
-           }
+  }
 
 
 }
 
-//get all restaurant owns by current user
 
 export const getAllMineRestaurant = async (req,res) => {
    
       try{
         const userId = req.user.id;
 
-        //pagination setup
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page-1)*limit;
@@ -136,42 +138,39 @@ export const getAllMineRestaurant = async (req,res) => {
           });
 
       }catch (error) {
-        console.error("Error fetching restaurants:", error);
         res.status(500).json({ message: "Failed to fetch restaurants" });
       }
     };
 
 
-//get all active restaurant 
 
 export const getActiveRestaurants = async (req,res) =>{
 
-       try{
-                //pagination setup 
-                const page = parseInt(req.query.page) || 1;
-                const limit = parseInt(req.query.limit) || 10;
-                const skip = (page-1)*limit;
+  try{
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page-1)*limit;
 
-                const allActiveRestaurants = await Restaurant.find({isApproved:true})
-                    .skip(skip)
-                    .limit(limit)
+    const allActiveRestaurants = await Restaurant.find({isApproved:true})
+        .skip(skip)
+        .limit(limit)
 
-              const totalCount = await Restaurant.countDocuments();
+  const totalCount = await Restaurant.countDocuments();
 
-              res.status(200).json({
-                        message: 'Restaurants fetched successfully',
-                        allActiveRestaurants,
-                        totalCount,
-                        totalPages: Math.ceil(totalCount / limit),
-                        currentPage: page
-                    });
+  res.status(200).json({
+            message: 'Restaurants fetched successfully',
+            allActiveRestaurants,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page
+        });
                 
 
-       }catch(err){
+  }catch(err){
 
-        res.status(500).json({message:'Error fetching active restaurants', err : err.message})
+  res.status(500).json({message:'Error fetching active restaurants', err : err.message})
 
-       }
+  }
 
 }
 
@@ -180,23 +179,23 @@ export const getActiveRestaurants = async (req,res) =>{
 export const getAllRestaurant = async (req,res)=>{
 
     try{
-                const page = parseInt(req.query.page) || 1;
-                const limit = parseInt(req.query.limit) || 10;
-                const skip = (page-1)*limit;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page-1)*limit;
 
-                const allRestaurants = await Restaurant.find()
-                       .skip(skip)
-                       .limit(limit);
+      const allRestaurants = await Restaurant.find().populate("ownerId", "name email phoneNumber")
+              .skip(skip)
+              .limit(limit);
 
-                const totalCount = await Restaurant.countDocuments();
+      const totalCount = await Restaurant.countDocuments();
 
-                res.status(200).json({
-                    message: 'Restaurants fetched successfully',
-                    allRestaurants,
-                    totalCount,
-                    totalPages: Math.ceil(totalCount / limit),
-                    currentPage: page
-                });
+      res.status(200).json({
+          message: 'Restaurants fetched successfully',
+          allRestaurants,
+          totalCount,
+          totalPages: Math.ceil(totalCount / limit),
+          currentPage: page
+      });
 
     }catch(err){
         console.error(err);
@@ -205,25 +204,28 @@ export const getAllRestaurant = async (req,res)=>{
 }
 
 
-export const approveRestaurant = async (req,res) =>{
+export const updateRestaurantStatus = async (req,res) =>{
    
-        try{
-               const restaurantId = req.params.id;
+  try{
+      const restaurantId = req.params.id;
+      const {status} = req.body;
+      
+      const restaurant = await Restaurant.findById(restaurantId);
 
-               const restaurant = await Restaurant.findById(restaurantId);
+      console.log(" restaurant", restaurant);
+      console.log(" status", status);
+      
+      
 
-               console.log(restaurant);
+      restaurant.status = status; 
 
-               restaurant.isApproved =true;
+      restaurant.save();
 
-               restaurant.save();
-
-               res.status(200).json({message:"Restaurant approved successfully "})
+      res.status(200).json({message:"Restaurant status updated successfully "})
 
 
-        }catch(err){
-          console.log(err.message);
-          res.status(500).json({message : err.message})
-        }
+    }catch(err){
+      res.status(500).json({message : err.message})
+    }
 
 }

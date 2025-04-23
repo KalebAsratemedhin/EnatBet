@@ -35,7 +35,7 @@ export const restaurantApi = createApi({
     }),
 
     updateRestaurant: builder.mutation<GenericResponse, UpdateRestaurantRequest>({
-      query: ({ id, ...data }) => ({
+      query: ({ id, data }) => ({
         url: `/restaurant/updateRestaurant/${id}`,
         method: 'PUT',
         body: data,
@@ -66,10 +66,11 @@ export const restaurantApi = createApi({
       providesTags: ['Restaurant'],
     }),
 
-    approveRestaurant: builder.mutation<GenericResponse, string>({
-      query: (id) => ({
-        url: `/restaurant/approveRestaurant/${id}`,
+    updateRestaurantStatus: builder.mutation<GenericResponse, {id: string, status: string}>({
+      query: ({id, status}) => ({
+        url: `/restaurant/updateRestaurantStatus/${id}`,
         method: 'PATCH',
+        body: {status}
       }),
       invalidatesTags: ['Restaurant'],
     }),
@@ -83,5 +84,5 @@ export const {
   useGetAllMineRestaurantQuery,
   useGetActiveRestaurantsQuery,
   useGetAllRestaurantQuery,
-  useApproveRestaurantMutation,
+  useUpdateRestaurantStatusMutation,
 } = restaurantApi;

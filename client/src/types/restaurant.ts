@@ -16,19 +16,21 @@ export interface Promotion {
     name: string;
     location: Location;
     ownerId: string;
-    deliveryAreas: Number;
-    promotion: Promotion[];
+    deliveryAreaRadius: number;
+    logo: string;
+    status: string
   }
   
   export interface AddRestaurantRequest {
     name: string;
     location: Location;
     deliveryAreas: Number;
-    promotion: Promotion[];
+    logo: string;
   }
   
-  export interface UpdateRestaurantRequest extends Partial<AddRestaurantRequest> {
+  export interface UpdateRestaurantRequest {
     id: string;
+    data: Partial<AddRestaurantRequest>;
   }
   
   export interface GenericResponse {
@@ -37,6 +39,6 @@ export interface Promotion {
   
   export interface GetRestaurantsResponse {
     message: string;
-    data: Restaurant[];
+    allRestaurants: Restaurant[];
   }
   

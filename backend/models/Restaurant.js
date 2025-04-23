@@ -38,14 +38,14 @@ const RestaurantSchema = new mongoose.Schema(
         max : 5,
         default : 0
     },
-    deliveryAreas : 
+    deliveryAreaRadius : 
     {
       type:Number
     },
     logo: { 
       type: String
     },
-    status: {type: String,enum: ['pending', 'approved', 'disapproved', 'inactive'],default: 'pending'},
+    status: {type: String,enum: ['pending', 'active', 'inactive'],default: 'pending'},
 
 
 })
