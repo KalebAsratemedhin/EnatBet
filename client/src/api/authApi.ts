@@ -39,13 +39,14 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["role-requests"],
+  tagTypes: ["role-requests", 'current-user'],
   endpoints: (builder) => ({
     logout: builder.mutation<void, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
       }),
+      invalidatesTags: ['current-user']
     }),
     updateUserProfile: builder.mutation<any, FormData>({
       query: (formData) => ({
@@ -87,6 +88,7 @@ export const authApi = createApi({
     
     getCurrentUser: builder.query<User, void>({
       query: () => '/auth/current-user',
+      providesTags: ['current-user'],
     }),
     
     changePassword: builder.mutation<void, ChangePasswordPayload>({

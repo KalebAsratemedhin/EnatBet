@@ -25,21 +25,19 @@ const App: React.FC = () => {
   return (
     <>
       <Routes>
-        <Route>
-          <Route path="/" element= {
-              <MainLayout> 
-                <Home/>
-              </MainLayout>  
-            } />
-          <Route path="/about" element= {
-              <MainLayout> 
-                <AboutPage/>
-              </MainLayout>  
-            } />
+        <Route  element= {
+          <MainLayout />  
+            } > 
+                <Route path="/" element={<Home />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/restaurants" element={<Restaurants />} />
+                <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+
         </Route>
+          
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
-
+        
         <Route
           element={
             <ProtectedRoute>
@@ -50,9 +48,7 @@ const App: React.FC = () => {
           <Route path="/settings" element={<SettingsPage />} /> 
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/role-management" element={<RoleManagement />} /> 
-
           <Route path="/menu/:menuId" element={<MenuDetailsPage />} />
-
 
 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
@@ -61,13 +57,6 @@ const App: React.FC = () => {
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/restaurant-management" element={<RestaurantManagement />} />
           <Route path="/restaurant-applications" element={<AdminRestaurantList />} />
-
-
-          <Route path="/restaurants" element={<Restaurants />} />
-          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
-
-
-
 
         </Route>
 
