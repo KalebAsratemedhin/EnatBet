@@ -4,7 +4,6 @@ import connectDB from './config/db.js';
 import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
-import fileUpload from 'express-fileupload';
 import restaurantRoutes from './routes/restaurant.js';
 
 import menuRoutes from './routes/menu.js';
