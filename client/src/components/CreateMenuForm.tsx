@@ -4,14 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useGetAllMineRestaurantQuery } from "@/api/restaurantApi";
 import { useCreateMenuMutation } from "@/api/menuApi"; // new import
 
 const createMenuSchema = z.object({
@@ -33,13 +25,12 @@ type Props = {
 };
 type CreateMenuFormData = z.infer<typeof createMenuSchema>;
 
-const CreateMenuForm = ({ selectedRestaurantId, onCreated }: Props) => {
+const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
     control,
     formState: { errors },
   } = useForm<CreateMenuFormData>({

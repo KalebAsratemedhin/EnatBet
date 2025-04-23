@@ -1,39 +1,25 @@
-import { useEffect, useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogHeader, // Import DialogHeader etc. for structure
+  DialogHeader,
   DialogTitle,
   DialogDescription,
   DialogFooter,
   DialogTrigger,
-  DialogClose, // Import DialogClose for cancel
+  DialogClose, 
 } from "@/components/ui/dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { Input } from "@/components/ui/input"; // Input not used in form
 import { Textarea } from "@/components/ui/textarea";
 import {
   useCreateRoleRequestMutation,
-  useCancelRoleRequestMutation,
-  useUpdateRoleRequestStatusMutation,
-  useGetCurrentUserQuery, // Keep this if needed
-} from "@/api/authApi"; // Adjust path if needed
+  useGetCurrentUserQuery, 
+} from "@/api/authApi";
 import { toast, Toaster } from "sonner";
-// import { useGetCurrentUserQuery } from "@/api/authApi"; // Duplicate import removed
 
-// *** Correct Shadcn UI Imports ***
 import {
   Select,
   SelectContent,
@@ -66,20 +52,17 @@ const formSchema = z.object({
 const RoleManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Provide default value during destructuring and handle loading/error states
   const [createRoleRequest, { isLoading: isCreating }] = useCreateRoleRequestMutation();
-  const { data: user, isLoading: isLoadingUser, error: userError } = useGetCurrentUserQuery();
+  const { data: user } = useGetCurrentUserQuery();
 
-  // *** Use Shadcn UI Form hook integration ***
   const form = useForm<RoleRequestFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      requestedRole: "", // Initialize role
+      requestedRole: "", 
       remark: "",
     },
   });
 
-  // Use form.handleSubmit directly
   const onSubmit = async (values: RoleRequestFormData) => {
 
     toast.promise(

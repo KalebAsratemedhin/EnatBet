@@ -1,6 +1,15 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 const url = import.meta.env.VITE_API_URL
 import { FetchBaseQueryError, BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/query/react';
+import {
+  SignupPayload,
+  SigninPayload,
+  ChangePasswordPayload,
+  RoleRequestPayload,
+  UpdateRoleStatusPayload,
+  CancelRoleRequestPayload,
+} from "@/types/requests";
+import { User, RoleRequest } from "@/types/api";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: url,
@@ -32,28 +41,11 @@ export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["role-requests"],
   endpoints: (builder) => ({
-    signup: builder.mutation({
-      query: (data) => ({
-        url: '/auth/signup',
-        method: 'POST',
-        body: data,
-      }),
-    }),
-    signin: builder.mutation({
-      query: (data) => ({
-        url: '/auth/signin',
-        method: 'POST',
-        body: data,
-      }),
-    }),
     logout: builder.mutation<void, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
       }),
-    }),
-    getCurrentUser: builder.query<any, void>({
-      query: () => '/auth/current-user',
     }),
     updateUserProfile: builder.mutation<any, FormData>({
       query: (formData) => ({
@@ -62,13 +54,7 @@ export const authApi = createApi({
         body: formData,
       }),
     }),
-    changePassword: builder.mutation<void, void>({
-      query: (data) => ({
-        url: '/user/change-password',
-        method: 'PUT',
-        body: data,
-      }),
-    }),
+  
     verifyEmail: builder.mutation<void, void>({
       query: () => ({
         url: '/user/verify-email',
@@ -81,15 +67,47 @@ export const authApi = createApi({
         method: 'DELETE',
       }),
     }),
-    getMineRoleRequests: builder.query<any, void>({
+ 
+    
+    signup: builder.mutation<{ token: string; user: User }, SignupPayload>({
+      query: (data) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    
+    signin: builder.mutation<{ token: string; user: User }, SigninPayload>({
+      query: (data) => ({
+        url: '/auth/signin',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+    
+    getCurrentUser: builder.query<User, void>({
+      query: () => '/auth/current-user',
+    }),
+    
+    changePassword: builder.mutation<void, ChangePasswordPayload>({
+      query: (data) => ({
+        url: '/user/change-password',
+        method: 'PUT',
+        body: data,
+      }),
+    }),
+    
+    getMineRoleRequests: builder.query<RoleRequest[], void>({
       query: () => '/auth/role-request/mine',
       providesTags: ['role-requests']
     }),
-    getAllRoleRequests: builder.query<any, void>({
+    
+    getAllRoleRequests: builder.query<RoleRequest[], void>({
       query: () => '/auth/role-request/all',
       providesTags: ['role-requests']
     }),
-    createRoleRequest: builder.mutation<void, any>({
+    
+    createRoleRequest: builder.mutation<void, RoleRequestPayload>({
       query: (data) => ({
         url: '/auth/role-request',
         method: 'POST',
@@ -97,22 +115,22 @@ export const authApi = createApi({
       }),
       invalidatesTags: ['role-requests']
     }),
-    updateRoleRequestStatus: builder.mutation<void, { id: string, status: string }>({
+    
+    updateRoleRequestStatus: builder.mutation<void, UpdateRoleStatusPayload>({
       query: ({id, status}) => ({
         url: `/auth/role-request/${id}`,
         method: 'PUT',
         body: {status}
       }),
       invalidatesTags: ['role-requests']
-
     }),
-    cancelRoleRequest: builder.mutation<void, { id: string }>({
+    
+    cancelRoleRequest: builder.mutation<void, CancelRoleRequestPayload>({
       query: ({id}) => ({
         url: `/auth/role-request/cancelled/${id}`,
         method: 'PUT'
       }),
       invalidatesTags: ['role-requests']
-
     }),
   }),
 });

@@ -2,15 +2,16 @@ import { useGetMineRoleRequestsQuery, useUpdateRoleRequestStatusMutation } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { RoleRequest } from "@/types/api";
 
 const UserRoleRequestTable = () => {
   const { data: requests = [], isLoading } = useGetMineRoleRequestsQuery();
   const [updateStatus] = useUpdateRoleRequestStatusMutation();
 
-  const handleToggleCancel = async (req: any) => {
+  const handleToggleCancel = async (req: RoleRequest) => {
     const updatedStatus = req.status === "cancelled" ? "pending" : "cancelled";
     try {
-      await updateStatus({ id: req._id}).unwrap();
+      await updateStatus({ id: req._id, status: updatedStatus}).unwrap();
       toast.success(`Request ${updatedStatus}`);
     } catch (err) {
       toast.error("Failed to update request");

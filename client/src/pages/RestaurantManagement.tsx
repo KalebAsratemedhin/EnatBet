@@ -1,9 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CreateRestaurantForm from "@/components/CreateRestaurantForm";
 import MyRestaurants from "@/components/MyRestaurants";
-// import Menus from "@/components/Menus";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
-import CreateMenuForm from "@/components/CreateMenuForm";
 import RestaurantMenus from "@/components/RestaurantMenus";
 
 const RestaurantManagement = () => {

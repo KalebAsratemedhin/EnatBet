@@ -6,8 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
 import { useUpdateRestaurantMutation } from "@/api/restaurantApi";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
-import { UpdateRestaurantRequest } from "@/types/restaurant";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 
 const updateRestaurantSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,7 +24,7 @@ interface UpdateRestaurantFormProps {
 }
 
 const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps) => {
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<UpdateFormData>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<UpdateFormData>({
     resolver: zodResolver(updateRestaurantSchema),
     defaultValues: {
       name: restaurant.name,

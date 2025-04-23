@@ -22,7 +22,7 @@ const restaurantSchema = z.object({
 type FormData = z.infer<typeof restaurantSchema>;
 
 const CreateRestaurantForm = () => {
-  const { register, handleSubmit, setValue, reset, watch, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(restaurantSchema),
   });
 

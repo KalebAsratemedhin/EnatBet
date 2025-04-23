@@ -4,7 +4,7 @@ import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 
 const MenusCarousel = ({restaurantId}: { restaurantId: string}) => {
-    const { data, isLoading: isLoadingMenus, isError: isMenusError,} = useGetMenusByRestaurantQuery(restaurantId);
+    const { data} = useGetMenusByRestaurantQuery(restaurantId);
   return (
     <div>
         {data && data.menus.length > 0 && (

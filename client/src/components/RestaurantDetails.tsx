@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  useGetRestaurantByIdQuery,
-  useRateRestaurantMutation,
+  useGetRestaurantByIdQuery
 } from "@/api/restaurantApi";
 import { Loader2, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +13,7 @@ import { toast } from "sonner";
 const RestaurantDetails = () => {
   const { id } = useParams();
   const { data, isLoading, error, refetch } = useGetRestaurantByIdQuery(id!);
-  const [rateRestaurant] = useRateRestaurantMutation();
+  // const [rateRestaurant] = useRateRestaurantMutation();
 
   const [userRating, setUserRating] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -39,7 +38,7 @@ const RestaurantDetails = () => {
   const handleRate = async (rating: number) => {
     try {
       setSubmitting(true);
-      await rateRestaurant({ id, rating }).unwrap();
+      // await rateRestaurant({ id, rating }).unwrap();
       toast.success("Thanks for your rating!");
       setUserRating(rating);
       refetch();

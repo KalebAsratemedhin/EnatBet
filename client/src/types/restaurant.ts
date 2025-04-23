@@ -47,7 +47,7 @@ export interface Promotion {
   
   export interface GetRestaurantsResponse {
     message: string;
-    data: Restaurant[];
+    data: PopulatedRestaurant[];
     totalCount: number;
     totalPages: number;
     currentPage: number;

@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
   ColumnDef,
@@ -32,32 +30,24 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { MoreHorizontal, Star } from "lucide-react"
-import { useGetAllRestaurantQuery, useUpdateRestaurantStatusMutation } from "@/api/restaurantApi"
+import {
+  useGetAllRestaurantQuery,
+  useUpdateRestaurantStatusMutation,
+} from "@/api/restaurantApi"
 import { cn } from "@/lib/utils"
-import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination"
-
-interface Restaurant {
-  _id: string
-  name: string
-  address: string
-  status: "approved" | "pending" | "rejected" | "suspended"
-  rating: number
-  logo?: string
-  deliveryAreas?: number
-  location?: {
-    coordinates: [number, number]
-    address: string
-  }
-  ownerId: {
-    name: string
-    email: string
-  }
-}
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination"
+import { PopulatedRestaurant } from "@/types/restaurant"
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
   active: "bg-green-100 text-green-800",
-  inactive: "bg-red-100 text-red-800"
+  inactive: "bg-red-100 text-red-800",
 }
 
 const AdminRestaurantList = () => {
@@ -65,9 +55,9 @@ const AdminRestaurantList = () => {
   const limit = 5
   const { data, error, isLoading } = useGetAllRestaurantQuery({ page, limit })
   const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation()
-  const [selectedRestaurant, setSelectedRestaurant] = React.useState<Restaurant | null>(null)
+  const [selectedRestaurant, setSelectedRestaurant] = React.useState<PopulatedRestaurant | null>(null)
 
-  const handleStatusUpdate = async (newStatus: string, restaurant: Restaurant) => {
+  const handleStatusUpdate = async (newStatus: string, restaurant: PopulatedRestaurant) => {
     try {
       await updateRestaurantStatus({ id: restaurant._id, status: newStatus }).unwrap()
       toast.success(`Restaurant status updated to: ${newStatus}`)
@@ -76,10 +66,10 @@ const AdminRestaurantList = () => {
     }
   }
 
-  const restaurants = data?.allRestaurants || []
+  const restaurants = data?.data || []
   const totalPages = data?.totalPages || 1
 
-  const columns: ColumnDef<Restaurant>[] = [
+  const columns: ColumnDef<PopulatedRestaurant>[] = [
     {
       accessorKey: "name",
       header: "Name",
@@ -100,14 +90,17 @@ const AdminRestaurantList = () => {
       ),
     },
     {
-      accessorKey: "owner",
+      accessorKey: "ownerId",
       header: "Owner",
-      cell: ({ row }) => (
-        <div className="text-sm">
-          <p className="font-medium">{row.original.ownerId?.name}</p>
-          <p className="text-xs text-muted-foreground">{row.original.ownerId?.email}</p>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const owner = row.original.owner
+        return (
+          <div className="text-sm">
+            <p className="font-medium">{owner.name}</p>
+            <p className="text-xs text-muted-foreground">{owner.email}</p>
+          </div>
+        )
+      },
     },
     {
       id: "actions",
@@ -117,15 +110,21 @@ const AdminRestaurantList = () => {
         return (
           <div className="text-right">
             <DropdownMenu>
-              <DropdownMenuTrigger >
+              <DropdownMenuTrigger>
                 <Button variant="ghost" size="icon">
                   <MoreHorizontal />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleStatusUpdate("active", restaurant)}>Activate</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusUpdate("inactive", restaurant)}>Deactivate</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedRestaurant(restaurant)}>View Details</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusUpdate("active", restaurant)}>
+                  Activate
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusUpdate("inactive", restaurant)}>
+                  Deactivate
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSelectedRestaurant(restaurant)}>
+                  View Details
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -133,6 +132,7 @@ const AdminRestaurantList = () => {
       },
     },
   ]
+  
 
   const table = useReactTable({
     data: restaurants,
@@ -185,13 +185,15 @@ const AdminRestaurantList = () => {
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious >
+                  <PaginationPrevious>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                       disabled={page === 1}
-                    >Previous</Button>
+                    >
+                      Previous
+                    </Button>
                   </PaginationPrevious>
                 </PaginationItem>
 
@@ -202,13 +204,15 @@ const AdminRestaurantList = () => {
                 </PaginationItem>
 
                 <PaginationItem>
-                  <PaginationNext >
+                  <PaginationNext>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
                       disabled={page === totalPages}
-                    >Next</Button>
+                    >
+                      Next
+                    </Button>
                   </PaginationNext>
                 </PaginationItem>
               </PaginationContent>
@@ -226,28 +230,50 @@ const AdminRestaurantList = () => {
               </DialogHeader>
               <div className="space-y-2">
                 {selectedRestaurant.logo && (
-                  <img src={selectedRestaurant.logo} alt={selectedRestaurant.name} className="w-full h-40 object-cover rounded-md" />
+                  <img
+                    src={selectedRestaurant.logo}
+                    alt={selectedRestaurant.name}
+                    className="w-full h-40 object-cover rounded-md"
+                  />
                 )}
-                <p><strong>Address:</strong> {selectedRestaurant.location?.address}</p>
+                <p>
+                  <strong>Address:</strong> {selectedRestaurant.location?.address}
+                </p>
                 <p>
                   <strong>Coordinates:</strong>{" "}
                   {selectedRestaurant.location?.coordinates
                     ? `(${selectedRestaurant.location.coordinates[1]}, ${selectedRestaurant.location.coordinates[0]})`
                     : "N/A"}
                 </p>
-                <p><strong>Delivery Radius:</strong> {selectedRestaurant.deliveryAreas} meters</p>
-                <p><strong>Owner:</strong> {selectedRestaurant.ownerId.name} ({selectedRestaurant.ownerId.email})</p>
-                <p><strong>Status:</strong> {selectedRestaurant.status}</p>
+                <p>
+                  <strong>Delivery Radius:</strong> {selectedRestaurant.deliveryAreaRadius} meters
+                </p>
+                <p>
+                  <strong>Owner:</strong> {selectedRestaurant.owner.name} (
+                  {selectedRestaurant.owner.email})
+                </p>
+                <p>
+                  <strong>Status:</strong> {selectedRestaurant.status}
+                </p>
                 <div className="flex items-center gap-1">
                   <strong>Rating:</strong>
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} fill={i < Math.round(selectedRestaurant.rating) ? "#facc15" : "none"} stroke="#facc15" />
+                    <Star
+                      key={i}
+                      size={16}
+                      fill={i < Math.round(selectedRestaurant.rating) ? "#facc15" : "none"}
+                      stroke="#facc15"
+                    />
                   ))}
-                  <span className="ml-1 text-sm text-muted-foreground">({selectedRestaurant.rating.toFixed(1)})</span>
+                  <span className="ml-1 text-sm text-muted-foreground">
+                    ({selectedRestaurant.rating.toFixed(1)})
+                  </span>
                 </div>
               </div>
               <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setSelectedRestaurant(null)}>Close</Button>
+                <Button variant="outline" onClick={() => setSelectedRestaurant(null)}>
+                  Close
+                </Button>
               </DialogFooter>
             </>
           )}
