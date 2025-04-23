@@ -1,3 +1,4 @@
+import { MenuResponse } from '@/types/menu';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 
@@ -28,8 +29,8 @@ export const menuApi = createApi({
       invalidatesTags: ['Menus'],
     }),
     
-    getMenusByRestaurant: builder.query({
-      query: (restaurantId: string) => `/menu/getMenu/${restaurantId}`,
+    getMenusByRestaurant: builder.query<MenuResponse, string>({
+      query: (restaurantId) => `/menu/getMenu/${restaurantId}`,
       providesTags: ['Menus'],
     }),
 

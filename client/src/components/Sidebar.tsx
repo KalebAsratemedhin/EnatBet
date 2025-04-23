@@ -6,8 +6,6 @@ const Sidebar: React.FC = () => {
   const { data: user } = useGetCurrentUserQuery(undefined);
 
   const staticLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Restaurants', href: '/restaurants' },
     { name: 'Orders', href: '/orders' },
     { name: 'Profile', href: '/profile' },
     { name: 'Settings', href: '/settings' },

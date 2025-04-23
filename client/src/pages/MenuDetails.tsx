@@ -40,7 +40,7 @@ const MenuDetailsPage = () => {
             {menu?.menuItems?.map((item: any, index: number) => (
               <Card
                 key={index}
-                className="transition pt-0 duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl shadow-md rounded-2xl overflow-hidden"
+                className="transition pt-0 duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl shadow-md rounded-2xl overflow-hidden h-96 w-80"
               >
                 {item.itemPicture && (
                   <img

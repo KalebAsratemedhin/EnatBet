@@ -27,7 +27,7 @@ const RestaurantMenusWithCreate = () => {
     data: restaurantsData,
     isLoading: isLoadingRestaurants,
     isError: isRestaurantError,
-  } = useGetAllMineRestaurantQuery();
+  } = useGetAllMineRestaurantQuery({page: 1, limit: 100});
 
   const {
     data: menus,
@@ -42,7 +42,6 @@ const RestaurantMenusWithCreate = () => {
 
   return (
     <div className="space-y-8">
-      {/* Restaurant Selector */}
       <div>
         <h2 className="text-2xl font-semibold">Select Restaurant</h2>
         <Select onValueChange={(value) => setSelectedRestaurantId(value)}>
@@ -68,14 +67,14 @@ const RestaurantMenusWithCreate = () => {
               [...Array(3)].map((_, i) => (
                 <Skeleton key={i} className="h-32 w-full rounded-xl" />
               ))
-            ) : menus?.menu.length === 0 ? (
+            ) : menus?.menus.length === 0 ? (
               <p className="text-gray-500 col-span-full">No menus found for this restaurant.</p>
             ) : (
-              menus.menu.map((menu: any) => (
+              menus?.menus.map((menu: any) => (
                 <Card
                   key={menu._id}
                   onClick={() => navigate(`/menu/${menu._id}`)}
-                  className="cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                  className="cursor-pointer hover:shadow-lg transition-shadow duration-200 "
                 >
                   <CardHeader>
                     <CardTitle className="text-lg font-semibold">{menu.menuName}</CardTitle>

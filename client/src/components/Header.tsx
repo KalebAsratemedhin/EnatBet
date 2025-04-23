@@ -52,6 +52,35 @@ const Header: React.FC = () => {
         </div>
 
         <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
+        <div className="space-x-4">
+          <NavLink
+            key={'Home'}
+            to={'/'}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            Home
+          </NavLink>
+          <NavLink
+            key={'About'}
+            to={'/about'}
+            className={({ isActive }) =>
+              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+            }
+          >
+            About
+          </NavLink>
+          <NavLink
+              key={'Restaurants'}
+              to={'/restaurants'}
+              className={({ isActive }) =>
+                isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
+              }
+            >
+              Restaurants
+            </NavLink>
+          </div>
         {isAuthenticated() ? (
           <div className="flex items-center space-x-4 relative">
             <div className="relative">
@@ -96,6 +125,7 @@ const Header: React.FC = () => {
           </div>
         ) : (
           <div className="space-x-4">
+            
             <Link
               to="/signup"
               className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"

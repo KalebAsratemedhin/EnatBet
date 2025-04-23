@@ -15,12 +15,16 @@ export interface MenuItem {
   export interface UpdateMenuRequest extends CreateMenuRequest {
     id: string;
   }
-  
-  export interface MenuResponse {
+
+  export interface Menu {
     _id: string;
     menuName: string;
     restaurant: string;
     menuItems: MenuItem[];
+  }
+  
+  export interface MenuResponse {
+    menus: Menu[];
   }
   
   export interface GetMenuResponse {

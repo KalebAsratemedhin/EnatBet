@@ -143,38 +143,43 @@ export const getAllMineRestaurant = async (req,res) => {
     };
 
 
+export const getActiveRestaurants = async (req, res) => {
+  try {
 
-export const getActiveRestaurants = async (req,res) =>{
-
-  try{
+    console.log(" query ", req.query); 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const skip = (page-1)*limit;
+    const skip = (page - 1) * limit;
 
-    const allActiveRestaurants = await Restaurant.find({isApproved:true})
-        .skip(skip)
-        .limit(limit)
+    const search = req.query.search || "";
+    const rating = parseFloat(req.query.rating);
 
-  const totalCount = await Restaurant.countDocuments();
+    const filter = {
+      status: "active",
+      ...(search && { name: { $regex: search, $options: "i" } }),
+      ...(rating && !isNaN(rating) && { rating: { $gte: rating } }),
+    };
+     
+    const restaurants = await Restaurant.find(filter)
+      .populate("ownerId", "name email phoneNumber")
+      .skip(skip)
+      .limit(limit);
 
-  res.status(200).json({
-            message: 'Restaurants fetched successfully',
-            allActiveRestaurants,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit),
-            currentPage: page
-        });
-                
+    const totalCount = await Restaurant.countDocuments(filter);
 
-  }catch(err){
+    res.status(200).json({
+      message: "Restaurants fetched successfully",
+      data: restaurants,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: page,
+    });
 
-  res.status(500).json({message:'Error fetching active restaurants', err : err.message})
-
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching active restaurants", err: err.message });
   }
-
-}
-
-// get all restaurants
+};
+    
 
 export const getAllRestaurant = async (req,res)=>{
 
@@ -191,7 +196,7 @@ export const getAllRestaurant = async (req,res)=>{
 
       res.status(200).json({
           message: 'Restaurants fetched successfully',
-          allRestaurants,
+          data: allRestaurants,
           totalCount,
           totalPages: Math.ceil(totalCount / limit),
           currentPage: page
@@ -203,6 +208,22 @@ export const getAllRestaurant = async (req,res)=>{
     }
 }
 
+
+export const getRestaurantById = async (req,res) =>{
+   
+  try{
+      const restaurantId = req.params.id;
+      
+      const restaurant = await Restaurant.findById(restaurantId).populate("menu");
+
+      res.status(200).json({message:"Restaurant fetched successfully ", data: restaurant})
+
+
+    }catch(err){
+      res.status(500).json({message : err.message})
+    }
+
+}
 
 export const updateRestaurantStatus = async (req,res) =>{
    

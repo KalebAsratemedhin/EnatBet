@@ -1,13 +1,28 @@
-import { useGetAllMineRestaurantQuery, useDeleteRestaurantMutation } from "@/api/restaurantApi";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Star, Edit, Trash } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import {
+  useGetAllMineRestaurantQuery,
+  useDeleteRestaurantMutation,
+} from "@/api/restaurantApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loader2, Star, Edit, Trash } from "lucide-react";
 import { toast, Toaster } from "sonner";
-import UpdateRestaurantForm from "../components/UpdateRestaurantForm"; 
-import { Dialog, DialogTrigger, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import UpdateRestaurantForm from "../components/UpdateRestaurantForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
+import { cn } from "@/lib/utils";
+
+const LIMIT = 6;
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -17,37 +32,33 @@ const statusColors: Record<string, string> = {
 };
 
 const MyRestaurants = () => {
-  const { data, isLoading, error } = useGetAllMineRestaurantQuery();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isFetching, error } = useGetAllMineRestaurantQuery({
+    page,
+    limit: LIMIT,
+  });
+
+  const totalPages = data?.totalPages || 1;
+
   const [deleteRestaurant] = useDeleteRestaurantMutation();
+  const [selectedRestaurant, setSelectedRestaurant] = useState<any | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [selectedRestaurant, setSelectedRestaurant] = useState<any | null>(null); // For updating a restaurant
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [restaurantToDelete, setRestaurantToDelete] = useState<string | null>(null);
 
   const handleDelete = async () => {
     if (!restaurantToDelete) return;
-
     try {
       await deleteRestaurant(restaurantToDelete).unwrap();
       toast.success("Restaurant deleted successfully");
-      setIsConfirmDeleteOpen(false); // Close the confirmation dialog
-      setRestaurantToDelete(null); // Clear the selected restaurant
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to delete restaurant");
+      setIsConfirmDeleteOpen(false);
+      setRestaurantToDelete(null);
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to delete restaurant");
     }
   };
 
-  const handleUpdateClick = (restaurant: any) => {
-    setSelectedRestaurant(restaurant);
-    setIsUpdateDialogOpen(true);
-  };
-
-  const handleDeleteClick = (restaurantId: string) => {
-    setRestaurantToDelete(restaurantId);
-    setIsConfirmDeleteOpen(true); // Open the confirmation dialog
-  };
-
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <div className="flex justify-center items-center h-40">
         <Loader2 className="animate-spin" />
@@ -57,21 +68,25 @@ const MyRestaurants = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-500">Failed to load your restaurants.</div>
+      <div className="text-center text-red-500">
+        Failed to load your restaurants.
+      </div>
     );
   }
 
   if (!data || data.data.length === 0) {
     return (
-      <div className="text-center text-gray-500">You haven't created any restaurants yet.</div>
+      <div className="text-center text-gray-500">
+        You haven’t created any restaurants yet.
+      </div>
     );
   }
 
   return (
-    <>
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
       <div className="grid gap-6 mt-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {data.data.map((restaurant) => (
-          <Card key={restaurant._id} className="overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+          <Card key={restaurant._id} className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
             {restaurant.logo && (
               <img
                 src={restaurant.logo}
@@ -81,21 +96,23 @@ const MyRestaurants = () => {
             )}
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle>{restaurant.name}</CardTitle>
-                <Badge className={cn("capitalize", statusColors[restaurant.status])}>
+                <CardTitle className="text-lg">{restaurant.name}</CardTitle>
+                <span
+                  className={cn(
+                    "text-xs px-2 py-1 rounded-md font-medium capitalize",
+                    statusColors[restaurant.status]
+                  )}
+                >
                   {restaurant.status}
-                </Badge>
+                </span>
               </div>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
               <p><strong>Address:</strong> {restaurant.location?.address}</p>
               <p>
-                <strong>Coordinates:</strong>
-                <span className="ml-1">
-                  ({restaurant.location?.coordinates[1]}, {restaurant.location?.coordinates[0]})
-                </span>
+                <strong>Coordinates:</strong> ({restaurant.location?.coordinates[1]}, {restaurant.location?.coordinates[0]})
               </p>
-              <p><strong>Delivery Radius:</strong> {restaurant.deliveryAreas} meters</p>
+              <p><strong>Delivery Radius:</strong> {restaurant.deliveryAreaRadius} meters</p>
               <div className="flex items-center gap-1">
                 <strong>Rating:</strong>
                 {[...Array(5)].map((_, i) => (
@@ -108,21 +125,27 @@ const MyRestaurants = () => {
                 ))}
                 <span className="ml-1 text-xs text-gray-500">({restaurant.rating.toFixed(1)})</span>
               </div>
-              <div className="flex justify-between items-center mt-4">
+              <div className="flex justify-between gap-2 pt-3">
                 <Button
                   size="sm"
-                  onClick={() => handleUpdateClick(restaurant)}
                   variant="outline"
+                  onClick={() => {
+                    setSelectedRestaurant(restaurant);
+                    setIsUpdateDialogOpen(true);
+                  }}
                 >
-                  <Edit className="mr-2" size={16} />
+                  <Edit size={16} className="mr-1" />
                   Update
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleDeleteClick(restaurant._id)}
                   variant="destructive"
+                  onClick={() => {
+                    setRestaurantToDelete(restaurant._id);
+                    setIsConfirmDeleteOpen(true);
+                  }}
                 >
-                  <Trash className="mr-2" size={16} />
+                  <Trash size={16} className="mr-1" />
                   Delete
                 </Button>
               </div>
@@ -131,7 +154,42 @@ const MyRestaurants = () => {
         ))}
       </div>
 
-      {/* Update Restaurant Dialog */}
+      <div className="mt-10 flex justify-center">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious>
+                <Button
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={page === 1}
+                  variant="outline"
+                  size="sm"
+                >
+                  Previous
+                </Button>
+              </PaginationPrevious>
+            </PaginationItem>
+            <PaginationItem>
+              <span className="text-sm text-muted-foreground px-4 py-2 border rounded-md">
+                Page {page} of {totalPages}
+              </span>
+            </PaginationItem>
+            <PaginationItem>
+              <PaginationNext>
+                <Button
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={page === totalPages}
+                  variant="outline"
+                  size="sm"
+                >
+                  Next
+                </Button>
+              </PaginationNext>
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
+
       {isUpdateDialogOpen && selectedRestaurant && (
         <UpdateRestaurantForm
           restaurant={selectedRestaurant}
@@ -139,7 +197,6 @@ const MyRestaurants = () => {
         />
       )}
 
-      {/* ShadCN Confirmation Dialog */}
       <Dialog open={isConfirmDeleteOpen} onOpenChange={setIsConfirmDeleteOpen}>
         <DialogContent>
           <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
@@ -156,7 +213,7 @@ const MyRestaurants = () => {
       </Dialog>
 
       <Toaster />
-    </>
+    </div>
   );
 };
 

@@ -17,6 +17,9 @@ import RoleManagement from './components/RoleManagement';
 import RestaurantManagement from './pages/RestaurantManagement';
 import MenuDetailsPage from './pages/MenuDetails';
 import AdminRestaurantList from './components/AdminRestaurantList';
+import Restaurants from './pages/Restaurants';
+import RestaurantDetails from './components/RestaurantDetails';
+import AboutPage from './pages/About';
 
 const App: React.FC = () => {
   return (
@@ -28,7 +31,11 @@ const App: React.FC = () => {
                 <Home/>
               </MainLayout>  
             } />
-       
+          <Route path="/about" element= {
+              <MainLayout> 
+                <AboutPage/>
+              </MainLayout>  
+            } />
         </Route>
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
@@ -54,6 +61,12 @@ const App: React.FC = () => {
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/restaurant-management" element={<RestaurantManagement />} />
           <Route path="/restaurant-applications" element={<AdminRestaurantList />} />
+
+
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+
+
 
 
         </Route>

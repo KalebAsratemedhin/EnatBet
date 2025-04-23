@@ -34,6 +34,7 @@ import { toast } from "sonner"
 import { MoreHorizontal, Star } from "lucide-react"
 import { useGetAllRestaurantQuery, useUpdateRestaurantStatusMutation } from "@/api/restaurantApi"
 import { cn } from "@/lib/utils"
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext } from "@/components/ui/pagination"
 
 interface Restaurant {
   _id: string
@@ -60,7 +61,9 @@ const statusColors: Record<string, string> = {
 }
 
 const AdminRestaurantList = () => {
-  const { data: restaurants, error, isLoading } = useGetAllRestaurantQuery()
+  const [page, setPage] = React.useState(1)
+  const limit = 5
+  const { data, error, isLoading } = useGetAllRestaurantQuery({ page, limit })
   const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation()
   const [selectedRestaurant, setSelectedRestaurant] = React.useState<Restaurant | null>(null)
 
@@ -72,6 +75,9 @@ const AdminRestaurantList = () => {
       toast.error("Failed to update status")
     }
   }
+
+  const restaurants = data?.allRestaurants || []
+  const totalPages = data?.totalPages || 1
 
   const columns: ColumnDef<Restaurant>[] = [
     {
@@ -111,7 +117,7 @@ const AdminRestaurantList = () => {
         return (
           <div className="text-right">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger >
                 <Button variant="ghost" size="icon">
                   <MoreHorizontal />
                 </Button>
@@ -129,53 +135,88 @@ const AdminRestaurantList = () => {
   ]
 
   const table = useReactTable({
-    data: restaurants?.allRestaurants || [],
+    data: restaurants,
     columns,
     getCoreRowModel: getCoreRowModel(),
   })
 
   return (
-    <div className="container  mx-12 w-auto mt-10 p-4 bg-gray-200 rounded-xl shadow-md">
+    <div className="container mx-12 w-auto mt-10 p-4 bg-gray-200 rounded-xl shadow-md">
       {isLoading ? (
         <p className="text-center">Loading...</p>
       ) : error ? (
         <p className="text-center text-red-500">Failed to load restaurants.</p>
       ) : (
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} className="text-sm font-semibold">
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id} className="align-middle">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+        <>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => (
+                    <TableHead key={header.id} className="text-sm font-semibold">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                  No restaurants found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id} className="align-middle">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
+                    No restaurants found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+
+          <div className="mt-6 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={page === 1}
+                    >Previous</Button>
+                  </PaginationPrevious>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <span className="text-sm text-muted-foreground px-4 py-2 border rounded-md">
+                    Page {page} of {totalPages}
+                  </span>
+                </PaginationItem>
+
+                <PaginationItem>
+                  <PaginationNext >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={page === totalPages}
+                    >Next</Button>
+                  </PaginationNext>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </>
       )}
 
-      {/* Dialog for restaurant details */}
       <Dialog open={!!selectedRestaurant} onOpenChange={() => setSelectedRestaurant(null)}>
         <DialogContent className="max-w-lg">
           {selectedRestaurant && (

@@ -56,12 +56,12 @@ export const getMenusByRestaurant = async (req,res) =>{
 
     try{
         const restaurantId = req.params.id;
-        const menu = await Menu.find({restaurant:restaurantId});
-        if (!menu) {
+        const menus = await Menu.find({restaurant:restaurantId});
+        if (!menus) {
             return res.status(404).json({ message: "No Menus found" });
           }
       
-        res.status(200).json({menu});
+        res.status(200).json({menus});
     }catch(err){
 
         res.status(500).json({message:"Something went wrong"});

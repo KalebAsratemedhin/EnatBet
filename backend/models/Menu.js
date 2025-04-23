@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 
 const MenuItemsSchema =  new mongoose.Schema({
+    id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
     name : { 
         type : String,
         required : true,
@@ -17,7 +21,7 @@ const MenuItemsSchema =  new mongoose.Schema({
         min : [0,'Price cannot be negative']
     },
 
-    itemPicture:{ 
+    itemPicture:{
         type:String
     },
     

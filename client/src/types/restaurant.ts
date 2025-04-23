@@ -10,15 +10,23 @@ export interface Promotion {
     coordinates: number[];
     address: string;
   }
-  
-  export interface Restaurant {
+
+  interface BaseRestaurant {
     _id: string;
     name: string;
     location: Location;
-    ownerId: string;
     deliveryAreaRadius: number;
     logo: string;
-    status: string
+    status: string;
+    rating: number;
+  }
+  
+  export interface Restaurant extends BaseRestaurant {
+    ownerId: string;
+  }
+
+  export interface PopulatedRestaurant extends BaseRestaurant{
+    owner: User;
   }
   
   export interface AddRestaurantRequest {
@@ -39,6 +47,20 @@ export interface Promotion {
   
   export interface GetRestaurantsResponse {
     message: string;
-    allRestaurants: Restaurant[];
+    data: Restaurant[];
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
   }
-  
+
+  export interface GetRestaurantDetailsResponse{
+    message: string;
+    data: PopulatedRestaurant;
+  }
+
+  export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    role: [string];
+  }
