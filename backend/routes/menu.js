@@ -164,7 +164,7 @@ router.put("/:id",
     upload.array("itemPictures"),
     updateMenu);
 
-/**
+/**d
  * @swagger
  * /menu/{id}:
  *   delete:
