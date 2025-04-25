@@ -7,7 +7,7 @@ import { MapContainer, TileLayer, Marker, Circle, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import MenusCarousel from "./MenusCarousel";
 import { toast } from "sonner";
-import { PopulatedRestaurant, Restaurant } from "@/types/restaurant";
+import { PopulatedRestaurant } from "@/types/restaurant";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
