@@ -1,123 +1,111 @@
-import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useGetCurrentUserQuery } from '../api/authApi'; // update path as needed
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { useGetCurrentUserQuery } from "@/api/authApi";
+import { Home, Settings, Utensils, Users, Contact, CheckCircle2Icon, FormInputIcon, HotelIcon } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
-const Sidebar: React.FC = () => {
+function AppSidebar() {
   const { data: user } = useGetCurrentUserQuery(undefined);
+  const roles: string[] = user?.role || [];
 
-  const staticLinks = [
-    { name: 'Orders', href: '/orders' },
-    { name: 'Profile', href: '/profile' },
-    { name: 'Settings', href: '/settings' },
-    { name: 'Role Management', href: '/role-management' },
+  const baseItems = [
+    { title: "Home", url: "/", icon: Home },
+    { title: "Profile", url: "/profile", icon: Contact},
+    { title: "Settings", url: "/settings", icon: Settings },
+    { title: "Role Management", url: "/role-management", icon: CheckCircle2Icon },
+    { title: "Restaurants", url: "/restaurants", icon: HotelIcon },
   ];
 
-  const restaurantOwnerLinks = [
-    { name: 'Restaurant Management', href: '/restaurant-management' },
-  ];
-
-  const adminLinks = [
-    { name: 'Restaurant Applications', href: '/restaurant-applications' },
-  ];
-
-  const dashboardLinks = [
-    { role: 'customer', name: 'Customer Dashboard', href: '/dashboard/customer' },
-    { role: 'restaurant_owner', name: 'Restaurant Dashboard', href: '/dashboard/restaurant' },
-    { role: 'delivery_person', name: 'Delivery Dashboard', href: '/dashboard/delivery' },
-    { role: 'admin', name: 'Admin Dashboard', href: '/dashboard/admin' },
-  ];
-
-  const userRoles: string[] =  user?.role || [];
-
-
-  useEffect(() => {
-    if (user) {
-      console.log('User roles:', userRoles, user);
+  const ownerItems = [
+    {
+      role: "restaurant_owner",
+      items: [
+        { title: "Restaurant Management", url: "/restaurant-management", icon: Utensils },
+      ],
     }
-  }, [user]);
+  ];
+
+  const adminItems = [
+    {
+      role: "admin",
+      items: [
+        { title: "Manage Users", url: "/users", icon: Users },
+        { title: "Restaurant Applications", url: "/restaurant-applications", icon: FormInputIcon },
+      ],
+    },
+  ];
+
+  const renderMenuItem = (item: { title: string; url: string; icon: any }) => (
+    <SidebarMenuItem key={item.title}>
+      <SidebarMenuButton >
+        <NavLink
+          to={item.url}
+          className={({ isActive }) =>
+            `flex items-center gap-2 py-2  text-[15px] rounded hover:bg-muted ${
+              isActive ? " text-red-500 font-semibold" : ""
+            }`
+          }
+        >
+          <item.icon className="w-6 h-6" />
+          <span className="whitespace-nowrap">{item.title}</span>
+        </NavLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
 
   return (
-    <aside className="hidden md:block bg-gray-100 p-4">
-      <nav className="space-y-4 flex flex-col">
-        {staticLinks.map((link) => (
-          <NavLink
-            key={link.name}
-            to={link.href}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
-          >
-            {link.name}
-          </NavLink>
-        ))}
-        { userRoles.includes("restaurant_owner") && restaurantOwnerLinks.map((link) => (
-          <NavLink
-            key={link.name}
-            to={link.href}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
-          >
-            {link.name}
-          </NavLink>
-        ))}
+    <Sidebar collapsible="icon" className="[--sidebar-width:16rem]" >
+      <div className="flex justify-end "><SidebarTrigger /></div>
 
-      { userRoles.includes("admin") && adminLinks.map((link) => (
-          <NavLink
-            key={link.name}
-            to={link.href}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
-          >
-            {link.name}
-          </NavLink>
-        ))}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-lg px-3 hidden md:block">General</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {baseItems.map(renderMenuItem)}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
 
-        {userRoles.length > 0 && (
-          <div className="pt-4 border-t border-gray-300 mt-4">
-            <p className="text-sm text-gray-500 uppercase mb-2">Dashboards</p>
-            <div className='flex flex-col gap-3'>
-            {dashboardLinks
-              .filter((link) => userRoles.includes(link.role))
-              .map((link) => (
-                <NavLink
-                  key={link.name}
-                  to={link.href}
-                  className={({ isActive }) =>
-                    isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-                  }
-                >
-                  {link.name}
-                </NavLink>
-              ))}
-            </div>
-          </div>
+        {roles.includes("restaurant_owner") && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-lg px-3 hidden md:block">Restaurant Owner</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {ownerItems
+                  .filter((group) => roles.includes(group.role))
+                  .flatMap((group) => group.items)
+                  .map(renderMenuItem)}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         )}
-{/* 
-        {userRoles.length > 0 && (
-          <div className="pt-4 border-t border-gray-300 mt-4">
-            <p className="text-sm text-gray-500 uppercase mb-2">Dashboards</p>
-            <div className='flex flex-col gap-3'>
-            {dashboardLinks
-              .filter((link) => userRoles.includes(link.role))
-              .map((link) => (
-                <NavLink
-                  key={link.name}
-                  to={link.href}
-                  className={({ isActive }) =>
-                    isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-                  }
-                >
-                  {link.name}
-                </NavLink>
-              ))}
-            </div>
-          </div>
-        )} */}
-      </nav>
-    </aside>
+        
+        {roles.includes("admin") && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-lg px-3 hidden md:block">Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminItems
+                  .filter((group) => roles.includes(group.role))
+                  .flatMap((group) => group.items)
+                  .map(renderMenuItem)}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+      </SidebarContent>
+    </Sidebar>
   );
-};
+}
 
-export default Sidebar;
+export default AppSidebar;

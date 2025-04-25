@@ -93,7 +93,7 @@ const AdminRestaurantList = () => {
       accessorKey: "ownerId",
       header: "Owner",
       cell: ({ row }) => {
-        const owner = row.original.owner
+        const owner = row.original.ownerId
         return (
           <div className="text-sm">
             <p className="font-medium">{owner.name}</p>
@@ -141,49 +141,66 @@ const AdminRestaurantList = () => {
   })
 
   return (
-    <div className="container mx-12 w-auto mt-10 p-4 bg-gray-200 rounded-xl shadow-md">
+    <div className="container mx-10 w-auto mt-10 p-6 space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Restaurant Management</h2>
+      {/* <hr className="border-gray-300" /> */}
+  
       {isLoading ? (
-        <p className="text-center">Loading...</p>
+        <p className="text-center text-gray-500">Loading...</p>
       ) : error ? (
         <p className="text-center text-red-500">Failed to load restaurants.</p>
       ) : (
         <>
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => (
-                    <TableHead key={header.id} className="text-sm font-semibold">
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.length ? (
-                table.getRowModel().rows.map(row => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map(cell => (
-                      <TableCell key={cell.id} className="align-middle">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
+          <div className="rounded-xl overflow-hidden border border-gray-200">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <TableRow key={headerGroup.id} className="bg-gray-100">
+                    {headerGroup.headers.map(header => (
+                      <TableHead
+                        key={header.id}
+                        className="text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                      </TableHead>
                     ))}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center text-muted-foreground">
-                    No restaurants found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-
-          <div className="mt-6 flex justify-center">
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row, index) => (
+                    <TableRow
+                      key={row.id}
+                      className={cn(
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50",
+                        "hover:bg-gray-100 transition"
+                      )}
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <TableCell key={cell.id} className="py-3 px-4 align-middle">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="text-center py-6 text-muted-foreground">
+                      No restaurants found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+  
+          <div className="flex justify-between items-center mt-6">
+            <span className="text-sm text-gray-500">
+              Showing page {page} of {totalPages}
+            </span>
             <Pagination>
-              <PaginationContent>
+              <PaginationContent className="gap-4">
                 <PaginationItem>
                   <PaginationPrevious>
                     <Button
@@ -196,13 +213,7 @@ const AdminRestaurantList = () => {
                     </Button>
                   </PaginationPrevious>
                 </PaginationItem>
-
-                <PaginationItem>
-                  <span className="text-sm text-muted-foreground px-4 py-2 border rounded-md">
-                    Page {page} of {totalPages}
-                  </span>
-                </PaginationItem>
-
+  
                 <PaginationItem>
                   <PaginationNext>
                     <Button
@@ -220,20 +231,22 @@ const AdminRestaurantList = () => {
           </div>
         </>
       )}
-
+  
       <Dialog open={!!selectedRestaurant} onOpenChange={() => setSelectedRestaurant(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg p-6 rounded-xl shadow-xl">
           {selectedRestaurant && (
             <>
               <DialogHeader>
-                <DialogTitle>{selectedRestaurant.name}</DialogTitle>
+                <DialogTitle className="text-xl font-bold">
+                  {selectedRestaurant.name}
+                </DialogTitle>
               </DialogHeader>
-              <div className="space-y-2">
+              <div className="space-y-3 text-sm text-gray-700">
                 {selectedRestaurant.logo && (
                   <img
                     src={selectedRestaurant.logo}
                     alt={selectedRestaurant.name}
-                    className="w-full h-40 object-cover rounded-md"
+                    className="w-full h-40 object-cover rounded-md border"
                   />
                 )}
                 <p>
@@ -249,8 +262,8 @@ const AdminRestaurantList = () => {
                   <strong>Delivery Radius:</strong> {selectedRestaurant.deliveryAreaRadius} meters
                 </p>
                 <p>
-                  <strong>Owner:</strong> {selectedRestaurant.owner.name} (
-                  {selectedRestaurant.owner.email})
+                  <strong>Owner:</strong> {selectedRestaurant.ownerId.name} (
+                  {selectedRestaurant.ownerId.email})
                 </p>
                 <p>
                   <strong>Status:</strong> {selectedRestaurant.status}
@@ -280,7 +293,7 @@ const AdminRestaurantList = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  )  
 }
 
 export default AdminRestaurantList

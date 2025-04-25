@@ -178,11 +178,9 @@ export const getActiveRestaurants = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Error fetching active restaurants", err: err.message });
   }
-};
-    
+};    
 
 export const getAllRestaurant = async (req,res)=>{
-
     try{
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;

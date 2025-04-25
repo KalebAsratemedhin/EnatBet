@@ -25,7 +25,7 @@ const slides = [
 
 const CustomCarousel: React.FC = () => {
   return (
-    <div className="w-full max-w-6xl mx-auto relative">
+    <div className="w-full relative">
       <Carousel
         opts={{
           loop: true,

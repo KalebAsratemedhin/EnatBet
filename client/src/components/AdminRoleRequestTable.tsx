@@ -1,98 +1,137 @@
-import { useGetAllRoleRequestsQuery, useUpdateRoleRequestStatusMutation } from "@/api/authApi";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  useGetAllRoleRequestsQuery,
+  useUpdateRoleRequestStatusMutation,
+} from "@/api/authApi";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useMemo } from "react";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 
 const AdminRoleRequestTable = () => {
   const { data: requests = [], isLoading } = useGetAllRoleRequestsQuery();
   const [updateStatus] = useUpdateRoleRequestStatusMutation();
 
   const handleApprove = async (id: string) => {
-
-    toast.promise(
-        updateStatus({id, status: "approved"}).unwrap(),
-        {
-            loading: "approving role request...",
-            success: () => {
-
-                return "Role approved successfully.";
-            },
-            error: (err) => {
-                return err?.data?.message || "Failed to approve request.";
-            }
-        })
+    toast.promise(updateStatus({ id, status: "approved" }).unwrap(), {
+      loading: "Approving role request...",
+      success: () => "Role approved successfully.",
+      error: (err) => err?.data?.message || "Failed to approve request.",
+    });
   };
 
   const handleReject = async (id: string) => {
-    toast.promise(
-        updateStatus({id, status: "disapproved"}).unwrap(),
-        {
-            loading: "rejecting role request...",
-            success: () => {
-
-                return "Role disapproved successfully.";
-            },
-            error: (err) => {
-                return err?.data?.message || "Failed to reject request.";
-            }
-        })
+    toast.promise(updateStatus({ id, status: "disapproved" }).unwrap(), {
+      loading: "Rejecting role request...",
+      success: () => "Role disapproved successfully.",
+      error: (err) => err?.data?.message || "Failed to reject request.",
+    });
   };
 
-  useEffect(()=>{
+  const columns = useMemo(
+    () => [
+      {
+        header: "Requested Role",
+        accessorKey: "requestedRole",
+        cell: ({ row }: any) => row.original.requestedRole,
+      },
+      {
+        header: "Remark",
+        accessorKey: "remark",
+        cell: ({ row }: any) => row.original.remark || "-",
+      },
+      {
+        header: "User Email",
+        accessorKey: "userId.email",
+        cell: ({ row }: any) => row.original.userId?.email || "-",
+      },
+      {
+        header: "Email Verified",
+        accessorKey: "userId.isEmailVerified",
+        cell: ({ row }: any) =>
+          row.original.userId?.isEmailVerified ? "Yes" : "No",
+      },
+      {
+        header: "Status",
+        accessorKey: "status",
+        cell: ({ row }: any) => row.original.status,
+      },
+      {
+        header: "Actions",
+        id: "actions",
+        cell: ({ row }: any) => {
+          const req = row.original;
+          return (
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleApprove(req._id)}
+              >
+                Approve
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleReject(req._id)}
+              >
+                Reject
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
 
-    if(requests){
-      console.log("role reqs ", requests);
-    }
+  const table = useReactTable({
+    data: requests,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-  },[requests])
+  if (isLoading)
+    return <p className="text-center py-10 text-muted-foreground">Loading role requests...</p>;
 
-  if (isLoading) return <p className="text-center">Loading requests...</p>;
+  if (requests.length === 0)
+    return <p className="text-center py-10 text-muted-foreground">No role requests found.</p>;
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Requested Role</TableHead>
-          <TableHead>Remark</TableHead>
-          <TableHead>User email</TableHead>
-          <TableHead>Email verified</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead className="text-right">Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {requests.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={4} className="text-center py-4">No role requests found.</TableCell>
-          </TableRow>
-        ) : (
-          requests.map((req) => (
-            <TableRow key={req._id}>
-              <TableCell>{req.requestedRole}</TableCell>
-              <TableCell>{req.remark || "-"}</TableCell>
-              <TableCell>{req.userId.email || "-"}</TableCell>
-              <TableCell>{req.userId.isEmailVerified ? "True" : "False"}</TableCell>
-
-
-              <TableCell>{req.status}</TableCell>
-              <TableCell className="text-right space-x-2">
-                {(
-                  <>
-                    <Button size="sm" variant="outline" onClick={() => handleApprove(req._id)}>
-                      Approve
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleReject(req._id)}>
-                      Reject
-                    </Button>
-                  </>
-                )}
-              </TableCell>
+    <div className="rounded-xl border bg-white shadow-sm">
+      <Table >
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id} className="bg-gray-100">
+              {headerGroup.headers.map((header) => (
+                        
+                <TableHead key={header.id} className="text-sm p-4 font-semibold text-gray-700 uppercase tracking-wider" >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
             </TableRow>
-          ))
-        )}
-      </TableBody>
-    </Table>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id} className="p-4">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

@@ -8,7 +8,7 @@ const Home: React.FC = () => {
     <>
         <Carousel />
 
-        <section className="py-16 px-6 bg-gray-50 text-center">
+        <section className="py-16 bg-gray-50 text-center">
         <h2 className="text-3xl font-bold mb-8">How EnatBet Works</h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <FeatureCard

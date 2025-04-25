@@ -26,7 +26,7 @@ export interface Promotion {
   }
 
   export interface PopulatedRestaurant extends BaseRestaurant{
-    owner: User;
+    ownerId: User;
   }
   
   export interface AddRestaurantRequest {
