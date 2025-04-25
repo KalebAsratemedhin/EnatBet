@@ -8,7 +8,7 @@ const AuthLayout = () => {
     <>
       <SidebarProvider>
         <AppSidebar />
-        <main className="flex-1 overflow-y-auto relative">
+        <main className="flex-1  relative">
           <AuthHeader />
           <Outlet />
         </main>

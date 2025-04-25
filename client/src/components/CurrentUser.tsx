@@ -25,8 +25,8 @@ const CurrentUser = () => {
     const handleLogout = async () => {
       try {
         await logout().unwrap();
-        refetch();
         localStorage.clear();
+        refetch();
         
       } catch (error) {
         console.error('Logout error:', error);
