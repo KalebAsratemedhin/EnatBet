@@ -15,8 +15,11 @@ const CurrentUser = () => {
   useEffect(() => {
     if (isError) {
         console.error('logout error:', error);
+        
     }
     if (isSuccess) {        
+        localStorage.clear();
+        refetch();
         navigator("/"); 
     }
   }, [isError, isSuccess, error]);
@@ -25,8 +28,6 @@ const CurrentUser = () => {
     const handleLogout = async () => {
       try {
         await logout().unwrap();
-        localStorage.clear();
-        refetch();
         
       } catch (error) {
         console.error('Logout error:', error);

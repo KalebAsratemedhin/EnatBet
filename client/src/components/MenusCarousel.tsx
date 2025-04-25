@@ -27,13 +27,13 @@ const MenusCarousel = ({restaurantId}: { restaurantId: string}) => {
                               <img
                                 src={item.itemPicture}
                                 alt={item.name}
-                                className="w-full h-40 object-cover "
+                                className="w-full h-40 object-cover"
                               />
                             )}
                             <CardContent className="p-4 space-y-1">
                               <h4 className="text-base font-semibold truncate">{item.name}</h4>
                               <p className="text-sm text-gray-600 truncate">{item.description}</p>
-                              <p className="text-sm font-bold text-gray-900">${item.price.toFixed(2)}</p>
+                              <p className="text-sm font-bold text-gray-900">ETB {item.price.toFixed(2)}</p>
 
                               <Button className="mt-2" variant="default">Add to order</Button>
                             </CardContent>
