@@ -2,7 +2,8 @@ import cloudinary from '../config/cloudinary.js'
 import bcrypt from 'bcryptjs'
 import User from '../models/user.js'
 import 'dotenv/config' 
-
+import emailService from '../services/emailService.js'
+import jwt from 'jsonwebtoken'
 
 
 export const changePassword = async (req, res) => {
@@ -34,18 +35,55 @@ export const changePassword = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-  
-  export const verifyEmail = async (req, res) => {
+
+  export const sendVerificationEmail = async (req, res) => {
     try {
       const user = await User.findById(req.user.id);
       if (!user) return res.status(400).json({ message: 'User not found' });
+
+      const verificationToken = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_EMAIL_SECRET,
+        { expiresIn: '1h' }
+      );
+  
+      const verificationLink = `${process.env.SERVER_URL}/user/verify-email?token=${verificationToken}`;
+  
+      await emailService.sendVerificationEmail(user.email, verificationLink);
+  
+      res.status(200).json({ message: 'Check your email.' });
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+  export const verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
+  
+      const user = await User.findById(decoded.userId);
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      if (user.isEmailVerified) {
+        return res.status(400).json({ message: 'Email already verified' });
+      }
   
       user.isEmailVerified = true;
       await user.save();
   
-      res.status(200).json({ message: 'Email verified successfully' });
-    } catch (err) {
-      res.status(500).json({ message: 'Server error' });
+      res.status(200).json({ message: 'Email verified successfully!' });
+    } catch (error) {
+      console.error('Verify Email Error:', error);
+      if (error.name === 'TokenExpiredError') {
+        return res.status(400).json({ message: 'Verification link expired. Please request a new one.' });
+      }
+      res.status(400).json({ message: 'Invalid verification link' });
     }
   };
   
@@ -72,7 +110,6 @@ export const changePassword = async (req, res) => {
         return res.status(400).json({ message: "No file uploaded" });
       }
   
-      // Upload to Cloudinary using the file buffer
       const result = await cloudinary.uploader.upload(
         `data:${imageFile.mimetype};base64,${imageFile.data.toString('base64')}`,
         {

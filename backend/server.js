@@ -4,6 +4,7 @@ import connectDB from './config/db.js';
 import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
+import roleRequestRoutes from './routes/roleRequest.js';
 import restaurantRoutes from './routes/restaurant.js';
 
 import menuRoutes from './routes/menu.js';
@@ -27,7 +28,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 
 app.use('/restaurant', restaurantRoutes);
-
+app.use('/role-reques', roleRequestRoutes);
 app.use("/menu",menuRoutes);
 
 
