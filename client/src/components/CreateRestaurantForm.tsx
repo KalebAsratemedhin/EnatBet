@@ -110,7 +110,7 @@ const CreateRestaurantForm = () => {
 
       <div style={{ height: '400px', width: '100%' }}>
         <MapContainer
-          style={{ height: "100%", width: "100%" }}
+          style={{ height: "100%", width: "100%", zIndex: '0' }}
           center={{ lat: 9.678112707591637, lng: 39.532579779624946 }}
           zoom={8}
         >

@@ -35,7 +35,7 @@ const RestaurantDetails = () => {
 
   return (
     <div className="mx-12 md:px-8 py-10 space-y-10">
-      <div className="flex gap-8 lg:flex-row justify-between">
+      <div className="flex gap-8 flex-col lg:flex-row justify-between">
         <RestaurantHeader restaurant={restaurant} />
         <div className="h-[500px] w-full lg:w-1/2 rounded-2xl overflow-hidden shadow-md">
           <MapContainer
@@ -95,7 +95,7 @@ const RestaurantHeader = ({
   };
 
   return (
-    <div className="flex-col justify-between items-center w-1/2 h-full">
+    <div className="flex-col justify-between items-center lg:w-1/2 h-full">
       <div className="space-y-1 lg:w-3/5 flex gap-4">
         <img
           className="w-60 h-60 rounded-full"
