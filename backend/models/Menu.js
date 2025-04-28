@@ -34,7 +34,12 @@ const MenuItemsSchema =  new mongoose.Schema({
         type:Number,
         min:1,
         max:5
-    }
+    },
+
+    totalRating :{
+        type: Number,
+        default :0
+      },
 
   
 })

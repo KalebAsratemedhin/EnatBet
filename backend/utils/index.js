@@ -1,7 +1,8 @@
-import { isDeliveryPerson } from "../middlewares/auth";
-import Menu from "../models/Menu";
-import Rating from "../models/Rating";
-import Restaurant from "../models/Restaurant";
+import { isDeliveryPerson } from "../middlewares/auth.js";
+import Delivery from "../models/Delivery.js";
+import Menu from "../models/Menu.js";
+import Rating from "../models/Rating.js";
+import Restaurant from "../models/Restaurant.js";
 
 
 export const checkOwnership =(resourceOwnerId,currentUserId) =>{
@@ -14,57 +15,105 @@ export const checkOwnership =(resourceOwnerId,currentUserId) =>{
 export const checkWhoRates = (currentUserId, raterId) =>{
 
     return currentUserId.toString() === raterId.toString();
-    
+
+}
+const calculateNewRating = (currentAvg, total, newRating, oldRating = null) =>{
+  let newAverage;
+  let newTotalRating =total;
+
+  if (oldRating !==null){
+
+    newAverage = ((total * currentAvg)-oldRating + newRating) / (total + 1);
+
+  }else{
+
+    newAverage = ((total * currentAvg) + newRating) / (total + 1);
+    newTotalRating = total+1
+  }
+ return { newAverage ,newTotalRating}
+
 }
 
-export const updateEntityRating = async (entityType, entityId) => {
+export const updateEntityRating = async (entityType, entityId, newRating,oldRating=null) => {
     try {
-        const ratings = await Rating.find({ entityType, entityId });
+      if (entityType === "Restaurant") {
+        const restaurant = await Restaurant.findById(entityId);
+        if (!restaurant) {
+          console.log("Restaurant not found");
+          return;
+        }
+  
+        const total = restaurant.totalRating ?? 0;
+        const currentAvg = restaurant.rating ?? 0;
+        
+        const {newAverage, newTotalRating} = calculateNewRating(currentAvg,total,newRating,oldRating)
 
-        if (ratings.length === 0) {
+        await Restaurant.findByIdAndUpdate(entityId, {
 
-            console.log("No ratings found for this entity.");
-            return;
+          rating: newAverage,
+          totalRating: newTotalRating,
+
+        });
+  
+        console.log(`Updated Restaurant rating to ${newAverage}`);
+      }
+  
+      else if (entityType === "MenuItem") {
+        const menu = await Menu.findOne({ "menuItems._id": entityId });
+  
+        if (!menu) {
+          console.log("Menu item not found");
+          return;
+        }
+  
+        const menuItem = menu.menuItems.id(entityId);
+  
+        if (!menuItem) {
+          console.log("No such menu item");
+          return;
+        }
+  
+        const total = menuItem.totalRating ?? 0;
+        const currentAvg = menuItem.rating ?? 0;
+  
+        const {newAverage, newTotalRating} = calculateNewRating(currentAvg,total,oldRating);
+
+        menuItem.rating = newAverage;
+        menuItem.totalRating = newTotalRating;
+  
+        await menu.save();
+  
+        console.log(`Updated MenuItem rating to ${newAverage}`);
+      }else if (entityType === "Delivery_Person"){
+
+        const deliveryPerson = Delivery.findById(entityId);
+
+        if (!deliveryPerson) {
+          console.log("Delivery person not found");
+          return
         }
 
-        const totalRating = ratings.reduce((sum, r) => sum + r.rating, 0);
-        const averageRating = totalRating / ratings.length;
+        const total = deliveryPerson.totalRating ?? 0;
+        const currentAvg = deliveryPerson.rating ?? 0;
 
-        if (entityType === 'Restaurant') {
+        const { newAverage, newTotalRating } = calculateNewRating(currentAvg, total, oldRating);
 
-            await Restaurant.findByIdAndUpdate(entityId, { rating: averageRating });
+        await findByIdAndUpdate(entityId,{
 
-            console.log(` Updated Restaurant rating to ${averageRating}`);
-        } 
+          rating:newAverage,
+          totalRating:newTotalRating
 
-        else if (entityType === 'MenuItem') {
-            await Menu.updateOne(
+        });
 
-                { "menuItems._id": entityId },
-                { $set: { "menuItems.$.rating": averageRating } 
-            
-            }
-            );
+      }
+      else {
 
-            console.log(` Updated MenuItem rating to ${averageRating}`);
+        console.log(" Unknown entity type");
 
-        } 
-        else if(entityType === "Delivery_Person"){
+      }
+  
+    } catch (error) {
 
-            await DeliveryPerson.findByIdAndUpdate(entityId, {rating:averageRating});
-
-            console.log(`Updated menu item rating to ${averageRating}`);
-
-
-        }
-        else {
-
-            console.log(` Unknown entity type: ${entityType}`);
-
-        }
-    } catch (err) {
-
-        console.error(" Error updating entity rating:", err);
-
+      console.error(" Error updating entity rating:", error);
     }
-};
+  };

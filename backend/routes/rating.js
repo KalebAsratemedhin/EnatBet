@@ -4,8 +4,12 @@ import { rate, updateRating , getRatingForEntity } from "../controllers/rating.j
 const router = express.Router();
 
 
-router.post('/entityType/entityId', isAuthenticated,rate)
+router.post('/:entityType/:entityId',isAuthenticated, rate);
 
-router.put('/entityType/entityId', isAuthenticated,updateRating);
+router.put('/:entityType/:entityId', isAuthenticated,updateRating);
 
-router.get('/entityType/entityId', isAuthenticated,getRatingForEntity);
+router.get('/:entityType/:entityId', isAuthenticated,getRatingForEntity);
+
+
+  
+export default router

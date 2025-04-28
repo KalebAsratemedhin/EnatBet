@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import { Types } from "mongoose";
 const RatingSchema = mongoose.Schema({
 
     entityType:{
