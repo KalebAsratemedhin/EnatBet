@@ -5,6 +5,7 @@ import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
+import ratingRoutes from './routes/rating.js'
 import restaurantRoutes from './routes/restaurant.js';
 
 import menuRoutes from './routes/menu.js';
@@ -32,8 +33,8 @@ app.use('/restaurant', restaurantRoutes);
 
 app.use("/menu",menuRoutes);
 
-
+app.use("/rating",ratingRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT,'0.0.0.0', () => console.log(`Server running on port ${PORT}`));
  

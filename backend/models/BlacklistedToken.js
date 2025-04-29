@@ -14,10 +14,7 @@ const BlackedListSchema = new mongoose.Schema(
 
     },
 
-    
-
   
-
 }
 );
 
