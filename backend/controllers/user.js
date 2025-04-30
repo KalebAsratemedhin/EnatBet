@@ -5,7 +5,6 @@ import 'dotenv/config'
 import emailService from '../services/emailService.js'
 import jwt from 'jsonwebtoken'
 
-
 export const changePassword = async (req, res) => {
     try {
       const { oldPassword, newPassword } = req.body;

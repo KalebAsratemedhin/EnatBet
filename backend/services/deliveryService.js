@@ -1,5 +1,6 @@
-import { User } from "./models/User.js";
-import Delivery from "../models/Delivery.js";
+import User from "./models/user.js";
+import Delivery from "../models/delivery.js";
+import DeliveryPerson from "../models/deliveryPerson.js";
 
 class DeliveryService {
   async findDeliveryPerson() {

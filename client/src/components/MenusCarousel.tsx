@@ -2,9 +2,17 @@ import { useGetMenusByRestaurantQuery } from "@/api/menuApi";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
+import { MenuItem } from "@/types/menu";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { add } from "@/cartSlice";
 
-const MenusCarousel = ({restaurantId}: { restaurantId: string}) => {
+const MenusCarousel = ({restaurantId, handleAddToCart}: { restaurantId: string, handleAddToCart: (item: MenuItem) => void}) => {
     const { data} = useGetMenusByRestaurantQuery(restaurantId);
+    const dispatch = useDispatch();
+    const cart = useSelector((state: RootState) => state.cart.items);
+  
+
   return (
     <div>
         {data && data.menus.length > 0 && (
@@ -35,7 +43,8 @@ const MenusCarousel = ({restaurantId}: { restaurantId: string}) => {
                               <p className="text-sm text-gray-600 truncate">{item.description}</p>
                               <p className="text-sm font-bold text-gray-900">ETB {item.price.toFixed(2)}</p>
 
-                              <Button className="mt-2" variant="default">Add to order</Button>
+                              <Button className="mt-2" variant="default" onClick={() => dispatch(add({ item, restaurantId: restaurantId }))}
+                              >Add to order</Button>
                             </CardContent>
                           </Card>
                         </CarouselItem>

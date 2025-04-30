@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const MenuItemsSchema =  new mongoose.Schema({
+export const MenuItemsSchema =  new mongoose.Schema({
     id: {
         type: mongoose.Schema.Types.ObjectId,
         auto: true
@@ -35,7 +35,7 @@ const MenuItemsSchema =  new mongoose.Schema({
 
 const MenuSchema = mongoose.Schema({
     menuName :{
-        type :String,required:true
+        type : String,required:true
     },
    
     restaurant : {

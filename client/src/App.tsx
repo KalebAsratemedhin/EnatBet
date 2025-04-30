@@ -20,6 +20,8 @@ import AdminRestaurantList from './components/AdminRestaurantList';
 import Restaurants from './pages/Restaurants';
 import RestaurantDetails from './components/RestaurantDetails';
 import AboutPage from './pages/About';
+import Checkout from './components/Checkout';
+import OrdersPage from './pages/OrdersPage';
 
 const App: React.FC = () => {
   return (
@@ -49,6 +51,8 @@ const App: React.FC = () => {
           <Route path="/profile" element={<ProfilePage />} /> 
           <Route path="/role-management" element={<RoleManagement />} /> 
           <Route path="/menu/:menuId" element={<MenuDetailsPage />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<OrdersPage />} />
 
 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />

@@ -6,9 +6,14 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import roleRequestRoutes from './routes/roleRequest.js';
 import restaurantRoutes from './routes/restaurant.js';
+import notificationRoutes from './routes/notification.js';
 
 import menuRoutes from './routes/menu.js';
+import orderRoutes from './routes/order.js';
 import dotenv from 'dotenv';
+import http from 'http';
+import { Server } from 'socket.io';
+
 dotenv.config(); 
 
 
@@ -30,8 +35,33 @@ app.use('/user', userRoutes);
 app.use('/restaurant', restaurantRoutes);
 app.use('/role-reques', roleRequestRoutes);
 app.use("/menu",menuRoutes);
+app.use("/order", orderRoutes);
+app.use("/notification", notificationRoutes);
+
+const server = http.createServer(app); 
+
+const io = new Server(server, {
+  cors: {
+    origin: '*', 
+    methods: ['GET', 'POST'],
+  },
+});
 
 
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('join', (userId) => {
+    socket.join(userId); 
+    console.log(`User ${userId} joined their notification room`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected:', socket.id);
+  });
+});
+
+app.set('io', io);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

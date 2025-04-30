@@ -10,7 +10,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useGetCurrentUserQuery } from "@/api/authApi";
-import { Home, Settings, Utensils, Users, Contact, CheckCircle2Icon, FormInputIcon, HotelIcon } from "lucide-react";
+import { Home, Settings, Utensils, Users, BellElectricIcon , Contact, CheckCircle2Icon, FormInputIcon, HotelIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 function AppSidebar() {
@@ -40,6 +40,15 @@ function AppSidebar() {
       items: [
         { title: "Manage Users", url: "/users", icon: Users },
         { title: "Restaurant Applications", url: "/restaurant-applications", icon: FormInputIcon },
+      ],
+    },
+  ];
+
+  const customerItems = [
+    {
+      role: "customer",
+      items: [
+        { title: "Orders", url: "/orders", icon: BellElectricIcon },
       ],
     },
   ];
@@ -96,6 +105,20 @@ function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {adminItems
+                  .filter((group) => roles.includes(group.role))
+                  .flatMap((group) => group.items)
+                  .map(renderMenuItem)}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+      {roles.includes("customer") && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-lg px-3 hidden md:block">Customer</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {customerItems
                   .filter((group) => roles.includes(group.role))
                   .flatMap((group) => group.items)
                   .map(renderMenuItem)}
