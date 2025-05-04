@@ -41,7 +41,7 @@ const RestaurantMenusWithCreate = () => {
   if (isMenusError) toast.error("Failed to load menus");
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-8">
       <div>
         <h2 className="text-2xl font-semibold">Select Restaurant</h2>
         <Select onValueChange={(value) => setSelectedRestaurantId(value)}>

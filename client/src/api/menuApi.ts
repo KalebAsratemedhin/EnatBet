@@ -43,7 +43,7 @@ export const menuApi = createApi({
       query: ({ menuId, formData}) => (
         {
           url: `/menu/updateMenu/${menuId}`,
-          method: 'PATCH',
+          method: 'PUT',
           body: formData
       }),
       invalidatesTags: ['Menus', 'Menu'],

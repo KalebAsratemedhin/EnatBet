@@ -22,6 +22,10 @@ import RestaurantDetails from './components/RestaurantDetails';
 import AboutPage from './pages/About';
 import Checkout from './components/Checkout';
 import OrdersPage from './pages/OrdersPage';
+import RestaurantOrdersPage from './pages/RestaurantOrdersPage';
+import CreateRestaurantForm from './components/CreateRestaurantForm';
+import RestaurantMenusWithCreate from './components/RestaurantMenus';
+import MyRestaurants from './components/MyRestaurants';
 
 const App: React.FC = () => {
   return (
@@ -53,7 +57,11 @@ const App: React.FC = () => {
           <Route path="/menu/:menuId" element={<MenuDetailsPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/restaurant-orders" element={<RestaurantOrdersPage />} />
 
+          <Route path="/restaurant-management/#create" element={<CreateRestaurantForm />} />
+          <Route path="/restaurant-management/#mine" element={<MyRestaurants />} />
+          <Route path="/restaurant-management/#menu" element={<RestaurantMenusWithCreate />} />
 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
           <Route path="/dashboard/restaurant" element={<RestaurantOwnerDashboard />} />

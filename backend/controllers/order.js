@@ -6,8 +6,6 @@ import { checkOwnership } from "../utils/index.js";
 export const createOrder = async (req, res) => {
   try {
 
-    console.log("order data ", req.body);
-    
     const orderData = {
       ...req.body,
       customerID: req.user.id, 
@@ -30,7 +28,6 @@ export const createOrder = async (req, res) => {
     const newOrder = await OrderService.createOrder(orderData);
     res.status(201).json({ success: true, order: newOrder });
   } catch (error) {
-    console.error("Error creating order:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -38,13 +35,17 @@ export const createOrder = async (req, res) => {
 
 export const updateOrderStatus = async (req, res) => {
   try {
+    console.log(" update order status ", req.body, req.params);
+    
     const { id } = req.params;
     const { status } = req.body;
 
     const oldOrder = await OrderService.getOrderById(id);
     let order;
 
-    if(!checkOwnership(oldOrder.restaurantID.owner, req.user.id)){
+    console.log("old order ", oldOrder);
+
+    if(!checkOwnership(oldOrder.restaurantID.ownerId, req.user.id)){
         return res.status(401).json({message: "You are not authorized to update this order."})
     }
 
@@ -100,6 +101,7 @@ export const getCustomerOrders = async (req, res) => {
 
     const { orders, total } = await OrderService.getOrdersByCustomerID(customerId, page, limit);
 
+    
     res.status(200).json({
       success: true,
       data: orders,
@@ -123,6 +125,7 @@ export const getRestaurantOrders = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
 
     const { orders, total } = await OrderService.getOrdersByRestaurantID(id, page, limit);
+    console.log(" orders ", orders);
 
     res.status(200).json({
       success: true,
@@ -135,6 +138,8 @@ export const getRestaurantOrders = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Error fetching rest orders:", error);
+
     res.status(500).json({ success: false, message: error.message });
   }
 };

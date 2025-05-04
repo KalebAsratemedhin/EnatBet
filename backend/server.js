@@ -33,7 +33,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 
 app.use('/restaurant', restaurantRoutes);
-app.use('/role-reques', roleRequestRoutes);
+app.use('/role-request', roleRequestRoutes);
 app.use("/menu",menuRoutes);
 app.use("/order", orderRoutes);
 app.use("/notification", notificationRoutes);

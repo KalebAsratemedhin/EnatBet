@@ -7,7 +7,7 @@ const OrderSchema = new Schema(
   { 
     customerID: { 
       type: Schema.Types.ObjectId,
-      ref: 'Customer',
+      ref: 'User',
       required: true,
       index: true
     },

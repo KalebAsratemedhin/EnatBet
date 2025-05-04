@@ -86,7 +86,7 @@ const MyRestaurants = () => {
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
       <div className="grid gap-6 mt-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {data.data.map((restaurant) => (
-          <Card key={restaurant._id} className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+          <Card key={restaurant._id} className="pt-0 w-72 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
             {restaurant.logo && (
               <img
                 src={restaurant.logo}

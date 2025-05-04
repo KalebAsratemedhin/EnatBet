@@ -100,18 +100,18 @@ export const authApi = createApi({
     }),
     
     getMineRoleRequests: builder.query<RoleRequest[], void>({
-      query: () => '/auth/role-request/mine',
+      query: () => '/role-request/mine',
       providesTags: ['role-requests']
     }),
     
     getAllRoleRequests: builder.query<RoleRequest[], void>({
-      query: () => '/auth/role-request/all',
+      query: () => '/role-request/all',
       providesTags: ['role-requests']
     }),
     
     createRoleRequest: builder.mutation<void, RoleRequestPayload>({
       query: (data) => ({
-        url: '/auth/role-request',
+        url: '/role-request',
         method: 'POST',
         body: data,
       }),
@@ -120,7 +120,7 @@ export const authApi = createApi({
     
     updateRoleRequestStatus: builder.mutation<void, UpdateRoleStatusPayload>({
       query: ({id, status}) => ({
-        url: `/auth/role-request/${id}`,
+        url: `/role-request/${id}`,
         method: 'PUT',
         body: {status}
       }),
@@ -129,7 +129,7 @@ export const authApi = createApi({
     
     cancelRoleRequest: builder.mutation<void, CancelRoleRequestPayload>({
       query: ({id}) => ({
-        url: `/auth/role-request/cancelled/${id}`,
+        url: `/role-request/cancelled/${id}`,
         method: 'PUT'
       }),
       invalidatesTags: ['role-requests']

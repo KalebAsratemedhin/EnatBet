@@ -50,7 +50,6 @@ const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
 
   const onSubmit = async (data: CreateMenuFormData) => {
     try {
-      console.log("yebo")
       const formData = new FormData();
       formData.append("restaurantId", selectedRestaurantId as string);
       formData.append("menuName", data.title);

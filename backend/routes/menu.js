@@ -13,15 +13,14 @@ const router = express.Router();
 
 router.post('/createMenu/:id',isAuthenticated,isRestaurantOwner,upload.fields([{name:"itemPictures"}]),createMenu);
 
-router.put("/updateMenu/:id",isAuthenticated,isRestaurantOwner,upload.fields([{name:"itemPictures"}]),updateMenu)
+router.put(
+  "/updateMenu/:id",
+  isAuthenticated,
+  isRestaurantOwner,
+  upload.any(),
+  updateMenu
+);
 
-router.put("/:id", 
-    isAuthenticated, 
-    isRestaurantOwner,
-    upload.array("itemPictures"),
-    updateMenu);
-
- 
 router.get('/getMenu/:id',isAuthenticated, getMenusByRestaurant);
 
 

@@ -39,7 +39,7 @@ export const orderApi = createApi({
         method: 'PUT',
         body: { status },
       }),
-      invalidatesTags: ['order'],
+      invalidatesTags: ['restaurant-orders'],
     }),
 
     cancelOrder: builder.mutation<{ success: boolean; order: Order }, string>({
