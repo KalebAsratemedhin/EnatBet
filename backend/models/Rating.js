@@ -12,9 +12,8 @@ const RatingSchema = mongoose.Schema({
 
     entityId: {
 
-        type:Types.ObjectId,
+        type:String,
         required:true,
-        refPath:"entityType"
 
     },
 

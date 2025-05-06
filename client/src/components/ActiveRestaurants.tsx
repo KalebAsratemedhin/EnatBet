@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetActiveRestaurantsQuery } from "@/api/restaurantApi";
+import { useGetActiveRestaurantsQuery } from "@/redux/api/restaurantApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Star, Search, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import {
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
-  PaginationNext
+  PaginationNext,
 } from "@/components/ui/pagination";
 
 const ActiveRestaurants = () => {
@@ -21,22 +21,25 @@ const ActiveRestaurants = () => {
   const [search, setSearch] = useState(""); // actual search term for API
   const [ratingFilter, setRatingFilter] = useState("all");
 
-  const { data, isLoading, error, isFetching } = useGetActiveRestaurantsQuery({
-    page,
-    limit,
-    search,
-    rating: ratingFilter,
-  },{
-    refetchOnMountOrArgChange: true
-  });
+  const { data, isLoading, error, isFetching } = useGetActiveRestaurantsQuery(
+    {
+      page,
+      limit,
+      search,
+      rating: ratingFilter,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const totalPages = data?.totalPages || 1;
 
   const handleSearchClick = () => {
     console.log(" input ", input);
-    
+
     setSearch(input);
-    setPage(1); 
+    setPage(1);
   };
 
   if (isLoading || isFetching) {
@@ -49,11 +52,11 @@ const ActiveRestaurants = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-500">Failed to load active restaurants.</div>
+      <div className="text-center text-red-500">
+        Failed to load active restaurants.
+      </div>
     );
   }
-
-
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
@@ -91,11 +94,16 @@ const ActiveRestaurants = () => {
       </div>
 
       <div className="grid gap-6 mt-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {data && data.data.length === 0 &&
-          <div className="text-center    text-gray-500">No active restaurants found.</div>
-        }
+        {data && data.data.length === 0 && (
+          <div className="text-center    text-gray-500">
+            No active restaurants found.
+          </div>
+        )}
         {data?.data.map((restaurant) => (
-          <Card key={restaurant._id} className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+          <Card
+            key={restaurant._id}
+            className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+          >
             {restaurant.logo && (
               <img
                 src={restaurant.logo}
@@ -107,21 +115,29 @@ const ActiveRestaurants = () => {
               <CardTitle className="text-lg">{restaurant.name}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
-              <p><strong>Address:</strong> {restaurant.location?.address}</p>
+              <p>
+                <strong>Address:</strong> {restaurant.location?.address}
+              </p>
               <div className="flex items-center gap-1">
                 <strong>Rating:</strong>
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     size={16}
-                    fill={i < Math.round(restaurant.rating) ? "#facc15" : "none"}
+                    fill={
+                      i < Math.round(restaurant.rating) ? "#facc15" : "none"
+                    }
                     stroke="#facc15"
                   />
                 ))}
-                <span className="ml-1 text-xs text-gray-500">({restaurant.rating.toFixed(1)})</span>
+                <span className="ml-1 text-xs text-gray-500">
+                  ({restaurant.rating.toFixed(1)})
+                </span>
               </div>
               <Link to={`/restaurants/${restaurant._id}`}>
-                <Button size="sm" className="w-full mt-3">View & Order</Button>
+                <Button size="sm" className="w-full mt-3">
+                  View & Order
+                </Button>
               </Link>
             </CardContent>
           </Card>
@@ -153,7 +169,9 @@ const ActiveRestaurants = () => {
             <PaginationItem>
               <PaginationNext>
                 <Button
-                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={page === totalPages}
                   variant="outline"
                   size="sm"

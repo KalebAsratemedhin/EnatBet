@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useGetCurrentUserQuery } from "@/api/authApi";
+import { useGetCurrentUserQuery } from "@/redux/api/authApi";
 import {
   Home,
   Settings,
@@ -31,7 +31,11 @@ function AppSidebar() {
     { title: "Home", url: "/", icon: Home },
     { title: "Profile", url: "/profile", icon: Contact },
     { title: "Settings", url: "/settings", icon: Settings },
-    { title: "Role Management", url: "/role-management", icon: CheckCircle2Icon },
+    {
+      title: "Role Management",
+      url: "/role-management",
+      icon: CheckCircle2Icon,
+    },
     { title: "Restaurants", url: "/restaurants", icon: HotelIcon },
   ];
 
@@ -39,7 +43,11 @@ function AppSidebar() {
     {
       role: "restaurant_owner",
       items: [
-        { title: "Restaurant Management", url: "/restaurant-management", icon: Utensils },
+        {
+          title: "Restaurant Management",
+          url: "/restaurant-management",
+          icon: Utensils,
+        },
         { title: "Orders", url: "/restaurant-orders", icon: BellElectricIcon },
       ],
     },
@@ -50,7 +58,11 @@ function AppSidebar() {
       role: "admin",
       items: [
         { title: "Manage Users", url: "/users", icon: Users },
-        { title: "Restaurant Applications", url: "/restaurant-applications", icon: FormInputIcon },
+        {
+          title: "Restaurant Applications",
+          url: "/restaurant-applications",
+          icon: FormInputIcon,
+        },
       ],
     },
   ];
@@ -82,14 +94,21 @@ function AppSidebar() {
 
   const renderRoleGroup = (
     label: string,
-    items: { role: string; items: { title: string; url: string; icon: any }[] }[]
+    items: {
+      role: string;
+      items: { title: string; url: string; icon: any }[];
+    }[]
   ) => {
-    const filteredItems = items.filter((group) => roles.includes(group.role)).flatMap((group) => group.items);
+    const filteredItems = items
+      .filter((group) => roles.includes(group.role))
+      .flatMap((group) => group.items);
     if (!filteredItems.length) return null;
 
     return (
       <SidebarGroup>
-        <SidebarGroupLabel className="text-lg px-3 hidden md:block">{label}</SidebarGroupLabel>
+        <SidebarGroupLabel className="text-lg px-3 hidden md:block">
+          {label}
+        </SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>{filteredItems.map(renderMenuItem)}</SidebarMenu>
         </SidebarGroupContent>
@@ -105,7 +124,9 @@ function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-lg px-3 hidden md:block">General</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-lg px-3 hidden md:block">
+            General
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{baseItems.map(renderMenuItem)}</SidebarMenu>
           </SidebarGroupContent>

@@ -1,5 +1,15 @@
-import { useGetMineRoleRequestsQuery, useUpdateRoleRequestStatusMutation } from "@/api/authApi";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  useGetMineRoleRequestsQuery,
+  useUpdateRoleRequestStatusMutation,
+} from "@/redux/api/authApi";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { RoleRequest } from "@/types/api";
@@ -11,7 +21,7 @@ const UserRoleRequestTable = () => {
   const handleToggleCancel = async (req: RoleRequest) => {
     const updatedStatus = req.status === "cancelled" ? "pending" : "cancelled";
     try {
-      await updateStatus({ id: req._id, status: updatedStatus}).unwrap();
+      await updateStatus({ id: req._id, status: updatedStatus }).unwrap();
       toast.success(`Request ${updatedStatus}`);
     } catch (err) {
       toast.error("Failed to update request");
@@ -33,7 +43,9 @@ const UserRoleRequestTable = () => {
       <TableBody>
         {requests.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={4} className="text-center py-4">You haven't made any requests yet.</TableCell>
+            <TableCell colSpan={4} className="text-center py-4">
+              You haven't made any requests yet.
+            </TableCell>
           </TableRow>
         ) : (
           requests.map((req) => (

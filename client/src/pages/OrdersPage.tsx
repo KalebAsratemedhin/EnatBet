@@ -2,13 +2,8 @@ import { useState } from "react";
 import {
   useGetCustomerOrdersQuery,
   useCancelOrderMutation,
-} from "@/api/orderApi";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+} from "@/redux/api/orderApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -58,9 +53,7 @@ const OrdersPage = () => {
 
   if (isError)
     return (
-      <p className="text-center text-red-500 mt-10">
-        Failed to load orders.
-      </p>
+      <p className="text-center text-red-500 mt-10">Failed to load orders.</p>
     );
 
   if (orders.length === 0)
@@ -89,7 +82,10 @@ const OrdersPage = () => {
             <div>
               <strong>Total:</strong> ETB{" "}
               {order.orderDetails
-                .reduce((sum, { item, quantity }) => sum + item.price * quantity, 0)
+                .reduce(
+                  (sum, { item, quantity }) => sum + item.price * quantity,
+                  0
+                )
                 .toFixed(2)}
             </div>
 
@@ -142,7 +138,10 @@ const OrdersPage = () => {
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         <Marker
-                          position={[order.coordinates.lat, order.coordinates.lng]}
+                          position={[
+                            order.coordinates.lat,
+                            order.coordinates.lng,
+                          ]}
                           icon={L.icon({
                             iconUrl:
                               "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
@@ -186,7 +185,9 @@ const OrdersPage = () => {
           <PaginationItem>
             <PaginationNext
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-              className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+              className={
+                page === totalPages ? "pointer-events-none opacity-50" : ""
+              }
             />
           </PaginationItem>
         </PaginationContent>

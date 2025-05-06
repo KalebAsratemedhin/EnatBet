@@ -2,17 +2,13 @@ import { useState } from "react";
 import {
   useGetAllMineRestaurantQuery,
   useDeleteRestaurantMutation,
-} from "@/api/restaurantApi";
+} from "@/redux/api/restaurantApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Star, Edit, Trash } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import UpdateRestaurantForm from "../components/UpdateRestaurantForm";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   Pagination,
   PaginationContent,
@@ -41,10 +37,14 @@ const MyRestaurants = () => {
   const totalPages = data?.totalPages || 1;
 
   const [deleteRestaurant] = useDeleteRestaurantMutation();
-  const [selectedRestaurant, setSelectedRestaurant] = useState<any | null>(null);
+  const [selectedRestaurant, setSelectedRestaurant] = useState<any | null>(
+    null
+  );
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-  const [restaurantToDelete, setRestaurantToDelete] = useState<string | null>(null);
+  const [restaurantToDelete, setRestaurantToDelete] = useState<string | null>(
+    null
+  );
 
   const handleDelete = async () => {
     if (!restaurantToDelete) return;
@@ -86,7 +86,10 @@ const MyRestaurants = () => {
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
       <div className="grid gap-6 mt-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {data.data.map((restaurant) => (
-          <Card key={restaurant._id} className="pt-0 w-72 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+          <Card
+            key={restaurant._id}
+            className="pt-0 w-72 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+          >
             {restaurant.logo && (
               <img
                 src={restaurant.logo}
@@ -108,22 +111,33 @@ const MyRestaurants = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
-              <p><strong>Address:</strong> {restaurant.location?.address}</p>
               <p>
-                <strong>Coordinates:</strong> ({restaurant.location?.coordinates[1]}, {restaurant.location?.coordinates[0]})
+                <strong>Address:</strong> {restaurant.location?.address}
               </p>
-              <p><strong>Delivery Radius:</strong> {restaurant.deliveryAreaRadius} meters</p>
+              <p>
+                <strong>Coordinates:</strong> (
+                {restaurant.location?.coordinates[1]},{" "}
+                {restaurant.location?.coordinates[0]})
+              </p>
+              <p>
+                <strong>Delivery Radius:</strong>{" "}
+                {restaurant.deliveryAreaRadius} meters
+              </p>
               <div className="flex items-center gap-1">
                 <strong>Rating:</strong>
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     size={16}
-                    fill={i < Math.round(restaurant.rating) ? "#facc15" : "none"}
+                    fill={
+                      i < Math.round(restaurant.rating) ? "#facc15" : "none"
+                    }
                     stroke="#facc15"
                   />
                 ))}
-                <span className="ml-1 text-xs text-gray-500">({restaurant.rating.toFixed(1)})</span>
+                <span className="ml-1 text-xs text-gray-500">
+                  ({restaurant.rating.toFixed(1)})
+                </span>
               </div>
               <div className="flex justify-between gap-2 pt-3">
                 <Button
@@ -177,7 +191,9 @@ const MyRestaurants = () => {
             <PaginationItem>
               <PaginationNext>
                 <Button
-                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={page === totalPages}
                   variant="outline"
                   size="sm"
@@ -202,7 +218,10 @@ const MyRestaurants = () => {
           <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
           <p>Are you sure you want to delete this restaurant?</p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsConfirmDeleteOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsConfirmDeleteOpen(false)}
+            >
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>

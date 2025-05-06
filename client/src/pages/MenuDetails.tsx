@@ -3,13 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   useGetMenuByIdQuery,
   useDeleteMenuMutation,
-} from "@/api/menuApi";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+} from "@/redux/api/menuApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +46,10 @@ const MenuDetailsPage = () => {
         </div>
 
         <div className="flex gap-4 items-center">
-          <Button variant="outline" onClick={() => setEditMode((prev) => !prev)}>
+          <Button
+            variant="outline"
+            onClick={() => setEditMode((prev) => !prev)}
+          >
             {editMode ? (
               <>
                 <Eye className="w-4 h-4 mr-2" />
@@ -137,7 +135,10 @@ const MenuDetailsPage = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+            >
               Cancel
             </Button>
             <Button

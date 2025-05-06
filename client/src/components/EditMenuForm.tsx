@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import { useGetMenuByIdQuery, useUpdateMenuMutation } from "@/api/menuApi";
+import {
+  useGetMenuByIdQuery,
+  useUpdateMenuMutation,
+} from "@/redux/api/menuApi";
 import { useEffect } from "react";
 
 const editMenuSchema = z.object({
@@ -74,12 +77,14 @@ const EditMenuForm = ({ menuId, onUpdated }: EditMenuFormProps) => {
       const formData = new FormData();
       formData.append("menuName", form.title);
 
-      const itemsToSend = form.menuItems.map(({ itemPicture, ...rest }) => rest);
+      const itemsToSend = form.menuItems.map(
+        ({ itemPicture, ...rest }) => rest
+      );
       formData.append("menuItems", JSON.stringify(form.menuItems));
 
       form.menuItems.forEach((item, index) => {
         if (item.itemPicture instanceof File) {
-          formData.append( `itemPictures-${index}`, item.itemPicture);
+          formData.append(`itemPictures-${index}`, item.itemPicture);
         }
       });
 
@@ -97,7 +102,9 @@ const EditMenuForm = ({ menuId, onUpdated }: EditMenuFormProps) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
       <div>
         <Input placeholder="Menu Title" {...register("title")} />
-        {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
+        {errors.title && (
+          <p className="text-sm text-red-500">{errors.title.message}</p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -143,11 +150,17 @@ const EditMenuForm = ({ menuId, onUpdated }: EditMenuFormProps) => {
         ))}
         <Button
           type="button"
-          onClick={() => append({ name: "", description: "", price: 0, itemPicture: null })}
+          onClick={() =>
+            append({ name: "", description: "", price: 0, itemPicture: null })
+          }
         >
           Add Menu Item
         </Button>
-        {errors.menuItems && <p className="text-red-500 text-sm">{(errors.menuItems as any).message}</p>}
+        {errors.menuItems && (
+          <p className="text-red-500 text-sm">
+            {(errors.menuItems as any).message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" disabled={isUpdating}>

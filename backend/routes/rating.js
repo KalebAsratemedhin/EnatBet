@@ -1,15 +1,21 @@
 import express from "express";
-import {isAuthenticated, isAdmin, isRestaurantOwner} from "../middlewares/auth.js"
-import { rate, updateRating , getRatingForEntity } from "../controllers/rating.js";
+import { isAuthenticated } from "../middlewares/auth.js";
+import {
+  rate,
+  getRatingForEntity,
+  getTopRatedRestaurants,
+  getTopRatedMenuItems,
+} from "../controllers/rating.js";
+
 const router = express.Router();
 
+router.get("/top/restaurants", getTopRatedRestaurants);
 
-router.post('/:entityType/:entityId',isAuthenticated, rate);
+router.get("/top/menu-items", getTopRatedMenuItems);
 
-router.put('/:entityType/:entityId', isAuthenticated,updateRating);
+router.put("/:entityType/:entityId", isAuthenticated, rate);
 
-router.get('/:entityType/:entityId', isAuthenticated,getRatingForEntity);
+router.get("/:entityType/:entityId", isAuthenticated, getRatingForEntity);
 
 
-  
-export default router
+export default router;

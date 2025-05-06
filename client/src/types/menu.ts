@@ -1,9 +1,12 @@
+import { Restaurant } from "./restaurant";
+
 export interface MenuItem {
     _id: string;
     name: string;
     description: string;
     price: number;
     quantity: number;
+    rating: number;
     itemPicture?: string; 
   }
   
@@ -18,11 +21,17 @@ export interface MenuItem {
     id: string;
   }
 
-  export interface Menu {
+  export interface BaseMenu {
     _id: string;
     menuName: string;
-    restaurant: string;
     menuItems: MenuItem[];
+  }
+  
+  export interface PopulatedMenuItem extends MenuItem {
+    restaurant: Restaurant;
+  }
+  export interface Menu extends BaseMenu {
+    restaurant: string;
   }
   
   export interface MenuResponse {
@@ -37,4 +46,3 @@ export interface MenuItem {
     message: string;
     data?: any;
   }
-  

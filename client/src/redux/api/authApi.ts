@@ -1,6 +1,3 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-const url = import.meta.env.VITE_API_URL
-import { FetchBaseQueryError, BaseQueryFn, FetchArgs } from '@reduxjs/toolkit/query/react';
 import {
   SignupPayload,
   SigninPayload,
@@ -10,36 +7,9 @@ import {
   CancelRoleRequestPayload,
 } from "@/types/requests";
 import { User, RoleRequest } from "@/types/api";
+import { api } from '.';
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: url,
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
-  },
-});
-
-
-// Wrap the baseQuery to check for a 401 error
-const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async(args, api, extraOptions) => {
-  // Execute the query
-  const result = await baseQuery(args, api, extraOptions);
-
-  // Check if we received a 401 Unauthorized error
-  if (result.error && result.error.status === 401) {
-    localStorage.clear()
-  }
-  
-  return result;
-};
-
-export const authApi = createApi({
-  reducerPath: 'authApi',
-  baseQuery: baseQueryWithReauth,
-  tagTypes: ["role-requests", 'current-user'],
+export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     logout: builder.mutation<void, void>({
       query: () => ({

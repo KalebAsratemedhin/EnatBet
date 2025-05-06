@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useGetCurrentUserQuery, useUpdateUserProfileMutation } from '../api/authApi';
+import { useGetCurrentUserQuery, useUpdateUserProfileMutation } from '@/redux/api/authApi';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 

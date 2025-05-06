@@ -1,23 +1,23 @@
-import * as React from "react"
+import * as React from "react";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -25,49 +25,56 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
-import { MoreHorizontal, Star } from "lucide-react"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { MoreHorizontal, Star } from "lucide-react";
 import {
   useGetAllRestaurantQuery,
   useUpdateRestaurantStatusMutation,
-} from "@/api/restaurantApi"
-import { cn } from "@/lib/utils"
+} from "@/redux/api/restaurantApi";
+import { cn } from "@/lib/utils";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationPrevious,
   PaginationNext,
-} from "@/components/ui/pagination"
-import { PopulatedRestaurant } from "@/types/restaurant"
+} from "@/components/ui/pagination";
+import { PopulatedRestaurant } from "@/types/restaurant";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
   active: "bg-green-100 text-green-800",
   inactive: "bg-red-100 text-red-800",
-}
+};
 
 const AdminRestaurantList = () => {
-  const [page, setPage] = React.useState(1)
-  const limit = 5
-  const { data, error, isLoading } = useGetAllRestaurantQuery({ page, limit })
-  const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation()
-  const [selectedRestaurant, setSelectedRestaurant] = React.useState<PopulatedRestaurant | null>(null)
+  const [page, setPage] = React.useState(1);
+  const limit = 5;
+  const { data, error, isLoading } = useGetAllRestaurantQuery({ page, limit });
+  const [updateRestaurantStatus] = useUpdateRestaurantStatusMutation();
+  const [selectedRestaurant, setSelectedRestaurant] =
+    React.useState<PopulatedRestaurant | null>(null);
 
-  const handleStatusUpdate = async (newStatus: string, restaurant: PopulatedRestaurant) => {
+  const handleStatusUpdate = async (
+    newStatus: string,
+    restaurant: PopulatedRestaurant
+  ) => {
     try {
-      await updateRestaurantStatus({ id: restaurant._id, status: newStatus }).unwrap()
-      toast.success(`Restaurant status updated to: ${newStatus}`)
+      await updateRestaurantStatus({
+        id: restaurant._id,
+        status: newStatus,
+      }).unwrap();
+      toast.success(`Restaurant status updated to: ${newStatus}`);
     } catch (err) {
-      toast.error("Failed to update status")
+      toast.error("Failed to update status");
     }
-  }
+  };
 
-  const restaurants = data?.data || []
-  const totalPages = data?.totalPages || 1
+  const restaurants = data?.data || [];
+  const totalPages = data?.totalPages || 1;
 
   const columns: ColumnDef<PopulatedRestaurant>[] = [
     {
@@ -93,20 +100,20 @@ const AdminRestaurantList = () => {
       accessorKey: "ownerId",
       header: "Owner",
       cell: ({ row }) => {
-        const owner = row.original.ownerId
+        const owner = row.original.ownerId;
         return (
           <div className="text-sm">
             <p className="font-medium">{owner.name}</p>
             <p className="text-xs text-muted-foreground">{owner.email}</p>
           </div>
-        )
+        );
       },
     },
     {
       id: "actions",
       header: () => <div className="text-right">Actions</div>,
       cell: ({ row }) => {
-        const restaurant = row.original
+        const restaurant = row.original;
         return (
           <div className="text-right">
             <DropdownMenu>
@@ -116,35 +123,42 @@ const AdminRestaurantList = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleStatusUpdate("active", restaurant)}>
+                <DropdownMenuItem
+                  onClick={() => handleStatusUpdate("active", restaurant)}
+                >
                   Activate
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleStatusUpdate("inactive", restaurant)}>
+                <DropdownMenuItem
+                  onClick={() => handleStatusUpdate("inactive", restaurant)}
+                >
                   Deactivate
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedRestaurant(restaurant)}>
+                <DropdownMenuItem
+                  onClick={() => setSelectedRestaurant(restaurant)}
+                >
                   View Details
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        )
+        );
       },
     },
-  ]
-  
+  ];
 
   const table = useReactTable({
     data: restaurants,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   return (
     <div className="container mx-10 w-auto mt-10 p-6 space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Restaurant Management</h2>
+      <h2 className="text-2xl font-bold text-gray-800">
+        Restaurant Management
+      </h2>
       {/* <hr className="border-gray-300" /> */}
-  
+
       {isLoading ? (
         <p className="text-center text-gray-500">Loading...</p>
       ) : error ? (
@@ -154,14 +168,17 @@ const AdminRestaurantList = () => {
           <div className="rounded-xl overflow-hidden border border-gray-200">
             <Table>
               <TableHeader>
-                {table.getHeaderGroups().map(headerGroup => (
+                {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id} className="bg-gray-100">
-                    {headerGroup.headers.map(header => (
+                    {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
                         className="text-sm font-semibold text-gray-700 uppercase tracking-wider"
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                       </TableHead>
                     ))}
                   </TableRow>
@@ -177,16 +194,25 @@ const AdminRestaurantList = () => {
                         "hover:bg-gray-100 transition"
                       )}
                     >
-                      {row.getVisibleCells().map(cell => (
-                        <TableCell key={cell.id} className="py-3 px-4 align-middle">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="py-3 px-4 align-middle"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </TableCell>
                       ))}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="text-center py-6 text-muted-foreground">
+                    <TableCell
+                      colSpan={columns.length}
+                      className="text-center py-6 text-muted-foreground"
+                    >
                       No restaurants found.
                     </TableCell>
                   </TableRow>
@@ -194,7 +220,7 @@ const AdminRestaurantList = () => {
               </TableBody>
             </Table>
           </div>
-  
+
           <div className="flex justify-between items-center mt-6">
             <span className="text-sm text-gray-500">
               Showing page {page} of {totalPages}
@@ -213,13 +239,15 @@ const AdminRestaurantList = () => {
                     </Button>
                   </PaginationPrevious>
                 </PaginationItem>
-  
+
                 <PaginationItem>
                   <PaginationNext>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={page === totalPages}
                     >
                       Next
@@ -231,8 +259,11 @@ const AdminRestaurantList = () => {
           </div>
         </>
       )}
-  
-      <Dialog open={!!selectedRestaurant} onOpenChange={() => setSelectedRestaurant(null)}>
+
+      <Dialog
+        open={!!selectedRestaurant}
+        onOpenChange={() => setSelectedRestaurant(null)}
+      >
         <DialogContent className="max-w-lg p-6 rounded-xl shadow-xl">
           {selectedRestaurant && (
             <>
@@ -250,7 +281,8 @@ const AdminRestaurantList = () => {
                   />
                 )}
                 <p>
-                  <strong>Address:</strong> {selectedRestaurant.location?.address}
+                  <strong>Address:</strong>{" "}
+                  {selectedRestaurant.location?.address}
                 </p>
                 <p>
                   <strong>Coordinates:</strong>{" "}
@@ -259,7 +291,8 @@ const AdminRestaurantList = () => {
                     : "N/A"}
                 </p>
                 <p>
-                  <strong>Delivery Radius:</strong> {selectedRestaurant.deliveryAreaRadius} meters
+                  <strong>Delivery Radius:</strong>{" "}
+                  {selectedRestaurant.deliveryAreaRadius} meters
                 </p>
                 <p>
                   <strong>Owner:</strong> {selectedRestaurant.ownerId.name} (
@@ -274,7 +307,11 @@ const AdminRestaurantList = () => {
                     <Star
                       key={i}
                       size={16}
-                      fill={i < Math.round(selectedRestaurant.rating) ? "#facc15" : "none"}
+                      fill={
+                        i < Math.round(selectedRestaurant.rating)
+                          ? "#facc15"
+                          : "none"
+                      }
                       stroke="#facc15"
                     />
                   ))}
@@ -284,7 +321,10 @@ const AdminRestaurantList = () => {
                 </div>
               </div>
               <DialogFooter className="mt-4">
-                <Button variant="outline" onClick={() => setSelectedRestaurant(null)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedRestaurant(null)}
+                >
                   Close
                 </Button>
               </DialogFooter>
@@ -293,7 +333,7 @@ const AdminRestaurantList = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )  
-}
+  );
+};
 
-export default AdminRestaurantList
+export default AdminRestaurantList;

@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 export const MenuItemsSchema =  new mongoose.Schema({
-    id: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true
-    },
     name : { 
         type : String,
         required : true,
@@ -32,8 +28,10 @@ export const MenuItemsSchema =  new mongoose.Schema({
 
     rating: {
         type:Number,
-        min:1,
-        max:5
+        min:0,
+        max:5,
+        default :0
+
     },
 
     totalRating :{

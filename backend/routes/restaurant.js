@@ -21,7 +21,7 @@ router.get('/active',getActiveRestaurants);
 
 router.get('/all',isAuthenticated,getAllRestaurant);
 
-router.get('/:id',isAuthenticated,getRestaurantById);
+router.get('/:id',getRestaurantById);
 
 router.patch('/status/:id',isAuthenticated,isAdmin,updateRestaurantStatus);
 

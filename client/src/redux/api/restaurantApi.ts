@@ -1,29 +1,13 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   AddRestaurantRequest,
   UpdateRestaurantRequest,
   GenericResponse,
   GetRestaurantsResponse,
   GetRestaurantDetailsResponse,
-} from '../types/restaurant';
+} from '@/types/restaurant';
+import { api } from '.';
 
-const url = import.meta.env.VITE_API_URL;
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: url,
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
-  },
-});
-
-export const restaurantApi = createApi({
-  reducerPath: 'restaurantApi',
-  baseQuery,
-  tagTypes: ['my-restaurants', 'a-restaurant', 'all-restaurants', 'active-restaurants'],
+export const restaurantApi = api.injectEndpoints({
   endpoints: (builder) => ({
     addRestaurant: builder.mutation<GenericResponse, AddRestaurantRequest>({
       query: (data) => ({

@@ -1,5 +1,5 @@
 import { isDeliveryPerson } from "../middlewares/auth.js";
-import Delivery from "../models/Delivery.js";
+import Delivery from "../models/delivery.js";
 import Menu from "../models/Menu.js";
 import Rating from "../models/Rating.js";
 import Restaurant from "../models/Restaurant.js";
@@ -21,7 +21,7 @@ const calculateNewRating = (currentAvg, total, newRating, oldRating = null) =>{
   let newAverage;
   let newTotalRating =total;
 
-  if (oldRating !==null){
+  if (oldRating){
 
     newAverage = ((total * currentAvg)-oldRating + newRating) / (total + 1);
 

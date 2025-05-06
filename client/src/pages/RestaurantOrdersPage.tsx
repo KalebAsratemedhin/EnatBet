@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  useGetAllMineRestaurantQuery,
-} from "@/api/restaurantApi";
+import { useGetAllMineRestaurantQuery } from "@/redux/api/restaurantApi";
 import {
   useGetRestaurantOrdersQuery,
   useUpdateOrderStatusMutation,
-} from "@/api/orderApi";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+} from "@/redux/api/orderApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -46,7 +39,9 @@ const getNextStatus = (current: string): "preparing" | "ready" | null => {
 
 const RestaurantOrdersPage = () => {
   const [page, setPage] = useState(1);
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<
+    string | null
+  >(null);
 
   const {
     data: restaurantsData,
@@ -63,17 +58,24 @@ const RestaurantOrdersPage = () => {
     { skip: !selectedRestaurantId }
   );
 
-  const [updateStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
+  const [updateStatus, { isLoading: isUpdating }] =
+    useUpdateOrderStatusMutation();
 
   const orders = ordersData?.data || [];
   const totalPages = ordersData?.pagination?.totalPages || 1;
 
-  const handleStatusUpdate = async (orderId: string, currentStatus: "pending" | "preparing" | "ready" | "cancelled") => {
+  const handleStatusUpdate = async (
+    orderId: string,
+    currentStatus: "pending" | "preparing" | "ready" | "cancelled"
+  ) => {
     const nextStatus = getNextStatus(currentStatus);
     if (!nextStatus) return;
 
     try {
-      const res = await updateStatus({ id: orderId, status: nextStatus }).unwrap();
+      const res = await updateStatus({
+        id: orderId,
+        status: nextStatus,
+      }).unwrap();
       if (res.success) {
         toast.success(`Order status updated to ${nextStatus}`);
       }
@@ -85,8 +87,6 @@ const RestaurantOrdersPage = () => {
   if (isRestaurantError) toast.error("Failed to load restaurants");
   if (isError) toast.error("Failed to load orders");
 
-
-
   return (
     <div className="lg:max-w-4xl px-6 mx-auto py-10 space-y-6">
       <h2 className="text-3xl font-bold mb-4">Restaurant Orders</h2>
@@ -96,7 +96,11 @@ const RestaurantOrdersPage = () => {
         <h3 className="text-lg font-medium mb-2">Select Restaurant</h3>
         <Select onValueChange={(value) => setSelectedRestaurantId(value)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder={isLoadingRestaurants ? "Loading..." : "Select a restaurant"} />
+            <SelectValue
+              placeholder={
+                isLoadingRestaurants ? "Loading..." : "Select a restaurant"
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             {restaurantsData?.data?.map((restaurant) => (
@@ -136,7 +140,11 @@ const RestaurantOrdersPage = () => {
                     <div>
                       <strong>Total:</strong> ETB{" "}
                       {order.orderDetails
-                        .reduce((sum, { item, quantity }) => sum + item.price * quantity, 0)
+                        .reduce(
+                          (sum, { item, quantity }) =>
+                            sum + item.price * quantity,
+                          0
+                        )
                         .toFixed(2)}
                     </div>
                     <div>
@@ -147,7 +155,8 @@ const RestaurantOrdersPage = () => {
                       <ul className="list-disc pl-5 space-y-1">
                         {order.orderDetails.map(({ item, quantity }) => (
                           <li key={item._id}>
-                            {item.name} x {quantity} — ETB {(item.price * quantity).toFixed(2)}
+                            {item.name} x {quantity} — ETB{" "}
+                            {(item.price * quantity).toFixed(2)}
                           </li>
                         ))}
                       </ul>
@@ -155,7 +164,9 @@ const RestaurantOrdersPage = () => {
 
                     {getNextStatus(order.status) && (
                       <Button
-                        onClick={() => handleStatusUpdate(order._id, order.status)}
+                        onClick={() =>
+                          handleStatusUpdate(order._id, order.status)
+                        }
                         disabled={isUpdating}
                         className="mt-4"
                       >
@@ -171,7 +182,9 @@ const RestaurantOrdersPage = () => {
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                      className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                      className={
+                        page === 1 ? "pointer-events-none opacity-50" : ""
+                      }
                     />
                   </PaginationItem>
                   <PaginationItem className="px-4 text-center">
@@ -179,8 +192,14 @@ const RestaurantOrdersPage = () => {
                   </PaginationItem>
                   <PaginationItem>
                     <PaginationNext
-                      onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                      className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                      onClick={() =>
+                        setPage((p) => Math.min(p + 1, totalPages))
+                      }
+                      className={
+                        page === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>

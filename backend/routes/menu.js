@@ -21,8 +21,7 @@ router.put(
   updateMenu
 );
 
-router.get('/getMenu/:id',isAuthenticated, getMenusByRestaurant);
-
+router.get('/getMenu/:id', getMenusByRestaurant);
 
 router.get('/:id',isAuthenticated, getMenuById);
 

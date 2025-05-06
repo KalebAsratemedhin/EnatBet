@@ -5,8 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import { useUpdateRestaurantMutation } from "@/api/restaurantApi";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { useUpdateRestaurantMutation } from "@/redux/api/restaurantApi";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 const updateRestaurantSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -23,8 +29,16 @@ interface UpdateRestaurantFormProps {
   onClose: () => void;
 }
 
-const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps) => {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<UpdateFormData>({
+const UpdateRestaurantForm = ({
+  restaurant,
+  onClose,
+}: UpdateRestaurantFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<UpdateFormData>({
     resolver: zodResolver(updateRestaurantSchema),
     defaultValues: {
       name: restaurant.name,
@@ -36,7 +50,9 @@ const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps
   });
 
   const [updateRestaurant, { isLoading }] = useUpdateRestaurantMutation();
-  const [logoPreview, setLogoPreview] = useState<string | null>(restaurant.logo ?? null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(
+    restaurant.logo ?? null
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
   const onSubmit = async (data: UpdateFormData) => {
@@ -52,7 +68,10 @@ const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps
         formData.append("logo", logoFile);
       }
 
-      await updateRestaurant({ id: restaurant._id, data: formData as any}).unwrap();
+      await updateRestaurant({
+        id: restaurant._id,
+        data: formData as any,
+      }).unwrap();
       toast.success("Restaurant updated successfully");
       onClose(); // Close the dialog after updating
     } catch (error: any) {
@@ -71,12 +90,19 @@ const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps
         <DialogHeader>
           <DialogTitle>Update Restaurant</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4 max-w-md">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4 mt-4 max-w-md"
+        >
           <Input {...register("name")} placeholder="Restaurant Name" />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+          {errors.name && (
+            <p className="text-red-500 text-sm">{errors.name.message}</p>
+          )}
 
           <Input {...register("address")} placeholder="Address" />
-          {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+          {errors.address && (
+            <p className="text-red-500 text-sm">{errors.address.message}</p>
+          )}
 
           {/* Logo input and preview */}
           <div>
@@ -94,18 +120,40 @@ const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps
               className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
             {logoPreview && (
-              <img src={logoPreview} alt="Logo Preview" className="mt-2 h-24 object-contain" />
+              <img
+                src={logoPreview}
+                alt="Logo Preview"
+                className="mt-2 h-24 object-contain"
+              />
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <Input {...register("latitude")} type="number" step="any" placeholder="Latitude" />
-              {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude.message}</p>}
+              <Input
+                {...register("latitude")}
+                type="number"
+                step="any"
+                placeholder="Latitude"
+              />
+              {errors.latitude && (
+                <p className="text-red-500 text-sm">
+                  {errors.latitude.message}
+                </p>
+              )}
             </div>
             <div>
-              <Input {...register("longitude")} type="number" step="any" placeholder="Longitude" />
-              {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude.message}</p>}
+              <Input
+                {...register("longitude")}
+                type="number"
+                step="any"
+                placeholder="Longitude"
+              />
+              {errors.longitude && (
+                <p className="text-red-500 text-sm">
+                  {errors.longitude.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -116,7 +164,11 @@ const UpdateRestaurantForm = ({ restaurant, onClose }: UpdateRestaurantFormProps
               step="any"
               placeholder="Delivery Area Radius (meters)"
             />
-            {errors.deliveryAreaRadius && <p className="text-red-500 text-sm">{errors.deliveryAreaRadius.message}</p>}
+            {errors.deliveryAreaRadius && (
+              <p className="text-red-500 text-sm">
+                {errors.deliveryAreaRadius.message}
+              </p>
+            )}
           </div>
 
           <Button type="submit" disabled={isLoading}>

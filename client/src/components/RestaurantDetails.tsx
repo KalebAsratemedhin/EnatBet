@@ -1,21 +1,18 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useGetRestaurantByIdQuery } from "@/api/restaurantApi";
-import { Loader2, Star, Plus, Minus, ShoppingCart } from "lucide-react";
+import { useGetRestaurantByIdQuery } from "@/redux/api/restaurantApi";
+import { Loader2, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MapContainer, TileLayer, Marker, Circle, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { toast } from "sonner";
 import { PopulatedRestaurant } from "@/types/restaurant";
-import { Menu, MenuItem } from "@/types/menu";
-import { Button } from "@/components/ui/button"; // Assuming you have a button component
 import MenusCarousel from "./MenusCarousel";
 import Cart from "./Cart";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
   const { data, isLoading, error } = useGetRestaurantByIdQuery(id!);
-  const [cart, setCart] = useState<Record<string, { item: MenuItem; quantity: number }>>({});
 
   if (isLoading) {
     return (
@@ -36,39 +33,6 @@ const RestaurantDetails = () => {
   const restaurant = data.data;
   const lat = restaurant.location?.coordinates[0];
   const lng = restaurant.location?.coordinates[1];
-
-  const handleAddToCart = (item: MenuItem) => {
-    setCart((prev) => {
-      const existingItem = prev[item._id];
-      const newQuantity = existingItem ? existingItem.quantity + 1 : 1;
-      return {
-        ...prev,
-        [item._id]: { item, quantity: newQuantity },
-      };
-    });
-    toast.success(`${item.name} added to cart`);
-  };
-
-  const handleIncreaseQuantity = (itemId: string) => {
-    setCart((prev) => ({
-      ...prev,
-      [itemId]: { ...prev[itemId], quantity: prev[itemId].quantity + 1 },
-    }));
-  };
-
-  const handleDecreaseQuantity = (itemId: string) => {
-    setCart((prev) => {
-      const current = prev[itemId];
-      if (current.quantity === 1) {
-        const { [itemId]: _, ...rest } = prev;
-        return rest;
-      }
-      return {
-        ...prev,
-        [itemId]: { ...current, quantity: current.quantity - 1 },
-      };
-    });
-  };
 
   return (
     <div className="mx-12 md:px-8 py-10 space-y-10">
@@ -100,28 +64,24 @@ const RestaurantDetails = () => {
         </div>
       </div>
 
-      <Cart restaurantId={restaurant._id} />
+      {isAuthenticated() && <Cart restaurantId={restaurant._id} />}
 
-
-      {/* Menus Section */}
       <div>
         <h2 className="text-2xl font-semibold mb-4">Menu</h2>
-          <MenusCarousel restaurantId={id!} handleAddToCart={handleAddToCart} />
+        <MenusCarousel restaurantId={id!} />
       </div>
-
-      {/* Cart Section */}
-     
     </div>
   );
 };
 
 export default RestaurantDetails;
 
+import {
+  useRateEntityMutation,
+  useGetRatingForEntityQuery,
+} from "@/redux/api/ratingApi";
+import { isAuthenticated } from "@/utils/auth";
 
-
-
-
-// RestaurantHeader stays the same
 const RestaurantHeader = ({
   restaurant,
 }: {
@@ -131,13 +91,27 @@ const RestaurantHeader = ({
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const { data } = useGetRatingForEntityQuery({
+    entityType: "Restaurant",
+    entityId: restaurant._id,
+  });
+
+  const [rateEntity] = useRateEntityMutation();
+
   const handleRate = async (rating: number) => {
+    setSubmitting(true);
     try {
-      setSubmitting(true);
-      toast.success("Thanks for your rating!");
+      await rateEntity({
+        entityType: "Restaurant",
+        entityId: restaurant._id,
+        rating,
+      }).unwrap();
       setUserRating(rating);
-    } catch (err) {
-      toast.error("Failed to submit rating.");
+      toast.success("Thanks for your rating!");
+    } catch (err: any) {
+      const msg =
+        err?.data?.message || err?.data?.error || "Rating submission failed.";
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }
@@ -177,30 +151,39 @@ const RestaurantHeader = ({
           </div>
         </div>
       </div>
-      <div className="mt-4  ">
+      <div className="mt-4">
         <hr className="text-gray-500 mb-8" />
-        <p className="text-sm font-medium text-gray-700 mb-1">
-          Rate this restaurant:
-        </p>
-        <div className="flex items-center gap-1">
-          {[...Array(5)].map((_, i) => {
-            const index = i + 1;
-            return (
-              <Star
-                key={i}
-                size={24}
-                className="cursor-pointer"
-                fill={
-                  index <= (hoverRating ?? userRating ?? 0) ? "#facc15" : "none"
-                }
-                stroke="#facc15"
-                onMouseEnter={() => setHoverRating(index)}
-                onMouseLeave={() => setHoverRating(null)}
-                onClick={() => handleRate(index)}
-              />
-            );
-          })}
-        </div>
+        {isAuthenticated() ? (
+          <p className="text-sm font-medium text-gray-700 mb-1">Your Rating:</p>
+        ) : (
+          <p className="text-lg font-bold text-gray-800 mb-1">
+            {" "}
+            Signin or signup to rate this restaurant
+          </p>
+        )}
+        {isAuthenticated() && (
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => {
+              const index = i + 1;
+              return (
+                <Star
+                  key={i}
+                  size={24}
+                  className="cursor-pointer"
+                  fill={
+                    index <= (hoverRating ?? userRating ?? data?.rating)
+                      ? "#facc15"
+                      : "none"
+                  }
+                  stroke="#facc15"
+                  onMouseEnter={() => setHoverRating(index)}
+                  onMouseLeave={() => setHoverRating(null)}
+                  onClick={() => handleRate(index)}
+                />
+              );
+            })}
+          </div>
+        )}
         {submitting && (
           <span className="text-sm text-muted-foreground ml-2">
             Submitting...
@@ -210,5 +193,3 @@ const RestaurantHeader = ({
     </div>
   );
 };
-
-

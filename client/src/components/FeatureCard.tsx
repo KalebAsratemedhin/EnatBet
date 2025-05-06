@@ -7,7 +7,7 @@ interface Props {
 }
 
 const FeatureCard: React.FC<Props> = ({ image, title, description }) => (
-  <div className="bg-white shadow-md rounded-xl overflow-hidden hover:scale-105 transition-transform">
+  <div className="bg-white shadow-md rounded-xl overflow-hidden hover:scale-105 w-60 md:w-auto max-w-6xl transition-transform">
     <img src={image} alt={title} className="h-40 w-full object-cover" />
     <div className="p-4">
       <h3 className="text-xl font-semibold text-gray-800">{title}</h3>

@@ -1,11 +1,18 @@
-import { useAddRestaurantMutation } from "@/api/restaurantApi";
+import { useAddRestaurantMutation } from "@/redux/api/restaurantApi";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMapEvents,
+  Circle,
+} from "react-leaflet";
 import { useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -16,13 +23,19 @@ const restaurantSchema = z.object({
   address: z.string().min(1, "Address is required"),
   latitude: z.coerce.number(),
   longitude: z.coerce.number(),
-  deliveryAreaRadius: z.coerce.number().min(1, "Radius must be greater than 0")
+  deliveryAreaRadius: z.coerce.number().min(1, "Radius must be greater than 0"),
 });
 
 type FormData = z.infer<typeof restaurantSchema>;
 
 const CreateRestaurantForm = () => {
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(restaurantSchema),
   });
 
@@ -32,10 +45,9 @@ const CreateRestaurantForm = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
 
-
   const onSubmit = async (data: FormData) => {
     try {
-      console.log("data rest create ", data, logoFile)
+      console.log("data rest create ", data, logoFile);
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("address", data.address);
@@ -46,7 +58,6 @@ const CreateRestaurantForm = () => {
       if (logoFile) {
         formData.append("logo", logoFile);
       }
-      
 
       await addRestaurant(formData as any).unwrap();
 
@@ -77,12 +88,20 @@ const CreateRestaurantForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4 max-w-md" encType="multipart/form-data">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 mt-4 max-w-md"
+      encType="multipart/form-data"
+    >
       <Input {...register("name")} placeholder="Restaurant Name" />
-      {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
+      {errors.name && (
+        <p className="text-red-500 text-sm">{errors.name.message}</p>
+      )}
 
       <Input {...register("address")} placeholder="Address" />
-      {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
+      {errors.address && (
+        <p className="text-red-500 text-sm">{errors.address.message}</p>
+      )}
 
       {/* Logo input and preview */}
       <div>
@@ -100,17 +119,19 @@ const CreateRestaurantForm = () => {
           className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4
                      file:rounded-full file:border-0 file:text-sm file:font-semibold
                      file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                     
         />
         {logoPreview && (
-          <img src={logoPreview} alt="Logo Preview" className="mt-2 h-24 object-contain" />
+          <img
+            src={logoPreview}
+            alt="Logo Preview"
+            className="mt-2 h-24 object-contain"
+          />
         )}
-
       </div>
 
-      <div style={{ height: '400px', width: '100%' }}>
+      <div style={{ height: "400px", width: "100%" }}>
         <MapContainer
-          style={{ height: "100%", width: "100%", zIndex: '0' }}
+          style={{ height: "100%", width: "100%", zIndex: "0" }}
           center={{ lat: 9.678112707591637, lng: 39.532579779624946 }}
           zoom={8}
         >
@@ -123,7 +144,11 @@ const CreateRestaurantForm = () => {
             <Circle
               center={position}
               radius={radius}
-              pathOptions={{ color: "blue", fillColor: "blue", fillOpacity: 0.2 }}
+              pathOptions={{
+                color: "blue",
+                fillColor: "blue",
+                fillOpacity: 0.2,
+              }}
             />
           )}
         </MapContainer>
@@ -131,12 +156,26 @@ const CreateRestaurantForm = () => {
 
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Input {...register("latitude")} type="number" step="any" placeholder="Latitude" />
-          {errors.latitude && <p className="text-red-500 text-sm">{errors.latitude.message}</p>}
+          <Input
+            {...register("latitude")}
+            type="number"
+            step="any"
+            placeholder="Latitude"
+          />
+          {errors.latitude && (
+            <p className="text-red-500 text-sm">{errors.latitude.message}</p>
+          )}
         </div>
         <div>
-          <Input {...register("longitude")} type="number" step="any" placeholder="Longitude" />
-          {errors.longitude && <p className="text-red-500 text-sm">{errors.longitude.message}</p>}
+          <Input
+            {...register("longitude")}
+            type="number"
+            step="any"
+            placeholder="Longitude"
+          />
+          {errors.longitude && (
+            <p className="text-red-500 text-sm">{errors.longitude.message}</p>
+          )}
         </div>
       </div>
 
@@ -148,7 +187,11 @@ const CreateRestaurantForm = () => {
           placeholder="Delivery Area Radius (meters)"
           onChange={(e) => setRadius(Number(e.target.value))}
         />
-        {errors.deliveryAreaRadius && <p className="text-red-500 text-sm">{errors.deliveryAreaRadius.message}</p>}
+        {errors.deliveryAreaRadius && (
+          <p className="text-red-500 text-sm">
+            {errors.deliveryAreaRadius.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" disabled={isLoading}>

@@ -1,7 +1,7 @@
 import {
   useGetAllRoleRequestsQuery,
   useUpdateRoleRequestStatusMutation,
-} from "@/api/authApi";
+} from "@/redux/api/authApi";
 import {
   Table,
   TableBody,
@@ -13,7 +13,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useMemo } from "react";
-import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 
 const AdminRoleRequestTable = () => {
   const { data: requests = [], isLoading } = useGetAllRoleRequestsQuery();
@@ -99,21 +103,34 @@ const AdminRoleRequestTable = () => {
   });
 
   if (isLoading)
-    return <p className="text-center py-10 text-muted-foreground">Loading role requests...</p>;
+    return (
+      <p className="text-center py-10 text-muted-foreground">
+        Loading role requests...
+      </p>
+    );
 
   if (requests.length === 0)
-    return <p className="text-center py-10 text-muted-foreground">No role requests found.</p>;
+    return (
+      <p className="text-center py-10 text-muted-foreground">
+        No role requests found.
+      </p>
+    );
 
   return (
     <div className="rounded-xl border bg-white shadow-sm">
-      <Table >
+      <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id} className="bg-gray-100">
               {headerGroup.headers.map((header) => (
-                        
-                <TableHead key={header.id} className="text-sm p-4 font-semibold text-gray-700 uppercase tracking-wider" >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
+                <TableHead
+                  key={header.id}
+                  className="text-sm p-4 font-semibold text-gray-700 uppercase tracking-wider"
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
                 </TableHead>
               ))}
             </TableRow>

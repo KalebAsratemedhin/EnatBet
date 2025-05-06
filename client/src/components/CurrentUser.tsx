@@ -1,50 +1,48 @@
-import {useGetCurrentUserQuery, useLogoutMutation } from "@/api/authApi";
+import { useGetCurrentUserQuery, useLogoutMutation } from "@/redux/api/authApi";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { HiBell} from 'react-icons/hi';
+import { HiBell } from "react-icons/hi";
 
 const CurrentUser = () => {
   const { data: user, refetch } = useGetCurrentUserQuery();
 
-  const [dropdownOpen, setDropdownOpen] = useState(false); 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [logout, { isError, error, isSuccess }] = useLogoutMutation();
   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
   const navigator = useNavigate();
 
-
   useEffect(() => {
     if (isError) {
-        console.error('logout error:', error);
-        
+      console.error("logout error:", error);
     }
-    if (isSuccess) {        
-        localStorage.clear();
-        refetch();
-        navigator("/"); 
+    if (isSuccess) {
+      localStorage.clear();
+      refetch();
+      navigator("/");
     }
   }, [isError, isSuccess, error]);
-      
 
-    const handleLogout = async () => {
-      try {
-        await logout().unwrap();
-        
-      } catch (error) {
-        console.error('Logout error:', error);
-        
-      }
-  
-    };
+  const handleLogout = async () => {
+    try {
+      await logout().unwrap();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
-     <div className="flex items-center space-x-4 relative">
+    <div className="flex items-center space-x-4 relative">
       <div className="relative">
         <button
           onClick={toggleDropdown}
           className="flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full text-xl text-gray-700"
         >
           {user?.profileImage ? (
-            <img src={user?.profileImage} alt="Profile" className="w-full h-full rounded-full object-cover" />
+            <img
+              src={user?.profileImage}
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover"
+            />
           ) : (
             user?.name?.charAt(0)?.toUpperCase()
           )}
@@ -53,10 +51,16 @@ const CurrentUser = () => {
         {/* Dropdown Menu */}
         {dropdownOpen && (
           <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg py-2 z-50">
-            <Link to="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <Link
+              to="/profile"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               Profile
             </Link>
-            <Link to="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <Link
+              to="/settings"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+            >
               Settings
             </Link>
             <button
@@ -78,7 +82,7 @@ const CurrentUser = () => {
         </span>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CurrentUser
+export default CurrentUser;

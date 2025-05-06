@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
-import { useCreateMenuMutation } from "@/api/menuApi"; // new import
+import { useCreateMenuMutation } from "@/redux/api/menuApi"; // new import
 
 const createMenuSchema = z.object({
   title: z.string().min(1, "Menu title is required"),
@@ -26,7 +26,6 @@ type Props = {
 type CreateMenuFormData = z.infer<typeof createMenuSchema>;
 
 const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
-
   const {
     register,
     handleSubmit,
@@ -47,36 +46,39 @@ const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
 
   const [createMenu, { isLoading: isCreating }] = useCreateMenuMutation();
 
-
   const onSubmit = async (data: CreateMenuFormData) => {
     try {
       const formData = new FormData();
       formData.append("restaurantId", selectedRestaurantId as string);
       formData.append("menuName", data.title);
-      const menuItemsWithoutImage = data.menuItems.map(({ itemPicture, ...rest }) => rest);
+      const menuItemsWithoutImage = data.menuItems.map(
+        ({ itemPicture, ...rest }) => rest
+      );
       formData.append("menuItems", JSON.stringify(menuItemsWithoutImage));
       data.menuItems.forEach((item) => {
         if (item.itemPicture) formData.append("itemPictures", item.itemPicture);
       });
 
-      console.log("creating", formData)
+      console.log("creating", formData);
 
-      await createMenu({ restaurantId: selectedRestaurantId as string, formData }).unwrap();
+      await createMenu({
+        restaurantId: selectedRestaurantId as string,
+        formData,
+      }).unwrap();
       toast.success("Menu created successfully!");
       // onCreated?.();
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create menu");
     }
   };
-  
-  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-
       <div>
         <Input placeholder="Menu Title" {...register("title")} />
-        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+        {errors.title && (
+          <p className="text-red-500 text-sm">{errors.title.message}</p>
+        )}
       </div>
 
       <div className="space-y-4">
@@ -104,7 +106,6 @@ const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
               }}
             />
 
-
             <Button
               type="button"
               variant="destructive"
@@ -117,9 +118,16 @@ const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
         ))}
 
         {errors.menuItems && (
-          <p className="text-red-500 text-sm">{(errors.menuItems as any).message}</p>
+          <p className="text-red-500 text-sm">
+            {(errors.menuItems as any).message}
+          </p>
         )}
-        <Button type="button" onClick={() => append({ name: "", description: "", price: 0, itemPicture: null })}>
+        <Button
+          type="button"
+          onClick={() =>
+            append({ name: "", description: "", price: 0, itemPicture: null })
+          }
+        >
           Add Menu Item
         </Button>
       </div>

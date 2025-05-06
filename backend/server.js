@@ -3,6 +3,7 @@ import cors from 'cors';
 import connectDB from './config/db.js'; 
 import setupSwagger from './config/swagger.js';
 import authRoutes from './routes/auth.js';
+import ratingRoutes from './routes/rating.js';
 import userRoutes from './routes/user.js';
 import roleRequestRoutes from './routes/roleRequest.js';
 import restaurantRoutes from './routes/restaurant.js';
@@ -37,6 +38,7 @@ app.use('/role-request', roleRequestRoutes);
 app.use("/menu",menuRoutes);
 app.use("/order", orderRoutes);
 app.use("/notification", notificationRoutes);
+app.use("/rating", ratingRoutes)
 
 const server = http.createServer(app); 
 
@@ -65,4 +67,3 @@ app.set('io', io);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,'0.0.0.0', () => console.log(`Server running on port ${PORT}`));
- 

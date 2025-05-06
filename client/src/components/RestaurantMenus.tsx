@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetAllMineRestaurantQuery } from "@/api/restaurantApi";
-import { useGetMenusByRestaurantQuery } from "@/api/menuApi";
+import { useGetAllMineRestaurantQuery } from "@/redux/api/restaurantApi";
+import { useGetMenusByRestaurantQuery } from "@/redux/api/menuApi";
 import {
   Select,
   SelectContent,
@@ -9,25 +9,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import CreateMenuForm from "@/components/CreateMenuForm";
 
 const RestaurantMenusWithCreate = () => {
-  const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(null);
+  const [selectedRestaurantId, setSelectedRestaurantId] = useState<
+    string | null
+  >(null);
   const navigate = useNavigate();
 
   const {
     data: restaurantsData,
     isLoading: isLoadingRestaurants,
     isError: isRestaurantError,
-  } = useGetAllMineRestaurantQuery({page: 1, limit: 100});
+  } = useGetAllMineRestaurantQuery({ page: 1, limit: 100 });
 
   const {
     data: menus,
@@ -46,7 +43,11 @@ const RestaurantMenusWithCreate = () => {
         <h2 className="text-2xl font-semibold">Select Restaurant</h2>
         <Select onValueChange={(value) => setSelectedRestaurantId(value)}>
           <SelectTrigger className="mt-2">
-            <SelectValue placeholder={isLoadingRestaurants ? "Loading..." : "Select Restaurant"} />
+            <SelectValue
+              placeholder={
+                isLoadingRestaurants ? "Loading..." : "Select Restaurant"
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             {restaurantsData?.data?.map((restaurant) => (
@@ -68,7 +69,9 @@ const RestaurantMenusWithCreate = () => {
                 <Skeleton key={i} className="h-32 w-full rounded-xl" />
               ))
             ) : menus?.menus.length === 0 ? (
-              <p className="text-gray-500 col-span-full">No menus found for this restaurant.</p>
+              <p className="text-gray-500 col-span-full">
+                No menus found for this restaurant.
+              </p>
             ) : (
               menus?.menus.map((menu: any) => (
                 <Card
@@ -77,10 +80,14 @@ const RestaurantMenusWithCreate = () => {
                   className="cursor-pointer hover:shadow-lg transition-shadow duration-200 "
                 >
                   <CardHeader>
-                    <CardTitle className="text-lg font-semibold">{menu.menuName}</CardTitle>
+                    <CardTitle className="text-lg font-semibold">
+                      {menu.menuName}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">Click to view details</p>
+                    <p className="text-sm text-muted-foreground">
+                      Click to view details
+                    </p>
                   </CardContent>
                 </Card>
               ))
