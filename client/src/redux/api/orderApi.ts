@@ -1,32 +1,17 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   Order,
   CreateOrderInput,
   UpdateOrderStatusInput,
   PaginatedResponse,
-} from '@/types/order'; // Add PaginatedResponse type
+} from '@/types/order';
+import { api } from '.';
 
-const url = import.meta.env.VITE_API_URL + '/order';
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: url,
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
-  },
-});
-
-export const orderApi = createApi({
-  reducerPath: 'orderApi',
-  baseQuery: baseQuery,
-  tagTypes: ['order', 'my-orders', 'all-orders', 'restaurant-orders'],
+export const orderApi = api.injectEndpoints({
   endpoints: (builder) => ({
     createOrder: builder.mutation<{ success: boolean; order: Order }, CreateOrderInput>({
       query: (orderData) => ({
-        url: '/',
+        url: '/order',
         method: 'POST',
         body: orderData,
       }),
@@ -35,7 +20,7 @@ export const orderApi = createApi({
 
     updateOrderStatus: builder.mutation<{ success: boolean; order: Order }, UpdateOrderStatusInput>({
       query: ({ id, status }) => ({
-        url: `/status/${id}`,
+        url: `/order/status/${id}`,
         method: 'PUT',
         body: { status },
       }),
@@ -44,7 +29,7 @@ export const orderApi = createApi({
 
     cancelOrder: builder.mutation<{ success: boolean; order: Order }, string>({
       query: (id) => ({
-        url: `/cancel/${id}`,
+        url: `/order/cancel/${id}`,
         method: 'PUT',
       }),
       invalidatesTags: ['my-orders'],
@@ -52,7 +37,7 @@ export const orderApi = createApi({
 
     getAllOrders: builder.query<PaginatedResponse<Order>, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 10 }) => ({
-        url: `?page=${page}&limit=${limit}`,
+        url: `/order?page=${page}&limit=${limit}`,
         method: 'GET',
       }),
       providesTags: ['all-orders'],
@@ -60,7 +45,7 @@ export const orderApi = createApi({
 
     getCustomerOrders: builder.query<PaginatedResponse<Order>, { page?: number; limit?: number }>({
       query: ({ page = 1, limit = 10 }) => ({
-        url: `/customer?page=${page}&limit=${limit}`,
+        url: `/order/customer?page=${page}&limit=${limit}`,
         method: 'GET',
       }),
       providesTags: ['my-orders'],
@@ -68,7 +53,7 @@ export const orderApi = createApi({
 
     getRestaurantOrders: builder.query<PaginatedResponse<Order>, { restaurantId: string; page?: number; limit?: number }>({
       query: ({ restaurantId, page = 1, limit = 10 }) => ({
-        url: `/restaurant/${restaurantId}?page=${page}&limit=${limit}`,
+        url: `/order/restaurant/${restaurantId}?page=${page}&limit=${limit}`,
         method: 'GET',
       }),
       providesTags: ['restaurant-orders'],
@@ -76,7 +61,7 @@ export const orderApi = createApi({
 
     getOrderById: builder.query<{ success: boolean; order: Order }, string>({
       query: (orderId) => ({
-        url: `/${orderId}`,
+        url: `/order/${orderId}`,
         method: 'GET',
       }),
       providesTags: ['order'],

@@ -27,7 +27,7 @@ const ORDERS_PER_PAGE = 5;
 
 const OrdersPage = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError } = useGetCustomerOrdersQuery({
+  const { data, isLoading, isError , error} = useGetCustomerOrdersQuery({
     page,
     limit: ORDERS_PER_PAGE,
   });
@@ -51,10 +51,15 @@ const OrdersPage = () => {
   if (isLoading)
     return <p className="text-center mt-10">Loading your orders...</p>;
 
-  if (isError)
+  if (isError){
+
+    console.log('eror ', error);
+    
+
     return (
       <p className="text-center text-red-500 mt-10">Failed to load orders.</p>
     );
+  }
 
   if (orders.length === 0)
     return (

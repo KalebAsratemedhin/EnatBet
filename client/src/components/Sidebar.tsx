@@ -20,6 +20,8 @@ import {
   CheckCircle2Icon,
   FormInputIcon,
   HotelIcon,
+  CarIcon,
+  LucideBike,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -53,6 +55,18 @@ function AppSidebar() {
     },
   ];
 
+  const deliveryPersonItems = [
+    {
+      role: "delivery_person",
+      items: [
+        {
+          title: "Deliveries",
+          url: "/deliveries/delivery-person",
+          icon: LucideBike,
+        },
+      ],
+    },
+  ];
   const adminItems = [
     {
       role: "admin",
@@ -70,7 +84,14 @@ function AppSidebar() {
   const customerItems = [
     {
       role: "customer",
-      items: [{ title: "Orders", url: "/orders", icon: BellElectricIcon }],
+      items: [
+        { title: "Orders", url: "/orders", icon: BellElectricIcon },
+        {
+          title: "Deliveries",
+          url: "/deliveries/customer",
+          icon: LucideBike,
+        },
+      ],
     },
   ];
 
@@ -135,6 +156,7 @@ function AppSidebar() {
         {renderRoleGroup("Restaurant Owner", ownerItems)}
         {renderRoleGroup("Admin", adminItems)}
         {renderRoleGroup("Customer", customerItems)}
+        {renderRoleGroup("Delivery Person", deliveryPersonItems)}
       </SidebarContent>
     </Sidebar>
   );

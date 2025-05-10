@@ -29,5 +29,5 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}), 
-  tagTypes: ["role-requests", "current-user", "Menu", "Menus", 'order', 'my-orders', 'all-orders', 'restaurant-orders', 'my-restaurants', 'a-restaurant', 'all-restaurants', 'active-restaurants']
+  tagTypes: ["role-requests", "current-user", "Menu", "Menus", 'order', 'my-orders', 'all-orders', 'restaurant-orders', 'my-restaurants', 'a-restaurant', 'all-restaurants', 'active-restaurants', 'delivery-person-deliveries', 'all-deliveries', 'customer-deliveries']
 });
