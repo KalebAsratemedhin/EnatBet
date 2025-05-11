@@ -35,10 +35,10 @@ const RestaurantDetails = () => {
   const lng = restaurant.location?.coordinates[1];
 
   return (
-    <div className="mx-12 md:px-8 py-10 space-y-10">
-      <div className="flex gap-8 flex-col lg:flex-row justify-between">
+    <div className="p-4 md:p-6 lg:p-8 w-full max-w-[100vw]">
+      <div className="flex gap-8 flex-col xl:flex-row  justify-between">
         <RestaurantHeader restaurant={restaurant} />
-        <div className="h-[500px] w-full lg:w-1/2 rounded-2xl overflow-hidden shadow-md">
+        <div className="h-[500px] w-full xl:w-1/2 rounded-2xl overflow-hidden shadow-md">
           <MapContainer
             center={{ lat, lng }}
             zoom={15}
@@ -66,7 +66,7 @@ const RestaurantDetails = () => {
 
       {isAuthenticated() && <Cart restaurantId={restaurant._id} />}
 
-      <div>
+      <div className="px-10">
         <h2 className="text-2xl font-semibold mb-4">Menu</h2>
         <MenusCarousel restaurantId={id!} />
       </div>

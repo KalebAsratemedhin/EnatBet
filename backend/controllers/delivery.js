@@ -1,4 +1,5 @@
 import Delivery from "../models/delivery.js";
+import DeliveryPerson from "../models/deliveryPerson.js";
 import { deliveryService } from "../services/deliveryService.js";
 import { checkOwnership } from "../utils/index.js";
 
@@ -7,13 +8,13 @@ export const updateDeliveryStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const delivery = await Delivery.findById(id);
+    const delivery = await Delivery.findById(id).populate("deliveryPersonId");
 
     if (!delivery) {
       return res.status(404).json({ message: "Delivery not found." });
     }
 
-    if (!checkOwnership(delivery.deliveryPersonId, req.user.id)) {
+    if (!checkOwnership(delivery.deliveryPersonId.userId, req.user.id)) {
       return res
         .status(401)
         .json({ message: "You are not authorized to update this order." });
@@ -92,8 +93,14 @@ export const getDeliveryPersonDeliveries = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
+    const deliverer = await DeliveryPerson.findOne({ userId: id });
+
     const { deliveries, total } =
-      await deliveryService.getDeliveryPersonDeliveries(id, page, limit);
+      await deliveryService.getDeliveryPersonDeliveries(
+        deliverer._id,
+        page,
+        limit
+      );
 
     res.status(200).json({
       success: true,

@@ -13,7 +13,6 @@ import DeliveryDashboard from "./components/DeliveryPersonDashboard";
 import AdminDashboard from "./components/AdminDashboard";
 import SettingsPage from "./pages/Settings";
 import ProfilePage from "./pages/Profile";
-import RoleManagement from "./components/RoleManagement";
 import RestaurantManagement from "./pages/RestaurantManagement";
 import MenuDetailsPage from "./pages/MenuDetails";
 import AdminRestaurantList from "./components/AdminRestaurantList";
@@ -28,16 +27,22 @@ import RestaurantMenusWithCreate from "./components/RestaurantMenus";
 import MyRestaurants from "./components/MyRestaurants";
 import DeliveryPersonDeliveries from "./components/DeliveryPersonDeliveries";
 import CustomerDeliveries from "./components/CustomerDeliveries";
+import UserManagementTable from "./pages/UserManagement";
+import { isAuthenticated } from "./utils/auth";
 
 const App: React.FC = () => {
+  const auth = isAuthenticated();
   return (
     <>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/restaurants" element={<Restaurants />} />
-          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+          {!auth && <Route path="/restaurants" element={<Restaurants />} />}
+
+          {!auth && (
+            <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+          )}
         </Route>
 
         <Route path="/signup" element={<Signup />} />
@@ -52,7 +57,6 @@ const App: React.FC = () => {
         >
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/role-management" element={<RoleManagement />} />
           <Route path="/menu/:menuId" element={<MenuDetailsPage />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<OrdersPage />} />
@@ -78,11 +82,18 @@ const App: React.FC = () => {
           />
 
           <Route path="/dashboard/customer" element={<CustomerDashboard />} />
+          <Route path="/user-management" element={<UserManagementTable />} />
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+
           <Route
-            path="/dashboard/restaurant"
+            path="/dashboard/restaurant_owner"
             element={<RestaurantOwnerDashboard />}
           />
-          <Route path="/dashboard/delivery" element={<DeliveryDashboard />} />
+          <Route
+            path="/dashboard/delivery_person"
+            element={<DeliveryDashboard />}
+          />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route
             path="/restaurant-management"

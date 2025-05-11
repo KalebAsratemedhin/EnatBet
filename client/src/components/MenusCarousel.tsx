@@ -74,35 +74,32 @@ const MenusCarousel = ({ restaurantId }: { restaurantId: string }) => {
   const dispatch = useDispatch();
 
   return (
-    <div>
+    <div className="w-full max-w-[100vw] overflow-visible">
       {data && data.menus.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full px-2 sm:px-4">
           {data.menus.map((menu) => (
             <div key={menu._id} className="space-y-2">
               <h3 className="text-xl font-semibold text-gray-800">
                 {menu.menuName}
               </h3>
-              <Carousel
-                opts={{ loop: true, align: "center" }}
-                className="w-full"
-              >
+              <Carousel opts={{ loop: true, align: "center" }}>
                 <CarouselPrevious />
                 <CarouselContent>
-                  {menu.menuItems.map((item, index) => {
-                    return (
-                      <CarouselItem
-                        key={index}
-                        className="md:basis-1/3 lg:basis-1/4 p-2"
-                      >
-                        <Card className="h-full rounded-xl overflow-hidden shadow pt-0">
-                          {item.itemPicture && (
-                            <img
-                              src={item.itemPicture}
-                              alt={item.name}
-                              className="w-full h-40 object-cover"
-                            />
-                          )}
-                          <CardContent className="p-4 space-y-1">
+                  {menu.menuItems.map((item, index) => (
+                    <CarouselItem
+                      key={index}
+                      className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-2"
+                    >
+                      <Card className="h-full flex flex-col justify-between rounded-xl overflow-hidden shadow pt-0">
+                        {item.itemPicture && (
+                          <img
+                            src={item.itemPicture}
+                            alt={item.name}
+                            className="w-full h-40 object-cover"
+                          />
+                        )}
+                        <CardContent className="p-4 space-y-1 flex-1 flex flex-col justify-between">
+                          <div>
                             <h4 className="text-base font-semibold truncate">
                               {item.name}
                             </h4>
@@ -113,27 +110,26 @@ const MenusCarousel = ({ restaurantId }: { restaurantId: string }) => {
                               ETB {item.price.toFixed(2)}
                             </p>
                             <MenuItemRating item={item} menuId={menu._id} />
-
-                            <Button
-                              className="mt-2"
-                              variant="default"
-                              onClick={() => {
-                                if (isAuthenticated()) {
-                                  dispatch(add({ item, restaurantId }));
-                                } else {
-                                  toast.warning(
-                                    "Please sign in to add items to your cart"
-                                  );
-                                }
-                              }}
-                            >
-                              Add to order
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </CarouselItem>
-                    );
-                  })}
+                          </div>
+                          <Button
+                            className="mt-3"
+                            variant="default"
+                            onClick={() => {
+                              if (isAuthenticated()) {
+                                dispatch(add({ item, restaurantId }));
+                              } else {
+                                toast.warning(
+                                  "Please sign in to add items to your cart"
+                                );
+                              }
+                            }}
+                          >
+                            Add to order
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
                 </CarouselContent>
                 <CarouselNext />
               </Carousel>

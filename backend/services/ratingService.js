@@ -2,6 +2,7 @@ import Restaurant from "../models/Restaurant.js";
 import Menu from "../models/Menu.js";
 import Delivery from "../models/delivery.js";
 import mongoose from "mongoose";
+import DeliveryPerson from "../models/deliveryPerson.js";
 
 class RatingService {
   checkWhoRates(currentUserId, raterId) {
@@ -24,11 +25,19 @@ class RatingService {
 
   async updateEntityRating(entityType, entityId, newRating, oldRating = null) {
     if (entityType === "Restaurant") {
-      this.updateRestaurantRating(new mongoose.Types.ObjectId(entityId), newRating, oldRating);
+      this.updateRestaurantRating(
+        new mongoose.Types.ObjectId(entityId),
+        newRating,
+        oldRating
+      );
     } else if (entityType === "MenuItem") {
       this.updateMenuItemRating(entityId, newRating, oldRating);
     } else if (entityType === "Delivery_Person") {
-      this.updateDeliveryPersonRating(new mongoose.Types.ObjectId(entityId), newRating, oldRating);
+      this.updateDeliveryPersonRating(
+        new mongoose.Types.ObjectId(entityId),
+        newRating,
+        oldRating
+      );
     }
   }
 
@@ -53,7 +62,9 @@ class RatingService {
 
   async updateMenuItemRating(menuItemId, newRating, oldRating) {
     const [itemId, menuId] = menuItemId.split(",");
-    const menu = await Menu.findOne({_id: new mongoose.Types.ObjectId(menuId)} );
+    const menu = await Menu.findOne({
+      _id: new mongoose.Types.ObjectId(menuId),
+    });
 
     if (!menu) {
       return;
@@ -77,11 +88,13 @@ class RatingService {
     menuItem.rating = newAverage;
     menuItem.totalRating = newTotalRating;
 
-    await menu.save(); 
+    await menu.save();
   }
 
   async updateDeliveryPersonRating(deliveryPersonId, newRating, oldRating) {
-    const deliveryPerson = await Delivery.findById(deliveryPersonId);
+    console.log(deliveryPersonId, "delivery personId");
+
+    const deliveryPerson = await DeliveryPerson.findById(deliveryPersonId);
     if (!deliveryPerson) {
       console.log("Delivery person not found");
       return;
@@ -97,7 +110,7 @@ class RatingService {
       oldRating
     );
 
-    await Delivery.findByIdAndUpdate(deliveryPersonId, {
+    await DeliveryPerson.findByIdAndUpdate(deliveryPersonId, {
       rating: newAverage,
       totalRating: newTotalRating,
     });

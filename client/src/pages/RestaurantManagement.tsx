@@ -8,9 +8,7 @@ import { useEffect, useState } from "react";
 const RestaurantManagement = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const tabFromPath = location.pathname.split("/").pop() || "create";
-
+  const tabFromPath = location.hash.replace("#", "") || "create";
   const [tab, setTab] = useState(tabFromPath);
 
   useEffect(() => {
@@ -23,26 +21,56 @@ const RestaurantManagement = () => {
   };
 
   return (
-    <div className="p-4">
-      <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="h-12 w-2/3">
-          <TabsTrigger value="create">Create Restaurant</TabsTrigger>
-          <TabsTrigger value="mine">My Restaurants</TabsTrigger>
-          <TabsTrigger value="menus">Menus</TabsTrigger>
-        </TabsList>
+    <div className="p-6 md:p-10">
+      <div className="max-w-5xl space-y-6 mx-auto">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Restaurant Management
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Manage your restaurants, menus, and create new listings.
+          </p>
+        </div>
 
-        <TabsContent value="create">
-          <CreateRestaurantForm />
-        </TabsContent>
+        <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
+          <div className="flex justify-center">
+            <TabsList className="bg-background border shadow-sm w-full h-12 rounded-xl p-1 flex justify-between">
+              <TabsTrigger
+                value="create"
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white rounded-lg"
+              >
+                Create
+              </TabsTrigger>
+              <TabsTrigger
+                value="mine"
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white rounded-lg"
+              >
+                My Restaurants
+              </TabsTrigger>
+              <TabsTrigger
+                value="menus"
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-white rounded-lg"
+              >
+                Menus
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        <TabsContent value="mine">
-          <MyRestaurants />
-        </TabsContent>
+          <div className="mt-6 mx-auto min-w-10/12">
+            <TabsContent value="create" className="animate-in fade-in-0">
+              <CreateRestaurantForm />
+            </TabsContent>
 
-        <TabsContent value="menus">
-          <RestaurantMenus />
-        </TabsContent>
-      </Tabs>
+            <TabsContent value="mine" className="animate-in fade-in-0">
+              <MyRestaurants />
+            </TabsContent>
+
+            <TabsContent value="menus" className="animate-in fade-in-0">
+              <RestaurantMenus />
+            </TabsContent>
+          </div>
+        </Tabs>
+      </div>
     </div>
   );
 };

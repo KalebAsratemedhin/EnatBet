@@ -1,126 +1,103 @@
-import { Link, NavLink } from 'react-router-dom';
-import { isAuthenticated } from '../utils/auth';
-import CurrentUser from './CurrentUser';
-import { SidebarTrigger } from './ui/sidebar';
-import { FC } from 'react';
+import { Link, NavLink } from "react-router-dom";
+import { isAuthenticated } from "../utils/auth";
+import CurrentUser from "./CurrentUser";
+import { SidebarTrigger } from "./ui/sidebar";
+import { FC } from "react";
+
+const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
+  `transition-colors font-medium px-3 py-2 rounded-md ${
+    isActive ? "text-red-600 font-semibold" : "text-gray-700 hover:text-red-500"
+  }`;
 
 export const AuthHeader: FC = () => {
+  return (
+    <header className="bg-white shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-50 h-20">
+      {/* Sidebar for mobile */}
+      <div className="md:hidden">
+        <SidebarTrigger />
+      </div>
 
-  return (  
-      <header className="bg-white shadow-lg py-5 px-6 flex justify-between items-center h-20 sticky top-0 z-50">
+      {/* Brand */}
+      <Link
+        to="/"
+        className="text-3xl font-bold text-red-600 tracking-wide  md:hidden"
+      >
+        EnatBet
+      </Link>
 
-        <div className="md:hidden">
-          <SidebarTrigger/>
+      {/* Desktop nav links */}
+      <nav className="hidden md:flex gap-6">
+        <NavLink to="/" className={navLinkClasses}>
+          Home
+        </NavLink>
+        <NavLink to="/about" className={navLinkClasses}>
+          About
+        </NavLink>
+        <NavLink to="/restaurants" className={navLinkClasses}>
+          Restaurants
+        </NavLink>
+      </nav>
+
+      {/* Auth buttons or current user */}
+      {isAuthenticated() ? (
+        <CurrentUser />
+      ) : (
+        <div className="flex gap-3">
+          <Link
+            to="/signup"
+            className="px-5 py-2 rounded-full border border-red-500 text-red-500 font-semibold hover:bg-red-50 transition"
+          >
+            Sign Up
+          </Link>
+          <Link
+            to="/signin"
+            className="px-5 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+          >
+            Sign In
+          </Link>
         </div>
-
-        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
-        <div className="space-x-4 hidden md:flex">
-          <NavLink
-            key={'Home'}
-            to={'/'}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
-          >
-            Home
-          </NavLink>
-          <NavLink
-            key={'About'}
-            to={'/about'}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
-          >
-            About
-          </NavLink>
-          <NavLink
-              key={'Restaurants'}
-              to={'/restaurants'}
-              className={({ isActive }) =>
-                isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-              }
-            >
-              Restaurants
-            </NavLink>
-          </div>
-        {isAuthenticated() ? <CurrentUser/> : (
-          <div className="space-x-4">
-            
-            <Link
-              to="/signup"
-              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
-            >
-              Signup
-            </Link>
-            <Link
-              to="/signin"
-              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
-            >
-              Signin
-            </Link>
-          </div>
-        )}
-      </header>
+      )}
+    </header>
   );
 };
-
 
 export const BasicHeader: FC = () => {
-
   return (
-    <>
-      <header className="bg-white shadow-lg py-5 px-6 flex justify-between items-center h-20 sticky top-0 z-50">
+    <header className="bg-white shadow-md px-6 py-4 flex items-center justify-between sticky top-0 z-50 h-20">
+      <Link to="/" className="text-3xl font-bold text-red-600 ">
+        EnatBet
+      </Link>
 
-        <h1 className="text-2xl font-bold text-red-500 tracking-wide">EnatBet</h1>
-        <div className="space-x-4 hidden md:flex">
-          <NavLink
-            key={'Home'}
-            to={'/'}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
+      <nav className="hidden md:flex gap-6">
+        <NavLink to="/" className={navLinkClasses}>
+          Home
+        </NavLink>
+        <NavLink to="/about" className={navLinkClasses}>
+          About
+        </NavLink>
+        <NavLink to="/restaurants" className={navLinkClasses}>
+          Restaurants
+        </NavLink>
+      </nav>
+
+      {isAuthenticated() ? (
+        <CurrentUser />
+      ) : (
+        <div className="flex gap-3">
+          <Link
+            to="/signup"
+            className="px-5 py-2 rounded-full border border-red-500 text-red-500 font-semibold hover:bg-red-50 transition"
           >
-            Home
-          </NavLink>
-          <NavLink
-            key={'About'}
-            to={'/about'}
-            className={({ isActive }) =>
-              isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-            }
+            Sign Up
+          </Link>
+          <Link
+            to="/signin"
+            className="px-5 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition"
           >
-            About
-          </NavLink>
-          <NavLink
-              key={'Restaurants'}
-              to={'/restaurants'}
-              className={({ isActive }) =>
-                isActive ? 'text-red-500 font-semibold' : 'text-gray-700'
-              }
-            >
-              Restaurants
-            </NavLink>
-          </div>
-          {isAuthenticated() ? <CurrentUser/> : (
-          <div className="space-x-4">
-            
-            <Link
-              to="/signup"
-              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
-            >
-              Signup
-            </Link>
-            <Link
-              to="/signin"
-              className="bg-white text-red-500 px-6 py-3 font-semibold rounded-full shadow-md hover:bg-gray-100"
-            >
-              Signin
-            </Link>
-          </div>
-        )}
-      </header>
-    </>
+            Sign In
+          </Link>
+        </div>
+      )}
+    </header>
   );
 };
-
-

@@ -46,7 +46,7 @@ class DeliveryService {
       Delivery.find()
         .populate({
           path: "orderId",
-          match: { customerID: customerId }, // Filters orders by customer
+          match: { customerID: customerId },
           populate: [
             { path: "customerID", select: ["name", "phoneNumber"] },
             { path: "restaurantID", select: "name" },
@@ -54,24 +54,23 @@ class DeliveryService {
         })
         .populate({
           path: "deliveryPersonId",
-          populate: [
-            {
-              path: "userId",
-              select: ["name", "phoneNumber", "profileImage"],
-            },
-          ],
-          select: ["rating"],
-        }) // Avoids strict population errors
+          select: "rating",
+          populate: {
+            path: "userId",
+            select: ["name", "phoneNumber", "profileImage"],
+          },
+        })
         .skip(skip)
         .limit(limit)
-        .lean(), // Optional: convert Mongoose docs to plain objects
+        .lean(),
+
       Delivery.countDocuments().populate({
         path: "orderId",
         match: { customerID: customerId },
       }),
     ]);
 
-    console.log("Deliveries:", deliveries, deliveries[0].deliveryPersonId);
+    console.log("Deliveries:", deliveries[0].deliveryPersonId);
 
     // Filter out any deliveries where the orderId was null due to the match
     const filteredDeliveries = deliveries.filter((d) => d.orderId);
@@ -84,7 +83,7 @@ class DeliveryService {
       status: "free",
     }).populate("userId");
     if (freePerson) {
-      return freePerson.userId;
+      return freePerson._id;
     }
 
     const now = new Date();
@@ -104,8 +103,8 @@ class DeliveryService {
       {
         $lookup: {
           from: "deliverypeople",
-          localField: "deliveryPersonID",
-          foreignField: "userId",
+          localField: "deliveryPersonId",
+          foreignField: "_id",
           as: "deliveryPerson",
         },
       },
@@ -117,7 +116,7 @@ class DeliveryService {
       },
       {
         $group: {
-          _id: "$deliveryPersonID",
+          _id: "$deliveryPersonId",
           earliestDeliveryTime: { $min: "$estimatedDeliveryTime" },
           deliveriesToday: {
             $sum: {
@@ -136,11 +135,9 @@ class DeliveryService {
     ]);
 
     if (deliveries.length > 0) {
-      const deliveryPersonUserId = deliveries[0]._id;
-      const person = await DeliveryPerson.findOne({
-        userId: deliveryPersonUserId,
-      }).populate("userId");
-      return person.userId;
+      console.log("find delv person delvs ", deliveries);
+
+      return deliveries[0]._id;
     }
 
     throw new Error("No delivery person available at the moment.");
@@ -154,16 +151,15 @@ class DeliveryService {
     console.log("Found delivery person:", deliveryPerson);
 
     const assignment = await Delivery.create({
-      deliveryPersonId: deliveryPerson._id,
+      deliveryPersonId: deliveryPerson,
       orderId,
       estimatedDeliveryTime: new Date(Date.now() + 30 * 60 * 1000),
     });
 
-    if (deliveryPerson.status === "free") {
-      await DeliveryPerson.updateOne(
-        { userId: deliveryPerson._id },
-        { status: "busy" }
-      );
+    const deliverer = await DeliveryPerson.findById(deliveryPerson);
+    if (deliverer && deliverer.status === "free") {
+      deliverer.status = "busy";
+      await deliverer.save();
     }
 
     return assignment;
@@ -172,10 +168,10 @@ class DeliveryService {
   async freeDeliveryPerson(deliveryPersonId) {
     const pendingAssignments = await Delivery.countDocuments({
       deliveryPersonId: deliveryPersonId,
-      status: "assigned" | "on_the_way",
+      status: "assigned" | "picked_up",
     }).sort({ assignedAt: 1 });
 
-    const deliveryPerson = await User.findById(deliveryPersonId);
+    const deliveryPerson = await DeliveryPerson.findById(deliveryPersonId);
 
     if (pendingAssignments == 0) {
       deliveryPerson.status = "free";

@@ -1,4 +1,5 @@
 import {
+  CustomerPopulatedDelivery,
   Delivery,
   PaginatedResponse,
   PopulatedDelivery,
@@ -36,7 +37,7 @@ export const deliveryApi = api.injectEndpoints({
     }),
 
     getCustomerDeliveries: builder.query<
-      PaginatedResponse<PopulatedDelivery>,
+      PaginatedResponse<CustomerPopulatedDelivery>,
       { page?: number; limit?: number }
     >({
       query: ({ page = 1, limit = 10 }) => ({

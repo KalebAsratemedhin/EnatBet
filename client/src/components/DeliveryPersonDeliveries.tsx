@@ -185,15 +185,8 @@ const DeliveryPersonDeliveries = () => {
                   Mark as Picked Up
                 </Button>
               )}
+
               {delivery.status === "picked_up" && (
-                <Button
-                  onClick={() => handleStatusUpdate(delivery._id, "on_the_way")}
-                  disabled={isUpdating}
-                >
-                  Mark as On the Way
-                </Button>
-              )}
-              {delivery.status === "on_the_way" && (
                 <>
                   <Button
                     onClick={() =>

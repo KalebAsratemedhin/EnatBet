@@ -21,6 +21,10 @@ const signupSchema = yup.object().shape({
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
+  role: yup
+    .string()
+    .oneOf(["restaurant_owner", "delivery_person", "customer"], "Invalid role")
+    .required("Role is required"),
 });
 
 type SignupFormValues = yup.InferType<typeof signupSchema>;
@@ -33,6 +37,7 @@ const SignupForm: React.FC = () => {
   } = useForm<SignupFormValues>({
     resolver: yupResolver(signupSchema),
   });
+
   const [signup, { isError, isLoading, error, isSuccess }] =
     useSignupMutation();
   const navigator = useNavigate();
@@ -42,15 +47,10 @@ const SignupForm: React.FC = () => {
   } | null>(null);
 
   const onSubmit = async (data: SignupFormValues) => {
-    console.log("signing up", data);
     try {
       const response = await signup(data).unwrap();
-      console.log("response", response);
-      // Assuming response = { token, user }
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", JSON.stringify(response.user));
-      console.log("User signed up:", response.user);
-      // You can redirect or show a success message
     } catch (err) {
       console.error("Signup error:", err);
     }
@@ -62,11 +62,10 @@ const SignupForm: React.FC = () => {
     }
     if (isSuccess) {
       setSnackbar({ message: "Signed up", type: "success" });
-
       const user = JSON.parse(localStorage.getItem("user") || "{}");
       navigator(`/dashboard/${user.role}`);
     }
-  }, [isError, isSuccess, error]);
+  }, [isError, isSuccess]);
 
   return (
     <div className="p-10 bg-white rounded-lg shadow-md">
@@ -108,6 +107,29 @@ const SignupForm: React.FC = () => {
           error={errors.password?.message}
         />
 
+        {/* Dropdown for Role Selection */}
+        <div className="mb-4">
+          <label
+            htmlFor="role"
+            className="block text-gray-700 font-medium mb-1"
+          >
+            Select Role
+          </label>
+          <select
+            id="role"
+            {...register("role")}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-red-500"
+          >
+            <option value="">-- Choose a Role --</option>
+            <option value="restaurant_owner">Restaurant Owner</option>
+            <option value="delivery_person">Delivery Person</option>
+            <option value="customer">Customer</option>
+          </select>
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+          )}
+        </div>
+
         {isLoading ? (
           <LoadingSpinner />
         ) : (
@@ -118,6 +140,7 @@ const SignupForm: React.FC = () => {
             Sign Up
           </button>
         )}
+
         <p className="text-sm text-gray-600 mt-4 text-center">
           Already have an account?{" "}
           <Link to="/signin" className="text-red-500 hover:underline">
@@ -137,6 +160,7 @@ const SignupForm: React.FC = () => {
           .
         </p>
       </form>
+
       {snackbar && (
         <Snackbar
           message={snackbar.message}

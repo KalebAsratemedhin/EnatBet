@@ -55,7 +55,7 @@ const SigninForm: React.FC = () => {
 
       const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-      navigator(`/dashboard/${user.role[0]}`);
+      navigator(`/dashboard/${user.role}`);
     }
   }, [isError, isSuccess, error]);
 

@@ -6,9 +6,9 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
+  SidebarMenuButton, // We'll wrap NavLink directly in SidebarMenuItem for better control
   SidebarTrigger,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/sidebar"; // Assuming these are shadcn/ui-like components
 import { useGetCurrentUserQuery } from "@/redux/api/authApi";
 import {
   Home,
@@ -20,60 +20,72 @@ import {
   CheckCircle2Icon,
   FormInputIcon,
   HotelIcon,
-  CarIcon,
-  LucideBike,
+  LucideBike, // Assuming CarIcon was a typo or not used
+  Briefcase,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import CurrentUser from "./CurrentUser";
+
+// Define a type for menu items for better type safety
+type MenuItemType = {
+  title: string;
+  url: string;
+  icon: React.ElementType; // Use React.ElementType for component icons
+};
+
+type RoleGroupItemType = {
+  role: string;
+  items: MenuItemType[];
+};
 
 function AppSidebar() {
   const { data: user } = useGetCurrentUserQuery(undefined);
   const roles: string[] = user?.role || [];
 
-  const baseItems = [
+  const baseItems: MenuItemType[] = [
     { title: "Home", url: "/", icon: Home },
     { title: "Profile", url: "/profile", icon: Contact },
-    { title: "Settings", url: "/settings", icon: Settings },
-    {
-      title: "Role Management",
-      url: "/role-management",
-      icon: CheckCircle2Icon,
-    },
     { title: "Restaurants", url: "/restaurants", icon: HotelIcon },
+    { title: "Settings", url: "/settings", icon: Settings },
   ];
 
-  const ownerItems = [
+  const ownerItems: RoleGroupItemType[] = [
     {
       role: "restaurant_owner",
       items: [
         {
-          title: "Restaurant Management",
-          url: "/restaurant-management",
+          title: "My Restaurant", // More specific title
+          url: "/restaurant-management/#create",
           icon: Utensils,
         },
-        { title: "Orders", url: "/restaurant-orders", icon: BellElectricIcon },
+        {
+          title: "Restaurant Orders",
+          url: "/restaurant-orders",
+          icon: BellElectricIcon,
+        },
       ],
     },
   ];
 
-  const deliveryPersonItems = [
+  const deliveryPersonItems: RoleGroupItemType[] = [
     {
       role: "delivery_person",
       items: [
         {
-          title: "Deliveries",
+          title: "My Deliveries",
           url: "/deliveries/delivery-person",
           icon: LucideBike,
         },
       ],
     },
   ];
-  const adminItems = [
+  const adminItems: RoleGroupItemType[] = [
     {
       role: "admin",
       items: [
-        { title: "Manage Users", url: "/users", icon: Users },
+        { title: "Manage Users", url: "/user-management", icon: Users },
         {
-          title: "Restaurant Applications",
+          title: "Restaurant Apps", // Shorter title
           url: "/restaurant-applications",
           icon: FormInputIcon,
         },
@@ -81,13 +93,13 @@ function AppSidebar() {
     },
   ];
 
-  const customerItems = [
+  const customerItems: RoleGroupItemType[] = [
     {
       role: "customer",
       items: [
-        { title: "Orders", url: "/orders", icon: BellElectricIcon },
+        { title: "My Orders", url: "/orders", icon: BellElectricIcon },
         {
-          title: "Deliveries",
+          title: "Track Deliveries",
           url: "/deliveries/customer",
           icon: LucideBike,
         },
@@ -95,68 +107,87 @@ function AppSidebar() {
     },
   ];
 
-  const renderMenuItem = (item: { title: string; url: string; icon: any }) => (
+  const renderMenuItem = (item: MenuItemType) => (
     <SidebarMenuItem key={item.title}>
-      <SidebarMenuButton>
-        <NavLink
-          to={item.url}
-          className={({ isActive }) =>
-            `flex items-center gap-2 py-2 text-[15px] rounded hover:bg-muted transition-colors ${
-              isActive ? "text-red-500 font-semibold" : ""
-            }`
-          }
-        >
-          <item.icon className="w-5 h-5 shrink-0" />
-          <span className="whitespace-nowrap">{item.title}</span>
-        </NavLink>
-      </SidebarMenuButton>
+      {/* Use asChild if SidebarMenuItem can pass props down to NavLink */}
+      <NavLink
+        to={item.url}
+        className={({ isActive }) =>
+          `flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-150 ease-in-out
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+           ${
+             isActive
+               ? "bg-primary text-primary-foreground shadow-sm" // Active: Primary background, contrasting text
+               : "text-muted-foreground hover:bg-accent hover:text-accent-foreground" // Inactive: Muted text, accent on hover
+           }`
+        }
+      >
+        <item.icon className="h-5 w-5 shrink-0" />
+        <span className="whitespace-nowrap truncate">{item.title}</span>
+      </NavLink>
     </SidebarMenuItem>
   );
 
   const renderRoleGroup = (
     label: string,
-    items: {
-      role: string;
-      items: { title: string; url: string; icon: any }[];
-    }[]
+    roleSpecificItems: RoleGroupItemType[]
   ) => {
-    const filteredItems = items
+    const filteredItems = roleSpecificItems
       .filter((group) => roles.includes(group.role))
       .flatMap((group) => group.items);
+
     if (!filteredItems.length) return null;
 
     return (
       <SidebarGroup>
-        <SidebarGroupLabel className="text-lg px-3 hidden md:block">
+        <SidebarGroupLabel className="px-4 pt-4 text-xs font-semibold uppercase text-muted-foreground tracking-wider hidden md:block">
           {label}
         </SidebarGroupLabel>
         <SidebarGroupContent>
-          <SidebarMenu>{filteredItems.map(renderMenuItem)}</SidebarMenu>
+          <SidebarMenu className="space-y-1 px-2 pt-4 md:px-3">
+            {filteredItems.map(renderMenuItem)}
+          </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
     );
   };
 
   return (
-    <Sidebar collapsible="icon" className="[--sidebar-width:16rem]">
-      <div className="flex justify-end p-2">
-        <SidebarTrigger />
+    <Sidebar
+      className="[--sidebar-width:16rem] border-r bg-card text-card-foreground" // Added border and background
+    >
+      {/* Optional: App Name / Logo Area */}
+      <div className="flex h-16 items-center justify-between border-b px-4">
+        <NavLink to="/" className="flex items-center gap-2">
+          <span className="text-lg font-semibold hidden md:inline">
+            EnatBet
+          </span>
+        </NavLink>
+        <div className="md:hidden">
+          {" "}
+          {/* Show trigger only on mobile if logo area takes space */}
+          <SidebarTrigger />
+        </div>
       </div>
 
-      <SidebarContent>
+      <SidebarContent className="flex-grow overflow-y-auto py-3">
+        {/* General Items Group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-lg px-3 hidden md:block">
+          <SidebarGroupLabel className="px-4 pt-4 pb-2 text-xs font-semibold uppercase text-muted-foreground tracking-wider hidden md:block">
             General
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{baseItems.map(renderMenuItem)}</SidebarMenu>
+            <SidebarMenu className="space-y-1 px-2 md:px-3">
+              {baseItems.map(renderMenuItem)}
+            </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {renderRoleGroup("Restaurant Owner", ownerItems)}
-        {renderRoleGroup("Admin", adminItems)}
-        {renderRoleGroup("Customer", customerItems)}
-        {renderRoleGroup("Delivery Person", deliveryPersonItems)}
+        {/* Role-Specific Groups */}
+        {renderRoleGroup("Restaurant", ownerItems)}
+        {renderRoleGroup("Administration", adminItems)}
+        {renderRoleGroup("My Account", customerItems)}
+        {renderRoleGroup("Delivery Tasks", deliveryPersonItems)}
       </SidebarContent>
     </Sidebar>
   );
