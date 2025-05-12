@@ -12,10 +12,12 @@ const PaymentConfirmation = () => {
   });
 
   useEffect(() => {
+    console.log("ordeer", data);
+
     if (!id) {
       console.error("No order ID found in URL");
     }
-  }, [id]);
+  }, [id, data]);
 
   if (!id) {
     return <div className="p-4 text-red-500">Invalid confirmation link</div>;
@@ -61,7 +63,7 @@ const PaymentConfirmation = () => {
           <ul className="list-disc list-inside ml-2">
             {order?.orderDetails?.map((item: any) => (
               <li key={item._id}>
-                {item.name} x {item.quantity}
+                {item.item.name} x {item.quantity}
               </li>
             ))}
           </ul>
