@@ -1,5 +1,7 @@
 import Order from "../models/order.js";
+import jwt from "jsonwebtoken";
 import Restaurant from "../models/Restaurant.js";
+import User from "../models/user.js";
 import { deliveryService } from "../services/deliveryService.js";
 import OrderService from "../services/orderService.js";
 import { checkOwnership } from "../utils/index.js";
@@ -10,6 +12,7 @@ export const createOrder = async (req, res) => {
       ...req.body,
       customerID: req.user.id,
     };
+    const user = await User.findById(req.user.id);
 
     if (!orderData.restaurantID) {
       return res.status(400).json({ message: "No restaurant provided." });
@@ -25,7 +28,11 @@ export const createOrder = async (req, res) => {
     }
 
     const newOrder = await OrderService.createOrder(orderData);
-    res.status(201).json({ success: true, order: newOrder });
+    res.status(201).json({
+      success: true,
+      message: "Order created successfully.",
+      order: newOrder,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -217,5 +224,85 @@ export const cancelOrder = async (req, res) => {
   } catch (error) {
     console.error("Error cancelling order:", error);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const payForOrder = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const { total, orderId } = req.body;
+    const order = await OrderService.getOrderById(orderId);
+
+    const token = jwt.sign({ orderId: order._id }, process.env.JWT_SECRET, {
+      expiresIn: "30m",
+    });
+    const returnUrl = `${process.env.SERVER_URL}/order/payment-success?token=${token}`; // Adjust port & path as needed
+
+    var myHeaders = new Headers();
+
+    myHeaders.append("Authorization", `Bearer ${process.env.CHAPA_AUTH}`);
+
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      amount: total,
+
+      currency: "ETB",
+
+      email: user.email,
+
+      first_name: user.name,
+
+      phone_number: user.phoneNumber,
+      tx_ref: `order_${order._id}`,
+      return_url: returnUrl,
+      "customization[title]": "Order payment",
+      "meta[hide_receipt]": "true",
+    });
+
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: raw,
+      redirect: "follow",
+    };
+
+    console.log("request options ", requestOptions);
+
+    fetch("https://api.chapa.co/v1/transaction/initialize", requestOptions)
+      .then((response) => response.json())
+      .then(async (result) => {
+        console.log("result ", result);
+        return res
+          .status(201)
+          .json({ message: result.message, url: result.data.checkout_url });
+      })
+      .catch((error) => {
+        console.log("error ", error);
+        return res.status(400).json({ message: error.message });
+      });
+  } catch (error) {
+    console.error("error ", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const paymentSuccess = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    // Decode the JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { orderId } = decoded;
+
+    // Update the order status to "pending"
+    await OrderService.updateOrderStatus(orderId, "pending");
+
+    return res.redirect(
+      `${process.env.CLIENT_URL}/order-confirmation/${orderId}`
+    );
+  } catch (error) {
+    console.error("error ", error);
+    return res.status(500).json({ message: error.message });
   }
 };

@@ -25,8 +25,11 @@ class DeliveryService {
       .populate({
         path: "orderId",
         populate: [
-          { path: "customerID", select: ["name", "phoneNumber"] },
-          { path: "restaurantID", select: "name" },
+          {
+            path: "customerID",
+            select: ["name", "phoneNumber"],
+          },
+          { path: "restaurantID", select: ["name", "location"] },
         ],
       })
       .skip((page - 1) * limit)

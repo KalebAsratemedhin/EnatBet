@@ -25,6 +25,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 
 import { Link } from "react-router-dom";
+import DeliveryDetailsPage from "@/pages/DeliveryDetails";
 
 const DeliveryPersonDeliveries = () => {
   const [page, setPage] = useState(1);
@@ -106,19 +107,19 @@ const DeliveryPersonDeliveries = () => {
               </p>
             </div>
 
-            <div className="flex gap-3 mt-4 flex-wrap">
+            <div className="flex gap-3 mt-4 flex-wrap ">
               <Dialog>
                 <DialogTrigger asChild>
                   <Button onClick={() => setSelectedDelivery(delivery)}>
                     View Details
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-3xl">
+                <DialogContent className="max-w-3xl ">
                   <DialogHeader>
                     <DialogTitle>Delivery Details</DialogTitle>
                   </DialogHeader>
 
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className=" gap-6">
                     <div className="space-y-2">
                       <p>
                         <strong>Status:</strong> {delivery.status}
@@ -142,34 +143,8 @@ const DeliveryPersonDeliveries = () => {
                     </div>
 
                     {delivery.orderId?.coordinates && (
-                      <div className="rounded-md overflow-hidden h-[250px]">
-                        <MapContainer
-                          center={[
-                            delivery.orderId.coordinates.lat,
-                            delivery.orderId.coordinates.lng,
-                          ]}
-                          zoom={15}
-                          style={{ height: "100%", width: "100%" }}
-                        >
-                          <TileLayer
-                            attribution="&copy; OpenStreetMap"
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                          />
-                          <Marker
-                            position={[
-                              delivery.orderId.coordinates.lat,
-                              delivery.orderId.coordinates.lng,
-                            ]}
-                            icon={L.icon({
-                              iconUrl:
-                                "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
-                              iconSize: [25, 41],
-                              iconAnchor: [12, 41],
-                            })}
-                          >
-                            <Popup>Delivery Location</Popup>
-                          </Marker>
-                        </MapContainer>
+                      <div className="rounded-md overflow-hidden h-[550px] w-full">
+                        <DeliveryDetailsPage delivery={delivery} />
                       </div>
                     )}
                   </div>

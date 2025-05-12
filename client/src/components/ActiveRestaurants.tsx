@@ -102,7 +102,7 @@ const ActiveRestaurants = () => {
         {data?.data.map((restaurant) => (
           <Card
             key={restaurant._id}
-            className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+            className="pt-0 overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow w-72"
           >
             {restaurant.logo && (
               <img

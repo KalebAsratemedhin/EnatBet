@@ -1,32 +1,32 @@
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import L from "leaflet";
 import { Minus, Plus } from "lucide-react";
 import { decrement, increment } from "@/redux/cartSlice";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useCreateOrderMutation } from "@/redux/api/orderApi"; // adjust based on your structure
+import {
+  useCreateOrderMutation,
+  usePayForOrderMutation,
+} from "@/redux/api/orderApi";
 import { toast, Toaster } from "sonner";
+import { useState } from "react";
 
 export const checkoutSchema = z.object({
   deliveryAddress: z.string().min(5, "Delivery address is required"),
   coordinates: z.object({
     lat: z.number(),
     lng: z.number(),
-  }),
-  paymentMethod: z.enum(["telebirr", "cbe"], {
-    errorMap: () => ({ message: "Select a valid payment method" }),
   }),
 });
 
@@ -40,6 +40,11 @@ const Checkout = () => {
   const dispatch = useDispatch();
 
   const [createOrder, { isLoading }] = useCreateOrderMutation();
+  const [payForOrder] = usePayForOrderMutation();
+
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+
   const {
     register,
     setValue,
@@ -67,121 +72,138 @@ const Checkout = () => {
   };
 
   const onSubmit = async (data: CheckoutFormValues) => {
-    console.log(" rest id ", restaurantID, cart);
     if (!restaurantID) {
-      console.log("empty cart");
-
       toast.warning("Cart is empty");
-
       return;
     }
+
     const orderPayload = {
       ...data,
       orderDetails: Object.values(cart),
       totalAmount: total,
       restaurantID,
     };
+
     try {
       const res = await createOrder(orderPayload).unwrap();
       if (res.success) {
         toast.success("Order placed successfully!");
-        // clearCart if needed
+        setOrderId(res.order?._id); // adjust based on API response
+        setShowPaymentDialog(true);
       }
     } catch (err) {
       toast.error("Failed to place order.");
     }
   };
 
+  const onInitializePayment = async () => {
+    if (!orderId) return;
+
+    try {
+      const res = await payForOrder({ total, orderId }).unwrap();
+      if (res.url) {
+        setShowPaymentDialog(false);
+        window.location.href = res.url;
+        toast.success("Payment initialized successfully!");
+      }
+    } catch (err) {
+      toast.error("Failed to initialize payment.");
+    }
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-2xl mx-auto py-10 space-y-6"
-    >
-      <h2 className="text-3xl font-bold">Checkout</h2>
-
-      {Object.keys(cart).length === 0 ? (
-        <p className="text-gray-500">Your cart is empty.</p>
-      ) : (
-        <div className="space-y-4">
-          {Object.values(cart).map(({ item, quantity }) => (
-            <div
-              key={item._id}
-              className="flex justify-between items-center border-b pb-2"
-            >
-              <div>
-                <h4 className="font-medium text-lg">{item.name}</h4>
-                <p className="text-lg text-gray-500">
-                  Price: ETB {item.price.toFixed(2)}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => dispatch(decrement(item._id))}
-                >
-                  <Minus size={16} />
-                </Button>
-                <span className="font-semibold">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => dispatch(increment(item._id))}
-                >
-                  <Plus size={16} />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <Input placeholder="Delivery Address" {...register("deliveryAddress")} />
-      {errors.deliveryAddress && (
-        <p className="text-sm text-red-500">{errors.deliveryAddress.message}</p>
-      )}
-
-      <div className="h-64 rounded overflow-hidden border">
-        <MapContainer
-          center={[9.678, 39.532]}
-          zoom={8}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <LocationSelector />
-        </MapContainer>
-      </div>
-      {errors.coordinates && (
-        <p className="text-sm text-red-500">{errors.coordinates.message}</p>
-      )}
-
-      <Select
-        onValueChange={(value: "telebirr" | "cbe") =>
-          setValue("paymentMethod", value)
-        }
+    <>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-2xl mx-auto py-10 space-y-6"
       >
-        <SelectTrigger>
-          <SelectValue placeholder="Select Payment Method" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="telebirr">Telebirr</SelectItem>
-          <SelectItem value="cbe">CBE</SelectItem>
-        </SelectContent>
-      </Select>
-      {errors.paymentMethod && (
-        <p className="text-sm text-red-500">{errors.paymentMethod.message}</p>
-      )}
+        <h2 className="text-3xl font-bold">Checkout</h2>
 
-      <div className="flex justify-between items-center">
-        <span className="text-xl font-semibold">
-          Total: ETB {total.toFixed(2)}
-        </span>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Placing..." : "Confirm Order"}
-        </Button>
-      </div>
-      <Toaster />
-    </form>
+        {Object.keys(cart).length === 0 ? (
+          <p className="text-gray-500">Your cart is empty.</p>
+        ) : (
+          <div className="space-y-4">
+            {Object.values(cart).map(({ item, quantity }) => (
+              <div
+                key={item._id}
+                className="flex justify-between items-center border-b pb-2"
+              >
+                <div>
+                  <h4 className="font-medium text-lg">{item.name}</h4>
+                  <p className="text-lg text-gray-500">
+                    Price: ETB {item.price.toFixed(2)}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => dispatch(decrement(item._id))}
+                  >
+                    <Minus size={16} />
+                  </Button>
+                  <span className="font-semibold">{quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => dispatch(increment(item._id))}
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <Input
+          placeholder="Delivery Address"
+          {...register("deliveryAddress")}
+        />
+        {errors.deliveryAddress && (
+          <p className="text-sm text-red-500">
+            {errors.deliveryAddress.message}
+          </p>
+        )}
+
+        <div className="h-64 rounded overflow-hidden border">
+          <MapContainer
+            center={[9.678, 39.532]}
+            zoom={8}
+            style={{ height: "100%", width: "100%", zIndex: 0 }}
+          >
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <LocationSelector />
+          </MapContainer>
+        </div>
+        {errors.coordinates && (
+          <p className="text-sm text-red-500">{errors.coordinates.message}</p>
+        )}
+
+        <div className="flex justify-between items-center">
+          <span className="text-xl font-semibold">
+            Total: ETB {total.toFixed(2)}
+          </span>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Placing..." : "Confirm Order"}
+          </Button>
+        </div>
+        <Toaster />
+      </form>
+
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Proceed to Payment</DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-600 mb-4">
+            Your order was placed successfully. Click below to proceed with
+            payment.
+          </p>
+          <Button onClick={onInitializePayment}>Pay Now</Button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

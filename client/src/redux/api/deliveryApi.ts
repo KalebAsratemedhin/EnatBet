@@ -26,7 +26,7 @@ export const deliveryApi = api.injectEndpoints({
     }),
 
     getDeliveryPersonDeliveries: builder.query<
-      PaginatedResponse<Delivery>,
+      PaginatedResponse<PopulatedDelivery>,
       { page?: number; limit?: number }
     >({
       query: ({ page = 1, limit = 10 }) => ({

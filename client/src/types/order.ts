@@ -1,4 +1,4 @@
-import { Menu, MenuItem } from "./menu";
+import { MenuItem } from "./menu";
 import { Restaurant, User } from "./restaurant";
 
 export interface Order {
@@ -11,11 +11,12 @@ export interface Order {
     lat: number;
     lng: number;
   };
-  paymentMethod: "telebirr" | "cbe";
+  paymentCompleted: boolean;
   orderDetails: Array<{
     item: MenuItem;
     quantity: number;
   }>;
+  totalAmount: number;
 }
 export interface PaginatedResponse<T> {
   success: boolean;
@@ -28,7 +29,6 @@ export interface PaginatedResponse<T> {
   };
 }
 
-
 export interface CreateOrderInput {
   restaurantID: string;
   deliveryAddress: string;
@@ -36,7 +36,6 @@ export interface CreateOrderInput {
     lat: number;
     lng: number;
   };
-  paymentMethod: "telebirr" | "cbe";
   orderDetails: Array<{
     item: MenuItem;
     quantity: number;

@@ -1,21 +1,40 @@
 import express from "express";
 import { isAuthenticated, isRestaurantOwner } from "../middlewares/auth.js";
-import { cancelOrder, createOrder, getAllOrders, getCustomerOrders, getOrderById, getRestaurantOrders, updateOrderStatus } from "../controllers/order.js";
+import {
+  cancelOrder,
+  createOrder,
+  getAllOrders,
+  getCustomerOrders,
+  getOrderById,
+  payForOrder,
+  getRestaurantOrders,
+  updateOrderStatus,
+  paymentSuccess,
+} from "../controllers/order.js";
 
 const router = express.Router();
 
-router.post('/',isAuthenticated, createOrder);
+router.put(
+  "/status/:id",
+  isAuthenticated,
+  isRestaurantOwner,
+  updateOrderStatus
+);
 
-router.put("/status/:id", isAuthenticated, isRestaurantOwner, updateOrderStatus)
+router.get("/payment-success", paymentSuccess);
 
-router.put("/cancel/:id", isAuthenticated, cancelOrder)
+router.put("/cancel/:id", isAuthenticated, cancelOrder);
 
-router.get('/',isAuthenticated, getAllOrders);
+router.get("/customer", isAuthenticated, getCustomerOrders);
 
-router.get('/customer',isAuthenticated, getCustomerOrders);
+router.get("/restaurant/:id", isAuthenticated, getRestaurantOrders);
 
-router.get('/restaurant/:id',isAuthenticated, getRestaurantOrders);
+router.get("/:id", isAuthenticated, getOrderById);
 
-router.get('/:id',isAuthenticated, getOrderById);
+router.post("/pay", isAuthenticated, payForOrder);
 
-export default router
+router.post("/", isAuthenticated, createOrder);
+
+router.get("/", isAuthenticated, getAllOrders);
+
+export default router;

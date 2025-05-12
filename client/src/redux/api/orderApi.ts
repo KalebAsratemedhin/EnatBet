@@ -3,68 +3,93 @@ import {
   CreateOrderInput,
   UpdateOrderStatusInput,
   PaginatedResponse,
-} from '@/types/order';
-import { api } from '.';
-
+} from "@/types/order";
+import { api } from ".";
 
 export const orderApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    createOrder: builder.mutation<{ success: boolean; order: Order }, CreateOrderInput>({
+    createOrder: builder.mutation<
+      { success: boolean; order: Order },
+      CreateOrderInput
+    >({
       query: (orderData) => ({
-        url: '/order',
-        method: 'POST',
+        url: "/order",
+        method: "POST",
         body: orderData,
       }),
-      invalidatesTags: ['order'],
+      invalidatesTags: ["order"],
     }),
 
-    updateOrderStatus: builder.mutation<{ success: boolean; order: Order }, UpdateOrderStatusInput>({
+    updateOrderStatus: builder.mutation<
+      { success: boolean; order: Order },
+      UpdateOrderStatusInput
+    >({
       query: ({ id, status }) => ({
         url: `/order/status/${id}`,
-        method: 'PUT',
+        method: "PUT",
         body: { status },
       }),
-      invalidatesTags: ['restaurant-orders'],
+      invalidatesTags: ["restaurant-orders"],
     }),
 
     cancelOrder: builder.mutation<{ success: boolean; order: Order }, string>({
       query: (id) => ({
         url: `/order/cancel/${id}`,
-        method: 'PUT',
+        method: "PUT",
       }),
-      invalidatesTags: ['my-orders'],
+      invalidatesTags: ["my-orders"],
     }),
 
-    getAllOrders: builder.query<PaginatedResponse<Order>, { page?: number; limit?: number }>({
+    getAllOrders: builder.query<
+      PaginatedResponse<Order>,
+      { page?: number; limit?: number }
+    >({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/order?page=${page}&limit=${limit}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['all-orders'],
+      providesTags: ["all-orders"],
     }),
 
-    getCustomerOrders: builder.query<PaginatedResponse<Order>, { page?: number; limit?: number }>({
+    getCustomerOrders: builder.query<
+      PaginatedResponse<Order>,
+      { page?: number; limit?: number }
+    >({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/order/customer?page=${page}&limit=${limit}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['my-orders'],
+      providesTags: ["my-orders"],
     }),
 
-    getRestaurantOrders: builder.query<PaginatedResponse<Order>, { restaurantId: string; page?: number; limit?: number }>({
+    getRestaurantOrders: builder.query<
+      PaginatedResponse<Order>,
+      { restaurantId: string; page?: number; limit?: number }
+    >({
       query: ({ restaurantId, page = 1, limit = 10 }) => ({
         url: `/order/restaurant/${restaurantId}?page=${page}&limit=${limit}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['restaurant-orders'],
+      providesTags: ["restaurant-orders"],
     }),
 
     getOrderById: builder.query<{ success: boolean; order: Order }, string>({
       query: (orderId) => ({
         url: `/order/${orderId}`,
-        method: 'GET',
+        method: "GET",
       }),
-      providesTags: ['order'],
+      providesTags: ["order"],
+    }),
+
+    payForOrder: builder.mutation<
+      { url: string; message: string; error: string },
+      { total: number; orderId: string }
+    >({
+      query: (orderPayload) => ({
+        url: `/order/pay`,
+        method: "POST",
+        body: orderPayload,
+      }),
     }),
   }),
 });
@@ -78,4 +103,5 @@ export const {
   useGetCustomerOrdersQuery,
   useGetRestaurantOrdersQuery,
   useGetOrderByIdQuery,
+  usePayForOrderMutation,
 } = orderApi;

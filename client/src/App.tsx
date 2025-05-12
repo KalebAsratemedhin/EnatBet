@@ -29,6 +29,7 @@ import DeliveryPersonDeliveries from "./components/DeliveryPersonDeliveries";
 import CustomerDeliveries from "./components/CustomerDeliveries";
 import UserManagementTable from "./pages/UserManagement";
 import { isAuthenticated } from "./utils/auth";
+import PaymentConfirmation from "./components/PaymentConfirmation";
 
 const App: React.FC = () => {
   const auth = isAuthenticated();
@@ -85,6 +86,10 @@ const App: React.FC = () => {
           <Route path="/user-management" element={<UserManagementTable />} />
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+          <Route
+            path="/order-confirmation/:id"
+            element={<PaymentConfirmation />}
+          />
 
           <Route
             path="/dashboard/restaurant_owner"
