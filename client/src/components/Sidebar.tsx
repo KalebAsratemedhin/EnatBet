@@ -6,7 +6,6 @@ import {
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton, // We'll wrap NavLink directly in SidebarMenuItem for better control
   SidebarTrigger,
 } from "@/components/ui/sidebar"; // Assuming these are shadcn/ui-like components
 import { useGetCurrentUserQuery } from "@/redux/api/authApi";
@@ -17,16 +16,11 @@ import {
   Users,
   BellElectricIcon,
   Contact,
-  CheckCircle2Icon,
   FormInputIcon,
   HotelIcon,
   LucideBike, // Assuming CarIcon was a typo or not used
-  Briefcase,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import CurrentUser from "./CurrentUser";
-
-// Define a type for menu items for better type safety
 type MenuItemType = {
   title: string;
   url: string;

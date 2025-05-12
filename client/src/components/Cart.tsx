@@ -8,16 +8,7 @@ import {
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
-import { Input } from "./ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import L from "leaflet";
+
 import "leaflet/dist/leaflet.css";
 import { useNavigate } from "react-router-dom";
 
@@ -25,12 +16,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store";
 import { increment, decrement } from "@/redux/cartSlice";
 
-const Cart = ({ restaurantId }: { restaurantId: string }) => {
+const Cart = () => {
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<"cart" | "checkout">("cart");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [coordinates, setCoordinates] = useState<L.LatLng | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState("");
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -41,36 +28,12 @@ const Cart = ({ restaurantId }: { restaurantId: string }) => {
     0
   );
 
-  const LocationSelector = () => {
-    useMapEvents({
-      click(e) {
-        setCoordinates(e.latlng);
-      },
-    });
-
-    return coordinates ? <Marker position={coordinates} /> : null;
-  };
-
-  const handlePlaceOrder = () => {
-    const orderDetails = {
-      deliveryAddress,
-      coordinates,
-      paymentMethod,
-      items: cart,
-    };
-    console.log("Placing Order:", orderDetails);
-    // Trigger API call here
-    setOpen(false);
-    setStep("cart");
-  };
-
   return (
     <div className="fixed top-25 right-10 z-50">
       <Dialog
         open={open}
         onOpenChange={(v) => {
           setOpen(v);
-          if (!v) setStep("cart");
         }}
       >
         <DialogTrigger asChild>

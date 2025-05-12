@@ -77,7 +77,6 @@ const DeliveryPersonRating = ({
 
 const CustomerDeliveries = () => {
   const [page, setPage] = useState(1);
-  const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
 
   const { data, isLoading, isError } = useGetCustomerDeliveriesQuery({
     page,
@@ -171,11 +170,7 @@ const CustomerDeliveries = () => {
 
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedDelivery(delivery)}
-                  >
+                  <Button variant="outline" size="sm">
                     View Details
                   </Button>
                 </DialogTrigger>

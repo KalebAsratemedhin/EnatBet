@@ -51,7 +51,7 @@ const EditMenuForm = ({ menuId, onUpdated }: EditMenuFormProps) => {
     },
   });
 
-  const { fields, append, remove, replace } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "menuItems",
   });
@@ -77,9 +77,6 @@ const EditMenuForm = ({ menuId, onUpdated }: EditMenuFormProps) => {
       const formData = new FormData();
       formData.append("menuName", form.title);
 
-      const itemsToSend = form.menuItems.map(
-        ({ itemPicture, ...rest }) => rest
-      );
       formData.append("menuItems", JSON.stringify(form.menuItems));
 
       form.menuItems.forEach((item, index) => {

@@ -21,15 +21,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
 import { DeliveryStatus } from "@/types/delivery";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
 
 import { Link } from "react-router-dom";
 import DeliveryDetailsPage from "@/pages/DeliveryDetails";
 
 const DeliveryPersonDeliveries = () => {
   const [page, setPage] = useState(1);
-  const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
   const [updateStatus, { isLoading: isUpdating }] =
     useUpdateDeliveryStatusMutation();
   const { data, isLoading, isError } = useGetDeliveryPersonDeliveriesQuery({
@@ -109,11 +106,7 @@ const DeliveryPersonDeliveries = () => {
 
             <div className="flex gap-3 mt-4 flex-wrap ">
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setSelectedDelivery(delivery)}>
-                    View Details
-                  </Button>
-                </DialogTrigger>
+                <DialogTrigger asChild></DialogTrigger>
                 <DialogContent className="max-w-3xl ">
                   <DialogHeader>
                     <DialogTitle>Delivery Details</DialogTitle>

@@ -27,12 +27,11 @@ const ORDERS_PER_PAGE = 5;
 
 const OrdersPage = () => {
   const [page, setPage] = useState(1);
-  const { data, isLoading, isError , error} = useGetCustomerOrdersQuery({
+  const { data, isLoading, isError, error } = useGetCustomerOrdersQuery({
     page,
     limit: ORDERS_PER_PAGE,
   });
   const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const handleCancel = async (orderId: string) => {
     try {
@@ -51,10 +50,8 @@ const OrdersPage = () => {
   if (isLoading)
     return <p className="text-center mt-10">Loading your orders...</p>;
 
-  if (isError){
-
-    console.log('eror ', error);
-    
+  if (isError) {
+    console.log("eror ", error);
 
     return (
       <p className="text-center text-red-500 mt-10">Failed to load orders.</p>
@@ -96,11 +93,7 @@ const OrdersPage = () => {
 
             <div className="flex gap-3 mt-4">
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button onClick={() => setSelectedOrder(order)}>
-                    View Details
-                  </Button>
-                </DialogTrigger>
+                <DialogTrigger asChild></DialogTrigger>
                 <DialogContent className="max-w-3xl">
                   <DialogHeader>
                     <DialogTitle>Order Details</DialogTitle>
@@ -114,9 +107,6 @@ const OrdersPage = () => {
                       <p>
                         <strong>Coordinates:</strong> {order.coordinates.lat},{" "}
                         {order.coordinates.lng}
-                      </p>
-                      <p>
-                        <strong>Payment:</strong> {order.paymentMethod}
                       </p>
 
                       <div className="pt-2">

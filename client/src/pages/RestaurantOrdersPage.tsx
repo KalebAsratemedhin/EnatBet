@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetAllMineRestaurantQuery } from "@/redux/api/restaurantApi";
 import {
   useGetRestaurantOrdersQuery,
@@ -21,8 +21,6 @@ import {
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { log } from "console";
-import { LogIn } from "lucide-react";
 
 const ORDERS_PER_PAGE = 5;
 
@@ -147,9 +145,7 @@ const RestaurantOrdersPage = () => {
                         )
                         .toFixed(2)}
                     </div>
-                    <div>
-                      <strong>Payment:</strong> {order.paymentMethod}
-                    </div>
+
                     <div className="pt-2">
                       <strong>Items:</strong>
                       <ul className="list-disc pl-5 space-y-1">

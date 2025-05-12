@@ -15,7 +15,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -23,7 +22,6 @@ import { Link } from "react-router-dom";
 
 const CustomerDeliveriesPage = () => {
   const [page, setPage] = useState(1);
-  const [selectedDelivery, setSelectedDelivery] = useState<any>(null);
 
   const { data, isLoading, isError } = useGetCustomerDeliveriesQuery({
     page,
@@ -77,7 +75,7 @@ const CustomerDeliveriesPage = () => {
               </p>
               <p>
                 <strong>Delivery Person:</strong>{" "}
-                {delivery.deliveryPersonId.name || "Not Assigned"}
+                {delivery.deliveryPersonId.userId.name || "Not Assigned"}
               </p>
               <p>
                 <strong>Estimated Delivery Time:</strong>{" "}
@@ -86,11 +84,7 @@ const CustomerDeliveriesPage = () => {
             </div>
 
             <Dialog>
-              <DialogTrigger asChild>
-                <Button onClick={() => setSelectedDelivery(delivery)}>
-                  View Details
-                </Button>
-              </DialogTrigger>
+              <DialogTrigger asChild></DialogTrigger>
               <DialogContent className="max-w-3xl">
                 <DialogHeader>
                   <DialogTitle>Delivery Details</DialogTitle>

@@ -64,7 +64,7 @@ const RestaurantDetails = () => {
         </div>
       </div>
 
-      {isAuthenticated() && <Cart restaurantId={restaurant._id} />}
+      {isAuthenticated() && <Cart />}
 
       <div className="px-10">
         <h2 className="text-2xl font-semibold mb-4">Menu</h2>

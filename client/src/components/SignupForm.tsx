@@ -38,8 +38,7 @@ const SignupForm: React.FC = () => {
     resolver: yupResolver(signupSchema),
   });
 
-  const [signup, { isError, isLoading, error, isSuccess }] =
-    useSignupMutation();
+  const [signup, { isError, isLoading, isSuccess }] = useSignupMutation();
   const navigator = useNavigate();
   const [snackbar, setSnackbar] = useState<{
     message: string;
