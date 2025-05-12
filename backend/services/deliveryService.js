@@ -73,9 +73,6 @@ class DeliveryService {
       }),
     ]);
 
-    console.log("Deliveries:", deliveries[0].deliveryPersonId);
-
-    // Filter out any deliveries where the orderId was null due to the match
     const filteredDeliveries = deliveries.filter((d) => d.orderId);
 
     return { deliveries: filteredDeliveries, total: filteredDeliveries.length };

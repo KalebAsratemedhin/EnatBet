@@ -273,6 +273,9 @@ export const payForOrder = async (req, res) => {
       .then((response) => response.json())
       .then(async (result) => {
         console.log("result ", result);
+        if (result.status === "failed") {
+          return res.status(400).json({ message: result.message });
+        }
         return res
           .status(201)
           .json({ message: result.message, url: result.data.checkout_url });
