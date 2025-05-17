@@ -3,7 +3,6 @@ import Restaurant from "../models/Restaurant.js";
 
 class OrderService {
   static async createOrder(orderData) {
-    console.log(" create order ", orderData);
     const order = new Order(orderData);
     return await order.save();
   }

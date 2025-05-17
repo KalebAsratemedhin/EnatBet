@@ -59,8 +59,6 @@ const CreateMenuForm = ({ selectedRestaurantId }: Props) => {
         if (item.itemPicture) formData.append("itemPictures", item.itemPicture);
       });
 
-      console.log("creating", formData);
-
       await createMenu({
         restaurantId: selectedRestaurantId as string,
         formData,

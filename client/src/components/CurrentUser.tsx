@@ -34,12 +34,10 @@ const CurrentUser = () => {
           socket.connect();
   
           socket.on("connect", () => {
-            console.log("Socket connected:", socket.id);
             socket.emit("join", user._id);
           });
   
-          socket.on("connect_error", (err) => {
-            console.error("Connection error:", err);
+          socket.on("connect_error", () => {
             setTimeout(connectSocket, 5000);
           });
         }
@@ -65,8 +63,11 @@ const CurrentUser = () => {
 
   useEffect(() => {
     if (isError) {
-      console.error("Logout error:", error);
+      localStorage.clear();
+      refetch();
       toast.error("Logout failed");
+      navigator("/");
+
     }
     if (isSuccess) {
       localStorage.clear();

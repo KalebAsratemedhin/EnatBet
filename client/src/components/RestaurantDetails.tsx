@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { PopulatedRestaurant } from "@/types/restaurant";
 import MenusCarousel from "./MenusCarousel";
 import Cart from "./Cart";
+import L from "leaflet";
 
 const RestaurantDetails = () => {
   const { id } = useParams();
@@ -48,7 +49,16 @@ const RestaurantDetails = () => {
               attribution="&copy; OpenStreetMap contributors"
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={{ lat, lng }}>
+
+            <Marker
+              position={{ lat, lng }}
+              icon={L.icon({
+                iconUrl:
+                  "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+              })}
+            >
               <Popup>{restaurant.name}</Popup>
             </Marker>
             <Circle

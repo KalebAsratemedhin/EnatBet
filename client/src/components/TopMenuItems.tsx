@@ -91,7 +91,7 @@ const TopMenuItems = () => {
               key={item._id}
               className="pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              <Card className="h-full rounded-xl overflow-hidden shadow pt-0">
+              <Card className="h-full rounded-xl overflow-hidden shadow pt-0  pb-4">
                 <img
                   src={item?.itemPicture || "/default-dish.jpeg"}
                   alt={item.name}

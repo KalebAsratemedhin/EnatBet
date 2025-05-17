@@ -10,6 +10,7 @@ import {
   getAllUsers,
   updateUserStatus,
 } from "../controllers/user.js";
+import { upload } from "../middlewares/fileUpload.js";
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.post("/verify-email", isAuthenticated, verifyEmail);
 
 router.post("/verify-phone", isAuthenticated, verifyPhone);
 
-router.put("/profile", isAuthenticated, updateProfile);
+router.put("/profile", isAuthenticated, upload.single("profilePicture"), updateProfile);
 
 router.get("/all", isAuthenticated, isAdmin, getAllUsers);
 

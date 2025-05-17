@@ -36,8 +36,6 @@ const ActiveRestaurants = () => {
   const totalPages = data?.totalPages || 1;
 
   const handleSearchClick = () => {
-    console.log(" input ", input);
-
     setSearch(input);
     setPage(1);
   };

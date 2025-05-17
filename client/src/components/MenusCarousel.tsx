@@ -84,7 +84,7 @@ const MenusCarousel = ({ restaurantId }: { restaurantId: string }) => {
               </h3>
               <Carousel opts={{ loop: true, align: "center" }}>
                 <CarouselPrevious />
-                <CarouselContent>
+                <CarouselContent className="-ml-4">
                   {menu.menuItems.map((item, index) => (
                     <CarouselItem
                       key={index}

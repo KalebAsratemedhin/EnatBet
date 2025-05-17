@@ -68,7 +68,6 @@ export const getCustomerDeliveries = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    console.log("customerId", customerId);
 
     const { deliveries, total } = await deliveryService.getCustomerDeliveries(
       customerId,

@@ -135,8 +135,6 @@ class DeliveryService {
     ]);
 
     if (deliveries.length > 0) {
-      console.log("find delv person delvs ", deliveries);
-
       return deliveries[0]._id;
     }
 
@@ -144,11 +142,8 @@ class DeliveryService {
   }
 
   async assignDelivery(orderId) {
-    console.log("Assigning delivery for order:", orderId);
 
     const deliveryPerson = await this.findDeliveryPerson();
-
-    console.log("Found delivery person:", deliveryPerson);
 
     const assignment = await Delivery.create({
       deliveryPersonId: deliveryPerson,

@@ -1,11 +1,8 @@
 import Notification from "../models/notification.js";
 
 import mongoose from "mongoose";
-// Get all notifications for current user
 export const getNotifications = async (req, res) => {
   try {
-    console.log("getting notifs ", req.user.id);
-    
     const notifications = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.status(200).json(notifications);
   } catch (error) {

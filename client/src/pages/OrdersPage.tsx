@@ -93,7 +93,9 @@ const OrdersPage = () => {
 
             <div className="flex gap-3 mt-4">
               <Dialog>
-                <DialogTrigger asChild></DialogTrigger>
+                <DialogTrigger asChild>
+                  <Button variant="outline">View Details</Button>
+                </DialogTrigger>
                 <DialogContent className="max-w-3xl">
                   <DialogHeader>
                     <DialogTitle>Order Details</DialogTitle>

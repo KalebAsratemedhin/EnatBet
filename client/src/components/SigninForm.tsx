@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputField from "../components/InputField";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSigninMutation } from "@/redux/api/authApi";
 import Snackbar from "./Snackbar";
 import LoadingSpinner from "./LoadingSpinner";
@@ -25,7 +25,6 @@ const SigninForm: React.FC = () => {
   });
   const [signin, { isError, isLoading, error, isSuccess }] =
     useSigninMutation();
-  const navigator = useNavigate();
   const [snackbar, setSnackbar] = useState<{
     message: string;
     type: "success" | "error";
@@ -52,7 +51,7 @@ const SigninForm: React.FC = () => {
     }
     if (isSuccess) {
       setSnackbar({ message: "Signed in", type: "success" });
-      navigator(`/dashboard`);
+      window.location.href = `/dashboard`;
     }
   }, [isError, isSuccess, error]);
 

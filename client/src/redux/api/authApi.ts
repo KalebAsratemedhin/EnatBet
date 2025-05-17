@@ -23,6 +23,7 @@ export const authApi = api.injectEndpoints({
         method: "PUT",
         body: formData,
       }),
+      invalidatesTags: ["current-user"]
     }),
 
     sendOTP: builder.mutation<void, void>({

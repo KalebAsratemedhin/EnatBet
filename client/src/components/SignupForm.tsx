@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import InputField from "../components/InputField";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSignupMutation } from "@/redux/api/authApi";
 import Snackbar from "./Snackbar";
 import LoadingSpinner from "./LoadingSpinner";
+
 
 const signupSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -39,7 +40,6 @@ const SignupForm: React.FC = () => {
   });
 
   const [signup, { isError, isLoading, isSuccess }] = useSignupMutation();
-  const navigator = useNavigate();
   const [snackbar, setSnackbar] = useState<{
     message: string;
     type: "success" | "error";
@@ -61,7 +61,8 @@ const SignupForm: React.FC = () => {
     }
     if (isSuccess) {
       setSnackbar({ message: "Signed up", type: "success" });
-      navigator(`/dashboard`);
+      window.location.href = `/dashboard`
+
     }
   }, [isError, isSuccess]);
 

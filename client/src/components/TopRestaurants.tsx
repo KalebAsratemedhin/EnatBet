@@ -45,7 +45,7 @@ const TopRestaurants = () => {
               key={restaurant._id}
               className="pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              <Card className="overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow">
+              <Card className="h-full overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow pt-0">
                 {restaurant.logo && (
                   <img
                     src={restaurant.logo}

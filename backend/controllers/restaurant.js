@@ -146,7 +146,6 @@ export const getAllMineRestaurant = async (req,res) => {
 export const getActiveRestaurants = async (req, res) => {
   try {
 
-    console.log(" query ", req.query); 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
@@ -230,11 +229,6 @@ export const updateRestaurantStatus = async (req,res) =>{
       const {status} = req.body;
       
       const restaurant = await Restaurant.findById(restaurantId);
-
-      console.log(" restaurant", restaurant);
-      console.log(" status", status);
-      
-      
 
       restaurant.status = status; 
 

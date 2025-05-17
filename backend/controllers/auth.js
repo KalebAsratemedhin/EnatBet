@@ -21,10 +21,8 @@ export const signup = async (req, res) => {
       isActive,
     });
 
-    console.log("creating user", user);
 
     if (role === "delivery_person") {
-      console.log("creating  deliveryPerson", user);
 
       await DeliveryPerson.create({
         userId: user._id,

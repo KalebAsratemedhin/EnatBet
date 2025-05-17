@@ -62,7 +62,6 @@ class EmailService {
     
     await this.sendEmail({ to, subject, html });
   }
-  
 
   async sendTwoFactorCode(to, code) {
     const subject = 'Your Two-Factor Authentication Code';

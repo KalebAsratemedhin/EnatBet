@@ -7,9 +7,6 @@ import crypto from "crypto";
 
 export const changePassword = async (req, res) => {
   try {
-
-    console.log("changing pass ", req.body);
-    
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user.id);
@@ -123,21 +120,7 @@ export const verifyPhone = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { name, phoneNumber, address } = req.body;
-    const imageFile = req.files?.profilePicture;
-
-    if (!imageFile) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const result = await cloudinary.uploader.upload(
-      `data:${imageFile.mimetype};base64,${imageFile.data.toString("base64")}`,
-      {
-        folder: "user_profiles",
-        resource_type: "auto",
-      }
-    );
-
-    const profilePictureUrl = result.secure_url;
+    const imageFile = req.file?.path;
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -145,7 +128,7 @@ export const updateProfile = async (req, res) => {
     user.name = name || user.name;
     user.phoneNumber = phoneNumber || user.phoneNumber;
     user.address = address || user.address;
-    user.profileImage = profilePictureUrl;
+    user.profileImage = imageFile || null;
 
     await user.save();
 
@@ -165,17 +148,6 @@ export const getAllUsers = async (req, res) => {
     const total = await User.countDocuments();
 
     const users = await User.find().skip(skip).limit(limit).select("-password");
-
-    console.log("users ", {
-      success: true,
-      data: users,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
 
     res.status(200).json({
       success: true,

@@ -92,11 +92,9 @@ class RatingService {
   }
 
   async updateDeliveryPersonRating(deliveryPersonId, newRating, oldRating) {
-    console.log(deliveryPersonId, "delivery personId");
 
     const deliveryPerson = await DeliveryPerson.findById(deliveryPersonId);
     if (!deliveryPerson) {
-      console.log("Delivery person not found");
       return;
     }
 

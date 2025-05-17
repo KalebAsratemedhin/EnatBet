@@ -136,13 +136,6 @@ export const getCustomerDashboard = async (req, res) => {
         ),
     ]);
 
-    console.log("dashboard data ", {
-        stats: totalStats[0] || { totalOrders: 0, totalSpent: 0, restaurantsOrderedFrom: 0 },
-        monthlySpending,
-        orderStatusDistribution: orderStatusDist,
-        favoriteRestaurants,
-        recentOrders,
-      });
     
     res.status(200).json({
       stats: totalStats[0] || { totalOrders: 0, totalSpent: 0, restaurantsOrderedFrom: 0 },
@@ -277,27 +270,6 @@ export const getAdminDashboard = async (req, res) => {
       .sort({ _id: -1 })
       .limit(5)
       .select("_id name email role isActive");
-
-
-
-    console.log("res dasgs ", {
-        stats: {
-          totalCustomers,
-          totalRestaurants,
-          totalDeliveryPeople
-        },
-        userData: [
-          { name: "Active Users", value: activeUsers },
-          { name: "Inactive Users", value: inactiveUsers }
-        ],
-        revenueData: [
-          { name: "Completed Orders", value: completedRevenue },
-          { name: "Pending Orders", value: unpaidRevenue },
-          { name: "Cancelled Orders", value: cancelledRevenue }
-        ],
-        salesData,
-        recentUsers
-      });
     
 
     return res.status(200).json({

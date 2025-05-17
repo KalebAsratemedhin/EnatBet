@@ -47,7 +47,6 @@ const CreateRestaurantForm = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log("data rest create ", data, logoFile);
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("address", data.address);

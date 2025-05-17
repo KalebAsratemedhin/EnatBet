@@ -20,7 +20,6 @@ export const rate = async (req, res) => {
       return res.status(400).json({ error: "Rating must be between 1 and 5." });
     }
     if (existingRating) {
-      console.log("rating ", existingRating); 
 
       const oldRating = existingRating.rating;
       existingRating.rating = rating;
