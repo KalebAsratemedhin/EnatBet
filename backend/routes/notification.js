@@ -1,19 +1,15 @@
-import express from 'express';
+import express from "express";
 import {
-  createNotification,
-  getUserNotifications,
-  markNotificationAsRead,
-  deleteNotification,
-} from '../controllers/notification.js';
+  getNotifications,
+  markAsSeen,
+} from "../controllers/notification.js";
+import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.post('/', createNotification);
+router.get("/", isAuthenticated, getNotifications);
 
-router.get('/:userId', getUserNotifications);
+router.put("/mark-as-seen/:id", isAuthenticated, markAsSeen);
 
-router.post('/read/:id', markNotificationAsRead);
-
-router.delete('/:id', deleteNotification);
 
 export default router;

@@ -1,39 +1,55 @@
-import NotificationService from '../services/notificationService.js';
+import Notification from "../models/notification.js";
 
-export const createNotification = async (req, res) => {
+import mongoose from "mongoose";
+// Get all notifications for current user
+export const getNotifications = async (req, res) => {
   try {
-    const { userId, title, body, type } = req.body;
-    const io = req.app.get('io');
-    const notification = await NotificationService.createNotification(io, userId, title, body, type);
-    res.status(201).json(notification);
+    console.log("getting notifs ", req.user.id);
+    
+    const notifications = await Notification.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    res.status(200).json(notifications);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getUserNotifications = async (req, res) => {
-  try {
-    const notifications = await NotificationService.getUserNotifications(req.params.userId);
-    res.json(notifications);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+export const markAsSeen = async (req, res) => {
+  const { id } = req.params;  
 
-export const markNotificationAsRead = async (req, res) => {
   try {
-    const notification = await NotificationService.markAsRead(req.params.id);
+    const notification = await Notification.findOneAndUpdate(
+      { _id: new mongoose.Types.ObjectId(id), userId: req.user.id },
+      { seen: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
     res.json(notification);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error marking notification as seen:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const deleteNotification = async (req, res) => {
+// Create and emit a new notification (for backend/internal use)
+export const createNotification = async (req, res) => {
+  const { userId, message, type } = req.body;
+  
   try {
-    await NotificationService.deleteNotification(req.params.id);
-    res.json({ message: 'Notification deleted' });
+    const notification = new Notification({ userId, message, type });
+    await notification.save();
+
+    // Emit to socket.io
+    const io = req.app.get("io");
+    io.to(userId.toString()).emit("new-notification", notification);
+
+    res.status(201).json(notification);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error creating notification:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

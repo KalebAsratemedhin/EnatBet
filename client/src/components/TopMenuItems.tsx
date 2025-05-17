@@ -1,3 +1,12 @@
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useGetTopMenuItemsQuery, useRateEntityMutation } from "@/redux/api/ratingApi";
 import { useDispatch } from "react-redux";
 import { add } from "@/redux/cartSlice";
@@ -5,8 +14,6 @@ import { toast, Toaster } from "sonner";
 import { isAuthenticated } from "@/utils/auth";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
 import { MenuItem } from "@/types/menu";
 import { Link } from "react-router-dom";
 
@@ -68,52 +75,63 @@ const TopMenuItems = () => {
   if (error) return <p>Failed to load menu items.</p>;
 
   return (
-    <div className="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
-      {data?.map((item) => (
-        <Card
-          key={item._id}
-          className="h-full rounded-xl w-60 md:w-auto max-w-3xl overflow-hidden shadow pt-0"
-        >
-          <img
-            src={item?.itemPicture || "/default-dish.jpeg"}
-            alt={item.name}
-            className="w-full h-40 object-cover"
-          />
-          <CardContent className="p-4 space-y-1">
-            <h4 className="text-base font-semibold truncate">{item.name}</h4>
-            <p className="text-sm text-gray-600 truncate">{item.description}</p>
-            <p className="text-sm font-bold text-gray-900">
-              ETB {item.price.toFixed(2)}
-            </p>
+    <div className="p-4 md:p-8 max-w-7xl mx-auto ">
+      <Carousel
+        opts={{
+          align: "start",
+          loop: true,
+        }}
+        className="w-full"
+      >
+        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10" />
 
-            {/* Restaurant Name and Link */}
-            {item.restaurant && (
-              <p className="text-xs text-blue-600 hover:underline">
-                From:{" "}
-                <Link to={`/restaurants/${item.restaurant._id}`}>
-                  {item.restaurant.name}
-                </Link>
-              </p>
-            )}
-
-            <MenuItemRating item={item} />
-
-            <Button
-              className="mt-2"
-              variant="default"
-              onClick={() => {
-                if (isAuthenticated()) {
-                  dispatch(add({ item, restaurantId: item.restaurant._id }));
-                } else {
-                  toast.warning("Please sign in to add items to your cart");
-                }
-              }}
+        <CarouselContent className="-ml-4">
+          {data?.map((item) => (
+            <CarouselItem
+              key={item._id}
+              className="pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              Add to order
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
+              <Card className="h-full rounded-xl overflow-hidden shadow pt-0">
+                <img
+                  src={item?.itemPicture || "/default-dish.jpeg"}
+                  alt={item.name}
+                  className="w-full h-40 object-cover"
+                />
+                <CardContent className="p-4 space-y-1">
+                  <h4 className="text-base font-semibold truncate">{item.name}</h4>
+                  <p className="text-sm text-gray-600 truncate">{item.description}</p>
+                  <p className="text-sm font-bold text-gray-900">
+                    ETB {item.price.toFixed(2)}
+                  </p>
+                  {item.restaurant && (
+                    <p className="text-xs text-blue-600 hover:underline">
+                      From:{" "}
+                      <Link to={`/restaurants/${item.restaurant._id}`}>
+                        {item.restaurant.name}
+                      </Link>
+                    </p>
+                  )}
+                  <MenuItemRating item={item} />
+                  <Button
+                    className="mt-2"
+                    variant="default"
+                    onClick={() => {
+                      if (isAuthenticated()) {
+                        dispatch(add({ item, restaurantId: item.restaurant._id }));
+                      } else {
+                        toast.warning("Please sign in to add items to your cart");
+                      }
+                    }}
+                  >
+                    Add to order
+                  </Button>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10" />
+      </Carousel>
       <Toaster />
     </div>
   );

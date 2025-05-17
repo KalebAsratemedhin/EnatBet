@@ -25,12 +25,21 @@ export const authApi = api.injectEndpoints({
       }),
     }),
 
-    verifyEmail: builder.mutation<void, void>({
+    sendOTP: builder.mutation<void, void>({
       query: () => ({
-        url: "/user/verify-email",
+        url: "/user/send-verification-email",
         method: "POST",
       }),
     }),
+    
+    verifyEmail: builder.mutation<void, { otp: string }>({
+      query: (body) => ({
+        url: "/user/verify-email",
+        method: "POST",
+        body,
+      }),
+    }),
+
     deleteAccount: builder.mutation<void, void>({
       query: () => ({
         url: "/user/delete-account",
@@ -97,4 +106,5 @@ export const {
   useDeleteAccountMutation,
   useGetAllUsersQuery,
   useUpdateUserStatusMutation,
+  useSendOTPMutation
 } = authApi;

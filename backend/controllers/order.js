@@ -5,6 +5,7 @@ import User from "../models/user.js";
 import { deliveryService } from "../services/deliveryService.js";
 import OrderService from "../services/orderService.js";
 import { checkOwnership } from "../utils/index.js";
+import NotificationService from "../services/notificationService.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -41,7 +42,7 @@ export const createOrder = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
   try {
     console.log(" update order status ", req.body, req.params);
-
+    const io = req.app.get("io");
     const { id } = req.params;
     const { status } = req.body;
 
@@ -64,9 +65,12 @@ export const updateOrderStatus = async (req, res) => {
 
     if (status === "preparing") {
       order = await OrderService.prepareOrder(id);
+      await NotificationService.createNotification(io, oldOrder.customerID, "Your order is  being prepared")
     } else if (status === "ready") {
       order = await OrderService.completeOrder(id);
       await deliveryService.assignDelivery(id);
+      await NotificationService.createNotification(io, oldOrder.customerID, "Your order is  ready for delivery and has been assigned to delivery")
+
     } else {
       return res
         .status(400)

@@ -22,6 +22,10 @@ export const updateDeliveryStatus = async (req, res) => {
 
     delivery.status = status;
     delivery.save();
+    const io = req.app.get("io");
+
+    await NotificationService.createNotification(io, oldOrder.customerID, `Your delivery is ${status} `)
+    
 
     if (status === "delivered" || status === "failed") {
       deliveryService.freeDeliveryPerson(delivery.deliveryPersonId);

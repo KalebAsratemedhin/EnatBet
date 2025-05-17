@@ -23,11 +23,11 @@ const seedUsers = async () => {
     await connectDB();
 
     const hashedPassword = await bcrypt.hash("password123", 10);
-
+    
     const users = [
       {
         name: "Admin User",
-        email: "admin@example.com",
+        email: "admin@gmail.com",
         password: hashedPassword,
         role: "admin",
         phoneNumber: "0912345678",

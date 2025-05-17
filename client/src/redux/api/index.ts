@@ -52,5 +52,11 @@ export const api = createApi({
     "delivery-person-deliveries",
     "all-deliveries",
     "customer-deliveries",
+    "Notifications",
+    "customer-dashboard",
+    "admin-dashboard",
+    "delivery-person-dashboard",
+    "owner-dashboard",
+    "restaurant-dashboard"
   ],
 });

@@ -1,88 +1,151 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { FaHamburger, FaPizzaSlice, FaWineBottle, FaUsers } from 'react-icons/fa';
-import { StatsCard } from '../components/StatsCard';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  CartesianGrid,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from "recharts";
+import { Card } from "@/components/ui/card";
+import { useGetRestaurantOwnerDashboardQuery } from "@/redux/api/dashboardApi";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const salesData = [
-  { name: 'Burger', sales: 240 },
-  { name: 'Pizza', sales: 390 },
-  { name: 'Pasta', sales: 170 },
-];
+const COLORS = ["#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#6366f1"];
 
-const orderStatusData = [
-  { name: 'Completed', value: 12 },
-  { name: 'Pending', value: 5 },
-  { name: 'Cancelled', value: 3 },
-];
-
-const customerRatings = [
-  { rating: '5 Stars', count: 20 },
-  { rating: '4 Stars', count: 10 },
-  { rating: '3 Stars', count: 5 },
-  { rating: '2 Stars', count: 1 },
-];
-
-const COLORS = ['#4CAF50', '#FF9800', '#F44336'];
-
-const RestaurantOwnerDashboard = () => (
-  <div className="p-4 md:p-6 space-y-8">
-    {/* Header */}
-    <div className="flex justify-between items-center flex-wrap gap-4">
-      <h2 className="text-2xl font-semibold text-gray-800">Restaurant Dashboard</h2>
-    </div>
-
-    {/* Stats Cards */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-      <StatsCard label="Total Sales" value="$8,550" icon={<FaHamburger className="text-xl text-red-500" />} />
-      <StatsCard label="Avg. Order Value" value="$20.50" icon={<FaPizzaSlice className="text-xl text-yellow-500" />} />
-      <StatsCard label="Total Customers" value={350} icon={<FaUsers className="text-xl text-blue-500" />} />
-      <StatsCard label="Total Orders" value={200} icon={<FaWineBottle className="text-xl text-green-500" />} />
-    </div>
-
-    {/* Charts Section */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Sales Data Bar Chart */}
-      <section className="bg-white p-6 rounded shadow">
-        <h3 className="text-lg font-semibold mb-4 text-gray-700">Sales by Product</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={salesData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="sales" fill="#3b82f6" />
-          </BarChart>
-        </ResponsiveContainer>
-      </section>
-
-      {/* Order Status Pie Chart */}
-      <section className="bg-white p-6 rounded shadow">
-        <h3 className="text-lg font-semibold mb-4 text-gray-700">Order Status Distribution</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie data={orderStatusData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
-              {orderStatusData.map((entry, index) => (
-                <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </section>
-    </div>
-
-    {/* Customer Ratings */}
-    <section className="bg-white p-6 rounded shadow">
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">Customer Ratings</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        {customerRatings.map((rating, index) => (
-          <div key={index} className="bg-gray-100 p-4 rounded shadow">
-            <h4 className="font-semibold text-gray-700">{rating.rating}</h4>
-            <p className="text-gray-500">Count: {rating.count}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  </div>
+const StatCard = ({ label, value }: { label: string; value: string | number }) => (
+  <Card className="p-4 rounded-lg shadow-sm border">
+    <h4 className="text-sm text-gray-500">{label}</h4>
+    <p className="text-xl font-semibold text-gray-800">{value}</p>
+  </Card>
 );
+
+const RestaurantOwnerDashboard = () => {
+  const { data, isLoading } = useGetRestaurantOwnerDashboardQuery();
+
+  if (isLoading || !data) {
+    return (
+      <div className="p-4 md:p-6 space-y-6">
+        <Skeleton className="h-10 w-48" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+      </div>
+    );
+  }
+
+  const {
+    totalSales,
+    totalOrders,
+    restaurantCount,
+    salesOverTime,
+    salesShare,
+    ordersPerRestaurant,
+    customersPerRestaurant,
+  } = data;
+
+  const restaurantNames = salesShare.map((r) => r.name);
+
+  return (
+    <div className="p-4 md:p-6 space-y-10">
+      <h2 className="text-2xl font-bold text-gray-800">My Restaurants Dashboard</h2>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <StatCard label="Total Sales" value={`$${totalSales.toLocaleString()}`} />
+        <StatCard label="Total Orders" value={totalOrders} />
+        <StatCard label="Number of Restaurants" value={restaurantCount} />
+      </div>
+
+      {/* Line & Pie Chart Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Line Chart */}
+        <section className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold mb-4 text-gray-700">Monthly Sales per Restaurant</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={salesOverTime}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              {restaurantNames.map((name, index) => (
+                <Line
+                  key={name}
+                  type="monotone"
+                  dataKey={name}
+                  stroke={COLORS[index % COLORS.length]}
+                  strokeWidth={2}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </section>
+
+        {/* Pie Chart */}
+        <section className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold mb-4 text-gray-700">Sales Share by Restaurant</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={salesShare}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={90}
+                label
+              >
+                {salesShare.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </section>
+      </div>
+
+      {/* Orders and Customers Bar Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Orders */}
+        <section className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold mb-4 text-gray-700">Orders per Restaurant</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={ordersPerRestaurant}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="orders" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+
+        {/* Customers */}
+        <section className="bg-white p-6 rounded shadow">
+          <h3 className="text-lg font-semibold mb-4 text-gray-700">Customers per Restaurant</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={customersPerRestaurant}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="customers" fill="#10b981" />
+            </BarChart>
+          </ResponsiveContainer>
+        </section>
+      </div>
+    </div>
+  );
+};
 
 export default RestaurantOwnerDashboard;

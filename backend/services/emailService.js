@@ -26,7 +26,7 @@ class EmailService {
     await this.transporter.sendMail(mailOptions);
   }
 
-  async sendVerificationEmail(to, verificationLink) {
+  async sendVerificationEmail(to, otp) {
     const subject = 'Verify Your Account';
     const html = `
     <!DOCTYPE html>
@@ -49,10 +49,9 @@ class EmailService {
       <h2 style="color: #333;">Welcome to Our App!</h2>
       <p style="color: #555;">Thank you for signing up. Please verify your account by clicking the button below:</p>
       
-      <a href="${verificationLink}" class="button" target="_blank">Verify Account</a>
       
-      <p>Or copy and paste this link into your browser:</p>
-      <p style="word-break: break-all;">${verificationLink}</p>
+      <p>Here is your otp </p>
+      <p style="word-break: break-all;">${otp}</p>
       
       <p class="footer">
         If you did not request this email, you can safely ignore it.

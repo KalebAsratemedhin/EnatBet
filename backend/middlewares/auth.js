@@ -42,8 +42,7 @@ export const isRestaurantOwner = async (req,res,next) =>{
 }
 
 export const isAdmin = async (req,res,next)=>{
-
-    if(!req.user.role.includes("admin")){
+    if(!req.user.role === "admin"){
 
         return res.status(403).json({message:"Access denied"})
         

@@ -18,7 +18,8 @@ import {
   Contact,
   FormInputIcon,
   HotelIcon,
-  LucideBike, // Assuming CarIcon was a typo or not used
+  LucideBike,
+  LayoutDashboardIcon // Assuming CarIcon was a typo or not used
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 type MenuItemType = {
@@ -34,13 +35,13 @@ type RoleGroupItemType = {
 
 function AppSidebar() {
   const { data: user } = useGetCurrentUserQuery(undefined);
-  const roles: string[] = user?.role || [];
 
   const baseItems: MenuItemType[] = [
     { title: "Home", url: "/", icon: Home },
     { title: "Profile", url: "/profile", icon: Contact },
     { title: "Restaurants", url: "/restaurants", icon: HotelIcon },
     { title: "Settings", url: "/settings", icon: Settings },
+    { title: "Dashboard", url: "/dashboard", icon: LayoutDashboardIcon}
   ];
 
   const ownerItems: RoleGroupItemType[] = [
@@ -127,7 +128,7 @@ function AppSidebar() {
     roleSpecificItems: RoleGroupItemType[]
   ) => {
     const filteredItems = roleSpecificItems
-      .filter((group) => roles.includes(group.role))
+      .filter((group) => user?.role == group.role)
       .flatMap((group) => group.items);
 
     if (!filteredItems.length) return null;

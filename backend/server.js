@@ -14,6 +14,7 @@ import orderRoutes from "./routes/order.js";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
+import dashboardRoutes from "./routes/dashboard.js";
 
 dotenv.config();
 
@@ -40,14 +41,20 @@ app.use("/order", orderRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/rating", ratingRoutes);
 app.use("/delivery", deliveryRoutes);
+app.use("/dashboard", dashboardRoutes);
+
+
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL || "http://localhost:3000", // Explicit default
     methods: ["GET", "POST"],
+    credentials: true
   },
+  transports: ["websocket"], 
+  path: "/socket.io/"
 });
 
 io.on("connection", (socket) => {
@@ -61,11 +68,11 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected:", socket.id);
   });
-});
+}); 
 
 app.set("io", io);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, "0.0.0.0", () =>
+server.listen(PORT, "0.0.0.0", () =>
   console.log(`Server running on port ${PORT}`)
 );

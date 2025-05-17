@@ -27,7 +27,8 @@ const UserSchema = new mongoose.Schema({
       message: "Password is required for non-Google users.",
     },
   },
-
+  emailVerificationOTP: { type: String },
+  otpExpires: { type: Date },
   role: {
     type: String,
     enum: ["admin", "customer", "restaurant_owner", "delivery_person"],

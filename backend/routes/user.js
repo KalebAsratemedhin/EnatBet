@@ -13,15 +13,15 @@ import {
 
 const router = express.Router();
 
-router.post("/change-password", isAuthenticated, changePassword);
+router.put("/change-password", isAuthenticated, changePassword);
 
-router.delete("/delete", isAuthenticated, deleteAccount);
+router.delete("/delete-account", isAuthenticated, deleteAccount);
 
-router.get("/send-verification-email", isAuthenticated, sendVerificationEmail);
+router.post("/send-verification-email", isAuthenticated, sendVerificationEmail);
 
-router.get("/verify-email", verifyEmail);
+router.post("/verify-email", isAuthenticated, verifyEmail);
 
-router.get("/verify-phone", isAuthenticated, verifyPhone);
+router.post("/verify-phone", isAuthenticated, verifyPhone);
 
 router.put("/profile", isAuthenticated, updateProfile);
 

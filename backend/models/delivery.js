@@ -21,7 +21,7 @@ const DeliverySchema = new mongoose.Schema({
   },
   estimatedDeliveryTime: {
     type: Date,
-  },
+  }
 });
 const Delivery = mongoose.model("Delivery", DeliverySchema);
 export default Delivery;

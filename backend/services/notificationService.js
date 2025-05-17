@@ -1,18 +1,15 @@
 import Notification from '../models/notification.js';
 
 export default class NotificationService {
-  static async createNotification(io, userId, title, body, type = 'general') {
+  static async createNotification(io, userId, message, type = 'general') {
     const notification = await Notification.create({
-      userId,
-      title,
-      body,
-      type,
+      userId: userId,
+      message,
+      type
     });
- 
-    // Emit notification via socket
-    io.to(userId.toString()).emit('new_notification', notification);
-
-    return notification;
+    
+    io.to(userId).emit("new-notification", notification);
+    
   }
 
   static async getUserNotifications(userId) {

@@ -3,10 +3,13 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.js";
 import "dotenv/config";
 import emailService from "../services/emailService.js";
-import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 export const changePassword = async (req, res) => {
   try {
+
+    console.log("changing pass ", req.body);
+    
     const { oldPassword, newPassword } = req.body;
 
     const user = await User.findById(req.user.id);
@@ -36,56 +39,70 @@ export const deleteAccount = async (req, res) => {
   }
 };
 
+
+// 1. SEND OTP TO EMAIL
 export const sendVerificationEmail = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    const verificationToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_EMAIL_SECRET,
-      { expiresIn: "1h" }
-    );
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const verificationLink = `${process.env.SERVER_URL}/user/verify-email?token=${verificationToken}`;
+    // Save hashed OTP to DB with expiry (5 minutes)
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    user.emailVerificationOTP = otpHash;
+    user.otpExpires = Date.now() + 5 * 60 * 1000; // 5 mins
+    await user.save();
 
-    await emailService.sendVerificationEmail(user.email, verificationLink);
+    // Send the plain OTP via email
+    await emailService.sendVerificationEmail(user.email, otp);
 
-    res.status(200).json({ message: "Check your email." });
+    res.status(200).json({ message: "OTP sent to your email." });
   } catch (err) {
-    console.error(err);
+    console.error("Send OTP Error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
 
+// 2. VERIFY OTP FROM EMAIL
 export const verifyEmail = async (req, res) => {
-  const { token } = req.query;
+  const { otp } = req.body;
+
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
-
-    const user = await User.findById(decoded.userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (user.isEmailVerified) {
       return res.status(400).json({ message: "Email already verified" });
     }
 
+    if (!user.emailVerificationOTP || !user.otpExpires) {
+      return res.status(400).json({ message: "No OTP found, please request a new one." });
+    }
+
+    // Check if OTP is expired
+    if (user.otpExpires < Date.now()) {
+      return res.status(400).json({ message: "OTP expired. Please request a new one." });
+    }
+
+    // Hash the provided OTP and compare
+    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    if (otpHash !== user.emailVerificationOTP) {
+      return res.status(400).json({ message: "Invalid OTP." });
+    }
+
+    // Mark email as verified and clear OTP
     user.isEmailVerified = true;
+    user.emailVerificationOTP = undefined;
+    user.otpExpires = undefined;
     await user.save();
 
     res.status(200).json({ message: "Email verified successfully!" });
-  } catch (error) {
-    console.error("Verify Email Error:", error);
-    if (error.name === "TokenExpiredError") {
-      return res.status(400).json({
-        message: "Verification link expired. Please request a new one.",
-      });
-    }
-    res.status(400).json({ message: "Invalid verification link" });
+  } catch (err) {
+    console.error("Verify OTP Error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 

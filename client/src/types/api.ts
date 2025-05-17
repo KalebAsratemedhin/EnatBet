@@ -7,11 +7,16 @@ export interface User {
   phoneNumber: string;
   address: string;
   profileImage?: string;
-  role: ("admin" | "customer" | "restaurant_owner" | "delivery_person")[];
+  role: ("admin" | "customer" | "restaurant_owner" | "delivery_person");
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
 }
 
+export interface CustomError {
+  data: {
+    message: string;
+  }
+}
 export interface RoleRequest {
   _id: string;
   userId: User;

@@ -2,13 +2,39 @@ import React, { useState } from "react";
 import {
   useChangePasswordMutation,
   useDeleteAccountMutation,
+  useSendOTPMutation,
   useVerifyEmailMutation,
-} from "@/redux/api/authApi"; // Assuming RTK Query setup
+} from "@/redux/api/authApi";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
-// Validation schema for change password
 const passwordSchema = yup.object({
   oldPassword: yup.string().required("Old password is required"),
   newPassword: yup
@@ -22,9 +48,12 @@ const SettingsPage: React.FC = () => {
     useChangePasswordMutation();
   const [deleteAccount, { isLoading: isDeletingAccount }] =
     useDeleteAccountMutation();
-  const [verifyEmail, { isLoading: isVerifyingEmail }] =
-    useVerifyEmailMutation();
+  const [sendOTP, { isLoading: isSendingOTP }] = useSendOTPMutation();
+  const [verifyEmail, { isLoading: isVerifying }] = useVerifyEmailMutation();
+
   const [emailVerified, setEmailVerified] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const {
     register,
@@ -37,115 +66,191 @@ const SettingsPage: React.FC = () => {
   const handleChangePassword = async (data: any) => {
     try {
       await changePassword(data).unwrap();
-      alert("Password changed successfully");
-    } catch (err) {
-      alert("Error changing password");
+      toast.success("Password changed successfully");
+    } catch(error: any) {
+      toast.error(`Error changing password ${error?.data?.message} `);
     }
   };
 
-  const handleVerifyEmail = async () => {
+  const handleSendVerificationEmail = async () => {
     try {
-      await verifyEmail().unwrap();
+      await sendOTP().unwrap();
+      toast.success("Verification email sent");
+      setIsDialogOpen(true);
+    } catch(error: any) {
+      toast.error(`Failed to send verification email ${error?.data?.message} `);
+
+    }
+  };
+
+  const handleVerifyOTP = async () => {
+    try {
+      await verifyEmail({ otp }).unwrap();
+      toast.success("Email verified successfully");
       setEmailVerified(true);
-      alert("Email verified successfully");
-    } catch (err) {
-      alert("Error verifying email");
+      setIsDialogOpen(false);
+    } catch (error: any) {
+      toast.error(`Invalid or expired OTP ${error?.data?.message}`);
     }
   };
 
   const handleDeleteAccount = async () => {
     try {
       await deleteAccount().unwrap();
-      alert("Account deleted successfully");
-    } catch (err) {
-      alert("Error deleting account");
+      toast.success("Account deleted successfully");
+      localStorage.clear();
+    } catch (error: any) {
+      toast.error(`Error deleting account ${error?.data?.message}`);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center text-red-500">
-        Account Settings
+    <div className="max-w-3xl mx-auto py-10 px-4 space-y-6">
+      <h1 className="text-3xl font-bold text-center text-primary">
+        ⚙️ Account Settings
       </h1>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Change Password
-        </h2>
-        <form onSubmit={handleSubmit(handleChangePassword)} className="mt-6">
-          <div>
-            <label htmlFor="oldPassword" className="block text-gray-600">
-              Old Password:
-            </label>
-            <input
-              type="password"
-              id="oldPassword"
-              {...register("oldPassword")}
-              className="w-full p-2 mt-2 border border-gray-300 rounded-md"
-            />
-            {errors.oldPassword && (
-              <p className="text-red-500 text-sm">
-                {errors.oldPassword.message}
-              </p>
-            )}
-          </div>
-          <div className="mt-4">
-            <label htmlFor="newPassword" className="block text-gray-600">
-              New Password:
-            </label>
-            <input
-              type="password"
-              id="newPassword"
-              {...register("newPassword")}
-              className="w-full p-2 mt-2 border border-gray-300 rounded-md"
-            />
-            {errors.newPassword && (
-              <p className="text-red-500 text-sm">
-                {errors.newPassword.message}
-              </p>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-md"
-            disabled={isChangingPassword}
-          >
-            {isChangingPassword ? "Changing..." : "Change Password"}
-          </button>
-        </form>
-      </div>
+      <Tabs defaultValue="password" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="password">Change Password</TabsTrigger>
+          <TabsTrigger value="email">Verify Email</TabsTrigger>
+          <TabsTrigger value="delete">Delete Account</TabsTrigger>
+        </TabsList>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Email Verification
-        </h2>
-        <div className="mt-4">
-          <button
-            onClick={handleVerifyEmail}
-            className={`px-6 py-2 rounded-md ${
-              emailVerified ? "bg-green-500" : "bg-yellow-500"
-            } text-white`}
-            disabled={isVerifyingEmail || emailVerified}
-          >
-            {emailVerified ? "Email Verified" : "Verify Email"}
-          </button>
-        </div>
-      </div>
+        {/* Change Password Tab */}
+        <TabsContent value="password">
+          <Card>
+            <CardHeader>
+              <CardTitle>🔒 Change Password</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={handleSubmit(handleChangePassword)}
+                className="space-y-4"
+              >
+                <Input
+                  type="password"
+                  placeholder="Old Password"
+                  {...register("oldPassword")}
+                />
+                {errors.oldPassword && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.oldPassword.message}
+                  </p>
+                )}
+                <Input
+                  type="password"
+                  placeholder="New Password"
+                  {...register("newPassword")}
+                />
+                {errors.newPassword && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.newPassword.message}
+                  </p>
+                )}
+                <Button type="submit" disabled={isChangingPassword}>
+                  {isChangingPassword && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Change Password
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Account Management
-        </h2>
-        <div className="mt-4">
-          <button
-            onClick={handleDeleteAccount}
-            className="px-6 py-2 bg-red-500 text-white rounded-md"
-            disabled={isDeletingAccount}
-          >
-            {isDeletingAccount ? "Deleting..." : "Delete Account"}
-          </button>
-        </div>
-      </div>
+        {/* Email Verification Tab */}
+        <TabsContent value="email">
+          <Card>
+            <CardHeader>
+              <CardTitle>📨 Email Verification</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={handleSendVerificationEmail}
+                disabled={isSendingOTP || emailVerified}
+                variant={emailVerified ? "default" : "secondary"}
+              >
+                {isSendingOTP ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : emailVerified ? (
+                  "✅ Email Verified"
+                ) : (
+                  "Send Verification Email"
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* OTP Dialog */}
+          <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Enter the OTP sent to your email
+                </AlertDialogTitle>
+              </AlertDialogHeader>
+              <Input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+                maxLength={6}
+              />
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleVerifyOTP}
+                  disabled={isVerifying}
+                >
+                  {isVerifying && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Verify Email
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </TabsContent>
+
+        {/* Delete Account Tab */}
+        <TabsContent value="delete">
+          <Card>
+            <CardHeader>
+              <CardTitle>🗑️ Delete Account</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">Delete Account</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you sure you want to delete your account?
+                    </AlertDialogTitle>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteAccount}
+                      disabled={isDeletingAccount}
+                    >
+                      {isDeletingAccount && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Confirm Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

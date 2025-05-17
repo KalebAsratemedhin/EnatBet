@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React from 'react';
 
 const NotFound: React.FC = () => {

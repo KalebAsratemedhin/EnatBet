@@ -61,8 +61,7 @@ const SignupForm: React.FC = () => {
     }
     if (isSuccess) {
       setSnackbar({ message: "Signed up", type: "success" });
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
-      navigator(`/dashboard/${user.role}`);
+      navigator(`/dashboard`);
     }
   }, [isError, isSuccess]);
 
