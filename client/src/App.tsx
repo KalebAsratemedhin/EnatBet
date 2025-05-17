@@ -24,24 +24,22 @@ import MyRestaurants from "./components/MyRestaurants";
 import DeliveryPersonDeliveries from "./components/DeliveryPersonDeliveries";
 import CustomerDeliveries from "./components/CustomerDeliveries";
 import UserManagementTable from "./pages/UserManagement";
-import { isAuthenticated } from "./utils/auth";
 import PaymentConfirmation from "./components/PaymentConfirmation";
 import NotificationsPage from "@/pages/NotificationsPage";
 import Dashboard from "./pages/Dashboard";
 
 
 const App: React.FC = () => {
-  const auth = isAuthenticated();
   return (
     <>
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutPage />} />
-          {!auth && <Route path="/restaurants" element={<Restaurants />} /> &&
-            <Route path="/restaurants/:id" element={<RestaurantDetails />} />
-          }
+          <Route path="/restaurants" element={<Restaurants />} />
+          <Route path="/restaurants/:id" element={<RestaurantDetails />} />
         </Route>
+
 
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
@@ -86,6 +84,7 @@ const App: React.FC = () => {
           
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/restaurants/:id" element={<RestaurantDetails />} />
+
           <Route
             path="/order-confirmation/:id"
             element={<PaymentConfirmation />}
