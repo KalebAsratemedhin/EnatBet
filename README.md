@@ -2,7 +2,7 @@
 
 **EnatBet** is a modern full-stack web application designed to simplify food discovery, ordering, and delivery for users while empowering restaurant owners and delivery personnel through a streamlined system. The platform combines real-time tracking, location-based restaurant suggestions, and customizable restaurant management to deliver a seamless food delivery experience.
 
-https://enatbet-client.onrender.com/
+https://enat-bet.vercel.app
 
 ---
 
